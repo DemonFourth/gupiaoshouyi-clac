@@ -1097,7 +1097,7 @@ const Detail = {
         DataService.invalidateCache(this.currentStockCode);
 
         stock.trades.push(newTrade);
-        DataManager.save(data);
+        await DataManager.save(data);
 
         // 触发 TRADE_ADDED 事件（携带股票代码）
         EventBus.emit(EventBus.EventTypes.TRADE_ADDED, {

@@ -335,11 +335,11 @@ const TradeManager = {
                 totalAmount: Math.round(price * amount * 100) / 100
             });
         }
-        DataManager.save(data);
+        await DataManager.save(data);
 
         this.closeEditModal();
         if (window.App && window.App.updateAll) {
-            window.App.updateAll();
+            await window.App.updateAll();
         }
     },
     
@@ -371,10 +371,10 @@ const TradeManager = {
         }
         
         stock.trades.splice(index, 1);
-        DataManager.save(data);
+        await DataManager.save(data);
         
         if (window.App && window.App.updateAll) {
-            window.App.updateAll();
+            await window.App.updateAll();
         }
     },
     
