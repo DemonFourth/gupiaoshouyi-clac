@@ -309,20 +309,23 @@ const Overview = {
         this.buildAggregatedChartData();
     },
 
-    async getStockSnapshot(stock) {
-        if (!this.stockSnapshots[stock.code]) {
-            this.stockSnapshots[stock.code] = await StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
+    getStockSnapshot(stock) {
+        // 优先使用缓存（同步）
+        if (this.stockSnapshots[stock.code]) {
+            return StockProfitCalculator.StockSnapshot.attachQuote(
+                this.stockSnapshots[stock.code], 
+                this.getQuoteInfo(stock.code)
+            );
         }
-        const baseSnapshot = this.stockSnapshots[stock.code];
-        if (!baseSnapshot) {
-            console.error(`[Overview] StockSnapshot is null for stock: ${stock.code}`);
-            return {
-                stockCode: stock.code,
-                stock: stock,
-                summary: { currentHolding: 0, currentCost: 0, totalProfit: 0, totalReturnRate: 0 },
-            };
-        }
-        return StockProfitCalculator.StockSnapshot.attachQuote(baseSnapshot, this.getQuoteInfo(stock.code));
+        
+        // 缓存不存在，返回空对象避免错误
+        console.error(`[Overview] Snapshot not found in cache for stock: ${stock.code}`);
+        return {
+            stockCode: stock.code,
+            stock: stock,
+            calcResult: { sellRecords: [], holdingQueue: [], holdingDetail: [] },
+            summary: { currentHolding: 0, currentCost: 0, totalProfit: 0, totalReturnRate: 0 },
+        };
     },
 
     buildAggregatedChartData() {
