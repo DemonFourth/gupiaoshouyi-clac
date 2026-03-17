@@ -140,6 +140,8 @@ window.App = {
             exportSummaryCSVBtn.onclick = () => this.exportSummaryCSV();
         }
 
+        // 备份管理按钮事件绑定已注释 - 功能未实现且不适用于 Cloudflare D1 数据库
+        /*
         const viewBackupsBtn = document.getElementById('viewBackupsBtn');
         if (viewBackupsBtn) {
             viewBackupsBtn.onclick = () => this.openBackupModal();
@@ -154,6 +156,7 @@ window.App = {
         if (closeBackupModalBtn) {
             closeBackupModalBtn.onclick = () => this.closeBackupModal();
         }
+        */
 
         const closeAlertModalBtn = document.getElementById('closeAlertModalBtn');
         if (closeAlertModalBtn) {
@@ -518,8 +521,8 @@ window.App = {
         this.closeSettingsModal();
     },
 
-    // ==================== 备份管理功能 ====================
-
+    // ==================== 备份管理功能已注释 - 功能未实现且不适用于 Cloudflare D1 数据库 ====================
+    /*
     openBackupModal() {
         const modal = document.getElementById('backupModal');
         if (modal) {
@@ -629,6 +632,7 @@ window.App = {
             }
         }
     }
+    */
 };
 
 // 挂载到命名空间
