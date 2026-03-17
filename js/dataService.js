@@ -108,7 +108,8 @@ const DataService = {
         // 重新计算
         const trades = await this.getTradeData(stockCode);
         if (!trades || trades.length === 0) {
-            return null;
+            // 返回空计算结果结构，而不是 null，避免后续访问报错
+            return StockProfitCalculator.Calculator.calculateAll([]);
         }
 
         const result = StockProfitCalculator.Calculator.calculateAll(trades);

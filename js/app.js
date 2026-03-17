@@ -107,7 +107,7 @@ window.App = {
 
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
-            backBtn.onclick = () => Router.showOverview();
+            backBtn.onclick = async () => await Router.showOverview();
         }
 
         const settingsBtn = document.getElementById('settingsBtn');
