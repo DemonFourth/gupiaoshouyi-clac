@@ -309,7 +309,7 @@ window.App = {
         if (page === 'detail' && stockCode) {
             if (typeof Detail !== 'undefined') {
                 await Router.showDetail(stockCode);  // 先切换页面
-                Detail.loadStock(stockCode);  // 再加载股票数据
+                await Detail.loadStock(stockCode);  // 再加载股票数据（添加 await）
             }
             return;
         }

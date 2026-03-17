@@ -145,7 +145,7 @@ const StockManager = {
             if (!isEdit) {
                 // 使用统一的路由处理函数，确保 Detail.loadStock() 被调用
                 if (window.App && window.App.handleRouteChange) {
-                    window.App.handleRouteChange('detail', code);
+                    await window.App.handleRouteChange('detail', code);
                 } else {
                     // 降级处理：直接调用（兼容旧代码）
                     Router.showDetail(code);
