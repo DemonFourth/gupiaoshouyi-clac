@@ -318,13 +318,52 @@ const Overview = {
             );
         }
         
-        // 缓存不存在，返回空对象避免错误
+        // 缓存不存在，返回完整的空对象结构避免错误
         console.error(`[Overview] Snapshot not found in cache for stock: ${stock.code}`);
         return {
             stockCode: stock.code,
             stock: stock,
-            calcResult: { sellRecords: [], holdingQueue: [], holdingDetail: [] },
-            summary: { currentHolding: 0, currentCost: 0, totalProfit: 0, totalReturnRate: 0 },
+            calcResult: {
+                sellRecords: [],
+                holdingQueue: [],
+                holdingDetail: [],
+                cycleInfo: {},
+                timeSeries: { dates: [], profits: [] }
+            },
+            summary: {
+                currentHolding: 0,
+                currentCost: 0,
+                totalProfit: 0,
+                totalReturnRate: 0,
+                totalBuyCost: 0,
+                currentCycleProfit: 0,
+                currentCycleDividend: 0,
+                currentCycleTax: 0
+            },
+            periodProfit: {
+                weeklyProfit: 0,
+                monthlyProfit: 0
+            },
+            totalAllProfit: 0,
+            totalAllReturnRate: 0,
+            firstBuyDate: null,
+            holdingCost: 0,
+            holdingInfo: {
+                startDate: '--',
+                holdingDays: 0
+            },
+            quote: null,
+            marketValue: null,
+            holdingProfit: null,
+            holdingReturnRate: null,
+            cycleProfit: null,
+            cycleReturnRate: null,
+            costPerShare: 0,
+            dilutedCostPerShare: null,
+            yearlyStats: [],
+            currentPrice: null,
+            currentHoldingProfit: null,
+            currentHoldingReturnRate: null
         };
     },
 
