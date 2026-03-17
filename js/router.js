@@ -56,7 +56,7 @@ const Router = {
      * 切换到汇总页面
      * @param {boolean} saveState - 是否保存状态
      */
-    showOverview(saveState = true) async {
+    async showOverview(saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showOverview') : null;
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.remove('page-detail');
@@ -128,7 +128,7 @@ const Router = {
      * @param {string} stockCode - 股票代码
      * @param {boolean} saveState - 是否保存状态
      */
-    showDetail(stockCode, saveState = true) async {
+    async showDetail(stockCode, saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
         // 保存当前页面（汇总页）的滚动位置
@@ -343,7 +343,7 @@ const Router = {
      * @param {number} year - 年份
      * @param {number|null} month - 月份（null 表示全年）
      */
-    showTradeRecords(year, month = null, startDate = null, endDate = null) async {
+    async showTradeRecords(year, month = null, startDate = null, endDate = null) {
         console.log('[Router.showTradeRecords] 收到参数:');
         console.log('  year:', year);
         console.log('  month:', month);
