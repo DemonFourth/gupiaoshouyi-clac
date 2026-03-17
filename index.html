@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票收益计算器</title>
+    <link rel="stylesheet" href="css/style.css?v=20260316-fieldsettings">
+</head>
+<body>
+    <!-- 错误提示容器 -->
+    <div id="alertContainer" class="alert-container"></div>
+
+    <div class="container">
+        <!-- 顶部标题栏 -->
+        <div class="header-bar">
+            <div id="headerLeft">
+                <button type="button" id="backBtn" class="back-btn" style="display: none;" title="返回">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    返回
+                </button>
+                <div class="header-title">
+                    <h1>股票收益计算器</h1>
+                    <div class="stock-info" id="stockInfo">支持多股票管理 | FIFO先进先出计算</div>
+                </div>
+
+                <!-- 股票筛选器：仅交易记录页面显示 -->
+                <select id="tradeRecordsStockFilter" class="trade-records-filter-select" style="display: none;">
+                    <option value="">全部股票</option>
+                </select>
+
+                <!-- 交易记录日期筛选器：仅交易记录页面显示 -->
+                <div class="trade-records-date-filters" style="display: none;">
+                    <input type="date" id="tradeRecordsStartDate" class="trade-records-filter-input" placeholder="起始日期">
+                    <span class="trade-records-filter-separator">-</span>
+                    <input type="date" id="tradeRecordsEndDate" class="trade-records-filter-input" placeholder="结束日期">
+                    <button id="tradeRecordsFilterBtn" class="trade-records-filter-btn">筛选</button>
+                </div>
+
+                <!-- 详情页顶部行情：由 Router 切换时显示/隐藏 -->
+                <span class="header-quote" id="headerQuote" style="display:none;">
+                    <span class="header-quote-item">
+                        <span class="header-quote-label">现价</span>
+                        <span class="header-quote-value" id="currentPrice"><span class="loading">--</span></span>
+                    </span>
+                    <span class="header-quote-item">
+                        <span class="header-quote-label">涨跌幅</span>
+                        <span class="header-quote-value" id="priceChange"><span class="loading">--</span></span>
+                    </span>
+                </span>
+
+                <!-- 交易记录汇总：仅交易记录页面显示 -->
+                <div class="trade-records-summary" style="display: none;">
+                    <span class="trade-records-summary-item">
+                        <span class="trade-records-summary-label">总收益：</span>
+                        <span class="trade-records-summary-value" id="tradeRecordsTotalProfit">¥0.00</span>
+                    </span>
+                    <span class="trade-records-summary-item">
+                        <span class="trade-records-summary-label">交易次数：</span>
+                        <span class="trade-records-summary-value" id="tradeRecordsCount">0</span>
+                    </span>
+                    <span class="trade-records-summary-item">
+                        <span class="trade-records-summary-label">总手续费：</span>
+                        <span class="trade-records-summary-value" id="tradeRecordsTotalFee">¥0.00</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="header-right-actions">
+                <!-- 详情页刷新股价按钮：由 Router 切换时显示/隐藏 -->
+                <button type="button" class="refresh-btn header-refresh-btn" id="refreshPriceBtn" style="display: none;">刷新股价</button>
+
+                <!-- 搜索框 -->
+                <div class="search-container">
+                    <input type="text" id="stockSearchInput" class="search-input" placeholder="搜索股票代码/名称">
+                    <div id="searchResults" class="search-results" style="display: none;"></div>
+                </div>
+
+                <button type="button" class="settings-btn" id="settingsBtn" title="设置">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== 汇总页面 ==================== -->
+        <div id="overviewPage" class="page-container">
+            <!-- 全部股票汇总统计 -->
+            <div class="overview-summary">
+                <div class="overview-summary-title">全部股票汇总</div>
+                <div class="overview-summary-grid">
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">当前持仓总市值</span>
+                        <span class="overview-summary-value" id="overviewTotalMarketValue">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">当前持仓总成本</span>
+                        <span class="overview-summary-value" id="overviewTotalHoldingCost">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">当前持仓总收益</span>
+                        <span class="overview-summary-value" id="overviewTotalProfit">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">当前持仓总收益率</span>
+                        <span class="overview-summary-value" id="overviewTotalReturnRate">0.00%</span>
+                    </div>
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">本周收益</span>
+                        <span class="overview-summary-value" id="overviewWeeklyProfit">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item">
+                        <span class="overview-summary-label">本月收益</span>
+                        <span class="overview-summary-value" id="overviewMonthlyProfit">¥0.00</span>
+                    </div>
+                </div>
+                <div class="overview-stock-stats">
+                    <!-- 持仓股票区域 -->
+                    <div class="stock-stats-group">
+                        <div class="stock-stats-header">
+                            <span class="stock-stats-title">持仓股票</span>
+                            <span class="stock-stats-count" id="overviewHoldingCount">0只</span>
+                            <span class="stock-stats-detail">
+                                <span class="profit" id="overviewProfitCount">盈利0只</span>
+                                <span class="loss" id="overviewLossCount">亏损0只</span>
+                            </span>
+                        </div>
+                        <div class="stock-stats-columns">
+                            <div class="profit-loss-column">
+                                <div class="profit-loss-header profit">盈利 TOP5</div>
+                                <div id="profitStockList" class="profit-loss-items"></div>
+                            </div>
+                            <div class="profit-loss-column">
+                                <div class="profit-loss-header loss">亏损 TOP5</div>
+                                <div id="lossStockList" class="profit-loss-items"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 清仓股票区域 -->
+                    <div class="stock-stats-group">
+                        <div class="stock-stats-header">
+                            <span class="stock-stats-title">清仓股票</span>
+                            <span class="stock-stats-count" id="overviewClearedCount">0只</span>
+                            <span class="stock-stats-detail">
+                                <span class="profit" id="overviewClearedProfitCount">盈利0只</span>
+                                <span class="loss" id="overviewClearedLossCount">亏损0只</span>
+                            </span>
+                        </div>
+                        <div class="stock-stats-columns">
+                            <div class="profit-loss-column">
+                                <div class="profit-loss-header profit">盈利 TOP5</div>
+                                <div id="clearedProfitStockList" class="profit-loss-items"></div>
+                            </div>
+                            <div class="profit-loss-column">
+                                <div class="profit-loss-header loss">亏损 TOP5</div>
+                                <div id="clearedLossStockList" class="profit-loss-items"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 年度/月度收益图表 -->
+            <div class="section">
+                <h2>收益趋势</h2>
+                <div class="charts-container">
+                    <div id="yearlyProfitChart" class="chart-box"></div>
+                    <div id="monthlyProfitChart" class="chart-box"></div>
+                </div>
+            </div>
+
+            <!-- 股票列表 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>持仓中</h2>
+                    <div class="section-header-right">
+                        <select id="holdingSortSelect" class="sort-select" onchange="Overview.onSortChange('holding')">
+                            <option value="change">当日涨幅</option>
+                            <option value="profit">收益</option>
+                            <option value="return">收益率</option>
+                            <option value="market-value">持仓市值</option>
+                            <option value="holding-days">持仓天数</option>
+                            <option value="first-buy">建仓时间</option>
+                            <option value="cost">持仓成本</option>
+                        </select>
+                        <div class="sort-direction-group" aria-label="排序方向">
+                        <button type="button" id="holdingSortDescBtn" class="sort-direction-btn active" title="降序">↓</button>
+                        <button type="button" id="holdingSortAscBtn" class="sort-direction-btn" title="升序">↑</button>
+                        </div>
+                        <button type="button" id="viewModeBtn" class="btn btn-icon" title="切换视图">
+                            <span class="view-icon-grid">▦</span>
+                            <span class="view-icon-list" style="display:none;">☰</span>
+                        </button>
+                        <button type="button" id="fieldSettingsBtn" class="btn btn-icon" title="显示设置">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-primary" id="addStockBtn">添加股票</button>
+                    </div>
+                </div>
+                <div id="holdingStocksList" class="stock-cards-container">
+                    <!-- 股票卡片将通过JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>已清仓</h2>
+                    <div class="section-header-right">
+                        <select id="clearedSortSelect" class="sort-select" onchange="Overview.onSortChange('cleared')">
+                            <option value="default">默认排序</option>
+                            <option value="profit-desc">收益降序</option>
+                            <option value="profit-asc">收益升序</option>
+                            <option value="first-buy">建仓时间</option>
+                            <option value="cost-desc">持仓成本降序</option>
+                            <option value="cost-asc">持仓成本升序</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="clearedStocksList" class="stock-cards-container">
+                    <!-- 股票卡片将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 详情页面 ==================== -->
+        <div id="detailPage" class="page-container" style="display: none;">
+            <!-- 当前持仓信息（Grid + label/value 层级，保持原有颜色） -->
+            <div class="realtime-info">
+                <div class="realtime-title">当前持仓</div>
+                <div class="detail-summary-grid detail-realtime-grid">
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">持有股成本</span>
+                        <span class="detail-summary-value" id="realtimeCost"><span class="loading">--</span></span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">持有股市值</span>
+                        <span class="detail-summary-value" id="marketValue"><span class="loading">--</span></span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">
+                            <span class="detail-summary-label-text">持有股数</span>
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text" id="holdingTooltip">
+                                    <strong>持仓明细：</strong><br>
+                                    暂无持仓
+                                </span>
+                            </span>
+                        </span>
+                        <span class="detail-summary-value" id="realtimeHolding"><span class="loading">--</span></span>
+                    </div>
+                    <div class="detail-summary-item detail-summary-item-dual">
+                        <span class="detail-summary-label">
+                            每股成本
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>计算公式：</strong>持仓成本=持仓成本÷持仓股数；摊薄成本=(持仓市值-总收益)÷持仓股数<br>
+                                    <strong>说明：</strong>摊薄成本会考虑已卖出收益对成本的抵扣。
+                                </span>
+                            </span>
+                        </span>
+                        <div class="detail-summary-dual">
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">持仓</span>
+                                <span class="detail-summary-dual-value" id="costPerShare"><span class="loading">--</span></span>
+                            </div>
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">摊薄</span>
+                                <span class="detail-summary-dual-value" id="dilutedCostPerShare"><span class="loading">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-summary-item detail-summary-item-dual">
+                        <span class="detail-summary-label">
+                            当前收益
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>持有股收益：</strong>浮动盈亏（当前持有股数的盈亏总和）<br>
+                                    <strong>持仓周期收益：</strong>当前持仓周期的已实现收益+浮动盈亏+分红-红利税（整个持仓周期的总收益）
+                                </span>
+                            </span>
+                        </span>
+                        <div class="detail-summary-dual">
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">持有股</span>
+                                <span class="detail-summary-dual-value" id="latestProfit"><span class="loading">--</span></span>
+                            </div>
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">持仓周期</span>
+                                <span class="detail-summary-dual-value" id="cycleProfit"><span class="loading">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-summary-item detail-summary-item-dual">
+                        <span class="detail-summary-label">
+                            当前收益率
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>持有股收益率：</strong>持有股收益÷持仓成本×100%<br>
+                                    <strong>持仓周期收益率：</strong>(现价-摊薄成本)÷摊薄成本×100%
+                                </span>
+                            </span>
+                        </span>
+                        <div class="detail-summary-dual">
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">持有股</span>
+                                <span class="detail-summary-dual-value" id="latestReturnRate"><span class="loading">--</span></span>
+                            </div>
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">持仓周期</span>
+                                <span class="detail-summary-dual-value" id="cycleReturnRate"><span class="loading">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">持仓开始日期</span>
+                        <span class="detail-summary-value" id="holdingStartDate"><span class="loading">--</span></span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">持有天数</span>
+                        <span class="detail-summary-value" id="holdingDays"><span class="loading">--</span></span>
+                    </div>
+                </div>
+                <!-- 提示已移到顶部工具条（#priceRefreshStatus） -->
+            </div>
+
+            <!-- 汇总信息（Summary Bar + Grid Stats：只改布局层级，不改颜色） -->
+            <div class="summary-info">
+                <div class="summary-title">汇总信息</div>
+                <div class="detail-summary-grid">
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">总投入成本</span>
+                        <span class="detail-summary-value" id="totalCost">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">总卖出金额</span>
+                        <span class="detail-summary-value" id="totalSell">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">总手续费</span>
+                        <span class="detail-summary-value" id="totalFee">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">
+                            已卖出收益
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>计算公式：</strong>已卖出收益=Σ(卖出净额-对应成本)<br>
+                                    <strong>说明：</strong>已卖出股票的实际盈亏，已落袋为安
+                                </span>
+                            </span>
+                        </span>
+                        <span class="detail-summary-value" id="totalProfit">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">
+                            已卖出收益率
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>计算公式：</strong>已卖出收益率=已卖出收益÷总投入成本×100%<br>
+                                    <strong>说明：</strong>整体投资回报率，反映投资效率
+                                </span>
+                            </span>
+                        </span>
+                        <span class="detail-summary-value" id="totalReturnRate">0.00%</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">
+                            总收益
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>计算公式：</strong>总收益=已卖出收益+当前持仓收益<br>
+                                    <strong>说明：</strong>已实现收益与浮动收益的总和
+                                </span>
+                            </span>
+                        </span>
+                        <span class="detail-summary-value" id="totalAllProfit">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">
+                            总收益率
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>计算公式：</strong>总收益率=总收益÷总投入成本×100%<br>
+                                    <strong>说明：</strong>总收益=已实现收益+浮动盈亏。持仓中股票基于总投入成本计算综合投资回报率，已清仓股票显示已实现收益率
+                                </span>
+                            </span>
+                        </span>
+                        <span class="detail-summary-value" id="totalAllReturnRate">0.00%</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">本周收益</span>
+                        <span class="detail-summary-value" id="weeklyProfit">¥0.00</span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">本月收益</span>
+                        <span class="detail-summary-value" id="monthlyProfit">¥0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 每股成本趋势图表（复刻汇总页 Grid + label/value 层级，不使用渐变背景） -->
+            <div class="section">
+                <h2>每股成本趋势</h2>
+                <div class="charts-container">
+                    <div id="perShareCostTrendChart" class="chart-box"></div>
+                </div>
+            </div>
+
+            <!-- 数据统计将并入趋势图表区域展示 -->
+
+            <!-- 交易记录表 -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>交易记录</h2>
+                    <button type="button" class="btn btn-primary" id="toggleAddTradeBtn">添加记录</button>
+                </div>
+                <!-- 添加交易记录表单（默认隐藏） -->
+                <div id="addTradeFormContainer" class="add-trade-form-container" style="display: none;">
+                    <form id="addTradeForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>交易日期</label>
+                                <input type="date" id="tradeDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>操作类型</label>
+                                <select id="tradeType" onchange="Detail.onTradeTypeChange()">
+                                    <option value="buy">买入</option>
+                                    <option value="sell">卖出</option>
+                                    <option value="dividend">分红</option>
+                                    <option value="tax">红利税补缴</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>价格(元)</label>
+                                <input type="number" id="tradePrice" step="0.001" placeholder="请输入价格" oninput="Detail.updateTradeAmount()">
+                            </div>
+                            <div class="form-group">
+                                <label>数量(股)</label>
+                                <input type="number" id="tradeAmount" placeholder="请输入数量" oninput="Detail.updateTradeAmount()">
+                            </div>
+                            <div class="form-group">
+                                <label>手续费(元)</label>
+                                <input type="number" id="tradeFee" step="0.01" value="5" placeholder="默认5元">
+                            </div>
+                            <div class="form-group">
+                                <label>金额(元)</label>
+                                <input type="text" id="tradeAmountDisplay" placeholder="自动计算" style="background: #f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="form-btn-group">
+                                    <button type="submit" class="btn btn-primary">确认添加</button>
+                    <button type="button" class="btn" id="cancelAddTradeBtn">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>操作</th>
+                                <th>价格(元)</th>
+                                <th>数量(股)</th>
+                                <th>手续费(元)</th>
+                                <th>金额(元)</th>
+                                <th>收益(金额/收益率)</th>
+                                <th>持仓周期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 交易记录分页控件 -->
+                <div id="tradePaginationContainer"></div>
+            </div>
+
+            <!-- 持仓明细表 -->
+            <div class="section">
+                <h2>持仓明细（FIFO先进先出）</h2>
+                <div style="overflow-x: auto;">
+                    <table id="holdingDetailTable">
+                        <thead>
+                            <tr>
+                                <th>买入日期</th>
+                                <th>买入价格(元)</th>
+                                <th>买入数量(股)</th>
+                                <th>已卖出数量(股)</th>
+                                <th>剩余数量(股)</th>
+                                <th>状态</th>
+                                <th>对应卖出记录</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdingDetailBody">
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 持仓明细分页控件 -->
+                <div id="holdingDetailPaginationContainer"></div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="section">
+                <h2>数据统计与趋势图表</h2>
+
+                <div class="stats-table-container" style="margin-bottom: 18px;">
+                    <table class="stats-table">
+                        <tbody>
+                            <tr>
+                                <td class="stats-label">买入次数</td>
+                                <td class="stats-value" id="statBuyCount">0</td>
+                                <td class="stats-label">卖出次数</td>
+                                <td class="stats-value" id="statSellCount">0</td>
+                            </tr>
+                            <tr>
+                                <td class="stats-label">盈利次数</td>
+                                <td class="stats-value profit" id="statProfitCount">0</td>
+                                <td class="stats-label">亏损次数</td>
+                                <td class="stats-value loss" id="statLossCount">0</td>
+                            </tr>
+                            <tr>
+                                <td class="stats-label">胜率</td>
+                                <td class="stats-value" id="statWinRate">0.00%</td>
+                                <td class="stats-label">平均收益率</td>
+                                <td class="stats-value" id="statAvgReturnRate">0.00%</td>
+                            </tr>
+                            <tr>
+                                <td class="stats-label">最大盈利</td>
+                                <td class="stats-value profit" id="statMaxProfit">¥0.00</td>
+                                <td class="stats-label">最大亏损</td>
+                                <td class="stats-value loss" id="statMaxLoss">¥0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="charts-container">
+                    <div id="holdingTrendChart" class="chart-box"></div>
+                    <div id="cumulativeProfitChart" class="chart-box"></div>
+                </div>
+                <div class="charts-container">
+                    <div id="profitTrendChart" class="chart-box"></div>
+                    <div id="returnRateTrendChart" class="chart-box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交易记录查询页面 -->
+    <div id="tradeRecordsPage" class="page-container" style="display: none;">
+        <h2>交易记录查询</h2>
+        
+        <!-- 图表选择控件 -->
+        <div class="trade-records-chart-selector">
+            <span class="chart-selector-label">选择显示的图表：</span>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="dailyAmount">
+                <span>每日交易额趋势</span>
+            </label>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="dailyProfit">
+                <span>每日收益趋势（累计）</span>
+            </label>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="typeDistribution">
+                <span>交易类型分布</span>
+            </label>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="dailyCount">
+                <span>每日交易次数趋势</span>
+            </label>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="stockAmount">
+                <span>股票交易额排行（前10）</span>
+            </label>
+            <label class="chart-selector-item">
+                <input type="checkbox" class="chart-selector-checkbox" data-chart="stockProfit">
+                <span>股票收益排行（前10）</span>
+            </label>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="trade-records-charts" id="tradeRecordsChartsContainer">
+            <div class="chart-row">
+                <div class="chart-container" data-chart="dailyAmount">
+                    <div class="chart-header">
+                        <h3>每日交易额趋势</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsDailyAmountChart">
+                            <option value="bar">柱状图</option>
+                            <option value="line" selected>折线图</option>
+                            <option value="stackedBar">堆叠柱状图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsDailyAmountChart" style="width: 100%; height: 300px;"></div>
+                </div>
+                <div class="chart-container" data-chart="dailyProfit">
+                    <div class="chart-header">
+                        <h3>每日收益趋势（累计）</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsDailyProfitChart">
+                            <option value="line" selected>折线图</option>
+                            <option value="bar">柱状图</option>
+                            <option value="area">面积图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsDailyProfitChart" style="width: 100%; height: 300px;"></div>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-container" data-chart="typeDistribution">
+                    <div class="chart-header">
+                        <h3>交易类型分布</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsTypeDistributionChart">
+                            <option value="pie" selected>饼图</option>
+                            <option value="donut">环形图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsTypeDistributionChart" style="width: 100%; height: 300px;"></div>
+                </div>
+                <div class="chart-container" data-chart="dailyCount">
+                    <div class="chart-header">
+                        <h3>每日交易次数趋势</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsDailyCountChart">
+                            <option value="line" selected>折线图</option>
+                            <option value="bar">柱状图</option>
+                            <option value="stackedBar">堆叠柱状图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsDailyCountChart" style="width: 100%; height: 300px;"></div>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-container" data-chart="stockAmount">
+                    <div class="chart-header">
+                        <h3>股票交易额排行（前10）</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsStockAmountChart">
+                            <option value="bubble" selected>气泡图</option>
+                            <option value="bidirectionalBar">双向柱状图</option>
+                            <option value="bidirectionalBarHorizontal">双向条形图</option>
+                            <option value="stackedBar">堆叠柱状图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsStockAmountChart" style="width: 100%; height: 300px;"></div>
+                </div>
+                <div class="chart-container" data-chart="stockProfit">
+                    <div class="chart-header">
+                        <h3>股票收益排行（前10）</h3>
+                        <select class="chart-type-selector" data-chart="tradeRecordsStockProfitChart">
+                            <option value="bar">柱状图</option>
+                            <option value="scatter">散点图</option>
+                            <option value="bubble">气泡图</option>
+                            <option value="treemap">矩形树图</option>
+                            <option value="radar">雷达图</option>
+                        </select>
+                    </div>
+                    <div id="tradeRecordsStockProfitChart" style="width: 100%; height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表格区域 -->
+        <div class="trade-records-table-container">
+            <table class="trade-records-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>股票代码</th>
+                        <th>股票名称</th>
+                        <th>交易类型</th>
+                        <th>价格</th>
+                        <th>数量</th>
+                        <th>金额</th>
+                        <th>手续费</th>
+                        <th>盈亏</th>
+                    </tr>
+                </thead>
+                <tbody id="tradeRecordsTableBody">
+                    <tr>
+                        <td colspan="9" class="trade-records-empty">暂无交易记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    <button type="button" id="scrollToTopBtn" class="scroll-to-top" title="回到顶部" aria-label="回到顶部">
+        ↑
+    </button>
+
+    <!-- 设置弹窗 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content settings-modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button type="button" class="modal-close-btn" id="closeSettingsModalBtn" title="关闭">&times;</button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-section">
+                    <h3>显示设置</h3>
+                    <div class="storage-info">
+                        <div class="storage-item">
+                            <span class="storage-label">持仓明细：</span>
+                            <label class="perf-switch">
+                                <input type="checkbox" id="holdingDetailToggle" checked>
+                                <span class="perf-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="settings-hint">开启后会在详情页显示持仓明细表格，包含FIFO先进先出成本计算详情。</p>
+                </div>
+                <div class="settings-section">
+                    <h3>数据管理</h3>
+                    <div class="settings-actions">
+                        <button type="button" class="btn btn-primary" id="exportDataBtn">导出JSON数据</button>
+                        <button type="button" class="btn btn-success" id="importDataBtn">导入JSON数据</button>
+                    </div>
+                    <div class="settings-actions" style="margin-top: 10px;">
+                        <button type="button" class="btn btn-warning" id="exportCSVBtn">导出CSV</button>
+                        <button type="button" class="btn btn-warning" id="exportSummaryCSVBtn">导出汇总CSV</button>
+                    </div>
+                    <p class="settings-hint">导出数据可备份或迁移到其他设备，导入数据可恢复或合并数据。CSV格式可用于Excel查看。</p>
+                </div>
+                <div class="settings-section">
+                    <h3>存储信息</h3>
+                    <div class="storage-info">
+                        <div class="storage-item">
+                            <span class="storage-label">存储位置：</span>
+                            <span class="storage-value">浏览器本地存储</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">股票数量：</span>
+                            <span class="storage-value" id="settingsStockCount">0只</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">交易记录：</span>
+                            <span class="storage-value" id="settingsTradeCount">0条</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">数据大小：</span>
+                            <span class="storage-value" id="settingsDataSize">0 KB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>备份管理</h3>
+                    <div class="settings-actions">
+                        <button type="button" class="btn btn-info" id="viewBackupsBtn">查看备份</button>
+                        <button type="button" class="btn btn-primary" id="createBackupBtn">创建备份</button>
+                    </div>
+                    <p class="settings-hint">系统会自动保存最近7天的备份，也可以手动创建备份。查看备份可以恢复或删除历史备份。</p>
+                </div>
+
+                <div class="settings-section">
+                    <h3>开发者选项</h3>
+                    <div class="storage-info">
+                        <div class="storage-item">
+                            <span class="storage-label">性能日志：</span>
+                            <label class="perf-switch">
+                                <input type="checkbox" id="perfToggle" checked>
+                                <span class="perf-switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <p class="settings-hint">开启后会在控制台输出关键模块耗时，用于对比优化前后性能。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入预览弹窗 -->
+    <div id="importPreviewModal" class="modal">
+        <div class="modal-content import-modal-content">
+            <div class="modal-header">
+                <h2>导入数据预览</h2>
+                <button type="button" class="modal-close-btn" id="closeImportPreviewModalBtn" title="关闭">&times;</button>
+            </div>
+            <div class="import-preview-body">
+                <div id="importPreviewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="confirmImportMergeBtn">合并数据</button>
+                <button type="button" class="btn btn-danger" id="confirmImportOverwriteBtn">覆盖数据</button>
+                <button type="button" class="btn" id="cancelImportPreviewBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 备份管理弹窗 -->
+    <div id="backupModal" class="modal">
+        <div class="modal-content backup-modal-content">
+            <div class="modal-header">
+                <h2>备份管理</h2>
+                <button type="button" class="modal-close-btn" id="closeBackupModalBtn" title="关闭">&times;</button>
+            </div>
+            <div class="backup-modal-body">
+                <div id="backupListContainer">
+                    <!-- 备份列表将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示弹窗 -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content alert-modal-content">
+            <div class="modal-header">
+                <h2 id="alertTitle">提示</h2>
+                <button type="button" class="modal-close-btn" id="closeAlertModalBtn" title="关闭">&times;</button>
+            </div>
+            <div class="alert-modal-body">
+                <div id="alertMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="alertOkBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑交易记录弹窗 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑交易记录</h2>
+            </div>
+            <input type="hidden" id="editTradeId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>交易日期</label>
+                    <input type="date" id="editTradeDate">
+                </div>
+                <div class="form-group">
+                    <label>操作类型</label>
+                    <select id="editTradeType" onchange="TradeManager.onEditTypeChange()">
+                        <option value="buy">买入</option>
+                        <option value="sell">卖出</option>
+                        <option value="dividend">分红</option>
+                        <option value="tax">红利税补缴</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>价格(元)</label>
+                    <input type="number" id="editTradePrice" step="0.001" oninput="TradeManager.updateEditAmount()">
+                </div>
+                <div class="form-group">
+                    <label>数量(股)</label>
+                    <input type="number" id="editTradeAmount" oninput="TradeManager.updateEditAmount()">
+                </div>
+                <div class="form-group">
+                    <label>手续费(元)</label>
+                    <input type="number" id="editTradeFee" step="0.01">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>金额(元)</label>
+                    <input type="text" id="editTradeAmountDisplay" readonly style="background: #f5f5f5;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="updateTradeBtn">保存</button>
+                <button type="button" class="btn" id="closeEditTradeModalBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加股票弹窗 -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加股票</h2>
+                <button type="button" class="modal-close-btn" id="closeAddStockModalBtn" title="关闭">&times;</button>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>股票代码</label>
+                    <input type="text" id="newStockCode" placeholder="如：002460" oninput="StockManager.fetchStockName(this.value)">
+                </div>
+                <div class="form-group">
+                    <label>股票名称</label>
+                    <input type="text" id="newStockName" placeholder="如：赣锋锂业">
+                </div>
+                <div class="form-group">
+                    <label>分组</label>
+                    <select id="newStockGroup">
+                        <option value="cleared">已清仓</option>
+                        <option value="holding">持仓中</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveNewStockBtn">保存</button>
+                <button type="button" class="btn" id="cancelAddStockBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入JS文件 -->
+    <!-- 命名空间（必须最先加载） -->
+    <script src="js/namespace.js?v=20260314"></script>
+    <!-- 工具模块 -->
+    <script src="js/config.js?v=20260316-fix2" defer></script>
+    <script src="js/utils.js?v=20260314" defer></script>
+    <script src="js/stockPriceAPI.js?v=20260314" defer></script>
+    <script src="lib/echarts.min.js?v=20260314"></script>
+    <script src="js/chartManager.js?v=20260314" defer></script>
+    <script src="js/pagination.js?v=20260314" defer></script>
+    <script src="js/tableHelper.js?v=20260314" defer></script>
+    <script src="js/formHelper.js?v=20260314" defer></script>
+    <script src="js/dataManager.js?v=20260314" defer></script>
+    <script src="js/dataService.js?v=20260314" defer></script>
+    <script src="js/fileStorage.js?v=20260314" defer></script>
+    <script src="js/calculator.js?v=20260314" defer></script>
+    <script src="js/stockSnapshot.js?v=20260314" defer></script>
+    <script src="js/eventBus.js?v=20260314" defer></script>
+    <script src="js/perf.js?v=20260314" defer></script>
+    <script src="js/stockManager.js?v=20260314" defer></script>
+    <script src="js/tradeManager.js?v=20260314" defer></script>
+    <script src="js/router.js?v=20260314" defer></script>
+    <script src="js/overview.js?v=20260316-sort" defer></script>
+    <script src="js/detail.js?v=20260314" defer></script>
+    <script src="js/tradeRecords.js?v=20260314-12" defer></script>
+    <script src="js/app.js?v=20260316-fix2" defer></script>
+</body>
+</html>

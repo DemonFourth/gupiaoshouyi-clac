@@ -1,0 +1,12 @@
+name = "stock-profit-calculator"
+compatibility_date = "2024-01-01"
+
+# Pages Functions 配置
+# 这个配置文件用于将 D1 数据库绑定到 Pages Functions
+# 使用方法：
+# 1. 在 Cloudflare D1 控制台创建数据库：stock-calculator-db
+# 2. 在 Cloudflare Pages 项目设置中绑定 D1 数据库
+# 3. Variable name: D1
+# 4. D1 database: stock-calculator-db
+
+# 注意：不需要在代码中填写 database_id，在 Cloudflare Pages 控制台绑定即可
