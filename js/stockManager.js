@@ -86,23 +86,23 @@ const StockManager = {
      */
     showAddModal() {
         document.getElementById('stockModalTitle').textContent = '添加股票';
-        document.getElementById('stockCode').value = '';
-        document.getElementById('stockCode').disabled = false;
-        document.getElementById('stockName').value = '';
-        document.getElementById('stockName').placeholder = '如: 赣锋锂业';
+        document.getElementById('newStockCode').value = '';
+        document.getElementById('newStockCode').disabled = false;
+        document.getElementById('newStockName').value = '';
+        document.getElementById('newStockName').placeholder = '如: 赣锋锂业';
         // 分组会在保存时根据持仓自动归一化；无交易记录默认归类为已清仓
-        document.getElementById('stockGroup').value = 'cleared';
-        document.getElementById('stockModal').style.display = 'block';
+        document.getElementById('newStockGroup').value = 'cleared';
+        document.getElementById('addStockModal').style.display = 'block';
     },
     
     /**
      * 保存股票
      */
     async saveStock() {
-        const code = document.getElementById('stockCode').value.trim();
-        const name = document.getElementById('stockName').value.trim();
-        const group = document.getElementById('stockGroup').value;
-        
+        const code = document.getElementById('newStockCode').value.trim();
+        const name = document.getElementById('newStockName').value.trim();
+        const group = document.getElementById('newStockGroup').value;
+
         if (!code || !name) {
             ErrorHandler.showErrorSimple('请填写股票代码和名称');
             return;
@@ -117,7 +117,7 @@ const StockManager = {
         const Router = StockProfitCalculator.Router;
 
         const data = await DataManager.load();
-        const isEdit = document.getElementById('stockCode').disabled;
+        const isEdit = document.getElementById('newStockCode').disabled;
 
         let result;
         if (isEdit) {
@@ -165,7 +165,7 @@ const StockManager = {
      * 关闭弹窗
      */
     closeModal() {
-        document.getElementById('stockModal').style.display = 'none';
+        document.getElementById('addStockModal').style.display = 'none';
     },
     
     // ==================== 汇总页面使用的方法 ====================
@@ -205,11 +205,11 @@ const StockManager = {
         }
 
         document.getElementById('stockModalTitle').textContent = '编辑股票';
-        document.getElementById('stockCode').value = stock.code;
-        document.getElementById('stockCode').disabled = true;
-        document.getElementById('stockName').value = stock.name;
-        document.getElementById('stockGroup').value = stock.group;
-        document.getElementById('stockModal').style.display = 'block';
+        document.getElementById('newStockCode').value = stock.code;
+        document.getElementById('newStockCode').disabled = true;
+        document.getElementById('newStockName').value = stock.name;
+        document.getElementById('newStockGroup').value = stock.group;
+        document.getElementById('addStockModal').style.display = 'block';
     },
 
     /**
