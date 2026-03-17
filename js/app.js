@@ -69,7 +69,7 @@ window.App = {
         FileStorage.init();
 
         // 初始化数据
-        this.data = DataManager.init();
+        this.data = await DataManager.init();
 
         // 初始化各模块
         StockManager.init();
