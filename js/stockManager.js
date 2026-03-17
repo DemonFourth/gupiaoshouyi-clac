@@ -98,7 +98,7 @@ const StockManager = {
     /**
      * 保存股票
      */
-    saveStock() {
+    async saveStock() {
         const code = document.getElementById('stockCode').value.trim();
         const name = document.getElementById('stockName').value.trim();
         const group = document.getElementById('stockGroup').value;
@@ -116,7 +116,7 @@ const StockManager = {
         const DataManager = StockProfitCalculator.DataManager;
         const Router = StockProfitCalculator.Router;
 
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const isEdit = document.getElementById('stockCode').disabled;
 
         let result;
@@ -194,9 +194,9 @@ const StockManager = {
     /**
      * 编辑股票（汇总页面使用）
      */
-    editStock(stockCode) {
+    async editStock(stockCode) {
         const DataManager = StockProfitCalculator.DataManager;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === stockCode);
 
         if (!stock) {
@@ -215,9 +215,9 @@ const StockManager = {
     /**
      * 删除股票（汇总页面使用）
      */
-    deleteStock(stockCode) {
+    async deleteStock(stockCode) {
         const DataManager = StockProfitCalculator.DataManager;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === stockCode);
 
         if (!stock) {

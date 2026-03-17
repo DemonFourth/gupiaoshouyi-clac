@@ -279,12 +279,12 @@ const Overview = {
     /**
      * 刷新页面
      */
-    refresh() {
+    async refresh() {
         // 先使 DataManager 缓存失效，强制重新加载
         StockProfitCalculator.DataManager.invalidateCache();
         
         // 重新加载所有股票数据
-        this.stocks = StockProfitCalculator.DataService.getAllStocks();
+        this.stocks = await StockProfitCalculator.DataService.getAllStocks();
         
         // 清空快照缓存
         this.stockSnapshots = {};
@@ -309,9 +309,9 @@ const Overview = {
         this.buildAggregatedChartData();
     },
 
-    getStockSnapshot(stock) {
+    async getStockSnapshot(stock) {
         if (!this.stockSnapshots[stock.code]) {
-            this.stockSnapshots[stock.code] = StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
+            this.stockSnapshots[stock.code] = await StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
         }
         const baseSnapshot = this.stockSnapshots[stock.code];
         if (!baseSnapshot) {
@@ -1539,7 +1539,7 @@ const Overview = {
                 if (stock) {
                     const StockSnapshot = StockProfitCalculator.StockSnapshot;
                     if (!this.stockSnapshots[code]) {
-                        this.stockSnapshots[code] = StockSnapshot.getBaseSnapshot(stock);
+                        this.stockSnapshots[code] = await StockSnapshot.getBaseSnapshot(stock);
                     }
                 }
             }

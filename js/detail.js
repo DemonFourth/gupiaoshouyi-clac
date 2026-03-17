@@ -374,7 +374,7 @@ const Detail = {
         document.getElementById('backBtn').style.display = 'inline-flex';
 
         // 先构建 snapshot（包含数据计算），避免重复计算
-        this.snapshot = StockSnapshot.build(stockCode, null);
+        this.snapshot = await StockSnapshot.build(stockCode, null);
         this.calcResult = this.snapshot.calcResult;
 
         // 更新UI
@@ -451,12 +451,12 @@ const Detail = {
     /**
      * 更新所有UI
      */
-    updateAll(stock) {
+    async updateAll(stock) {
         const DataService = StockProfitCalculator.DataService;
         
         // 每次都从 DataService 获取最新数据（不使用缓存）
         if (!stock) {
-            stock = DataService.getStock(this.currentStockCode);
+            stock = await DataService.getStock(this.currentStockCode);
         }
         if (!stock) return;
 
@@ -496,17 +496,17 @@ const Detail = {
     /**
      * 更新汇总卡片
      */
-    updateSummaryCards() {
+    async updateSummaryCards() {
         this._ensureDOMCache();
 
         const Utils = StockProfitCalculator.Utils;
 
         let snapshot = this.snapshot;
         if (!snapshot) {
-            const stock = this.currentStock || StockProfitCalculator.DataManager.getStock(this.currentStockCode);
+            const stock = this.currentStock || await StockProfitCalculator.DataService.getStock(this.currentStockCode);
             if (stock) {
                 this.currentStock = stock;
-                snapshot = StockProfitCalculator.StockSnapshot.build(stock.code, this.currentStockPrice !== null ? {
+                snapshot = await StockProfitCalculator.StockSnapshot.build(stock.code, this.currentStockPrice !== null ? {
                     price: this.currentStockPrice,
                     change: 0,
                     changePercent: 0
@@ -800,7 +800,7 @@ const Detail = {
             
             if (!quote || !Number.isFinite(quote.price) || !Number.isFinite(quote.change) || !Number.isFinite(quote.changePercent)) {
                 this.currentStockPrice = null;
-                this.snapshot = StockSnapshot.build(stock.code, null);
+                this.snapshot = await StockSnapshot.build(stock.code, null);
                 this.calcResult = this.snapshot.calcResult;
                 
                 const priceElement = document.getElementById('currentPrice');
@@ -1063,7 +1063,7 @@ const Detail = {
         });
 
         // 重新获取最新的股票对象（避免使用克隆的对象）
-        const updatedStock = DataService.getStock(this.currentStockCode);
+        const updatedStock = await DataService.getStock(this.currentStockCode);
         if (!updatedStock) return;
 
         // 确保缓存已失效（再次调用）

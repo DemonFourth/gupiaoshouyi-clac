@@ -87,7 +87,7 @@ const TradeManager = {
      * 处理分页页码变化
      * @param {string} action - 'prev' 或 'next'
      */
-    handlePageChange(action) {
+    async handlePageChange(action) {
         if (action === 'prev' && this._pagination.currentPage > 1) {
             this._pagination.currentPage--;
         } else if (action === 'next') {
@@ -96,7 +96,8 @@ const TradeManager = {
         
         // 重新渲染交易记录表格
         const DataManager = StockProfitCalculator.DataManager;
-        const currentStock = DataManager.getCurrentStock(DataManager.load());
+        const data = await DataManager.load();
+        const currentStock = DataManager.getCurrentStock(data);
         if (currentStock) {
             const Calculator = StockProfitCalculator.Calculator;
             const result = Calculator.calculateAll(currentStock.trades);
@@ -161,7 +162,7 @@ const TradeManager = {
      * @param {number} tradeId - 交易记录ID
      * @param {string} stockCode - 股票代码（可选，不传则使用当前设置的股票代码）
      */
-    editTrade(tradeId, stockCode) {
+    async editTrade(tradeId, stockCode) {
         this._ensureDOMCache();
         const code = stockCode || this._currentStockCode;
         if (!code) {
@@ -169,7 +170,7 @@ const TradeManager = {
             return;
         }
 
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === code);
         if (!stock) return;
 
@@ -273,7 +274,7 @@ const TradeManager = {
      * 更新交易记录
      * @param {string} stockCode - 股票代码（可选）
      */
-    updateTrade(stockCode) {
+    async updateTrade(stockCode) {
         this._ensureDOMCache();
         const code = stockCode || this._currentStockCode;
         if (!code) {
@@ -285,7 +286,7 @@ const TradeManager = {
         const date = this._domCache.editTradeDate.value;
         const type = this._domCache.editTradeType.value;
 
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === code);
         if (!stock) {
             ErrorHandler.showErrorSimple('未找到当前股票');
@@ -347,7 +348,7 @@ const TradeManager = {
      * @param {number} tradeId - 交易记录ID
      * @param {string} stockCode - 股票代码（可选）
      */
-    deleteTrade(tradeId, stockCode) {
+    async deleteTrade(tradeId, stockCode) {
         if (!confirm('确定要删除这条交易记录吗？')) return;
         
         const code = stockCode || this._currentStockCode;
@@ -356,7 +357,7 @@ const TradeManager = {
             return;
         }
 
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === code);
         if (!stock) {
             ErrorHandler.showErrorSimple('未找到当前股票');

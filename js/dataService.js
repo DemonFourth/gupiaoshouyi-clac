@@ -76,8 +76,8 @@ const DataService = {
      * @param {string} group - 分组名称 ('holding' | 'cleared')
      * @returns {Array} 股票数据数组
      */
-    getStocksByGroup(group) {
-        const stocks = this.getAllStocks();
+    async getStocksByGroup(group) {
+        const stocks = await this.getAllStocks();
         return stocks.filter(s => s.group === group);
     },
 
@@ -127,8 +127,8 @@ const DataService = {
      * 获取当前股票代码
      * @returns {string|null} 当前股票代码
      */
-    getCurrentStockCode() {
-        const data = StockProfitCalculator.DataManager.load();
+    async getCurrentStockCode() {
+        const data = await StockProfitCalculator.DataManager.load();
         return data ? data.currentStockCode : null;
     },
 
@@ -136,11 +136,11 @@ const DataService = {
      * 设置当前股票代码
      * @param {string} stockCode - 股票代码
      */
-    setCurrentStockCode(stockCode) {
-        const data = StockProfitCalculator.DataManager.load();
+    async setCurrentStockCode(stockCode) {
+        const data = await StockProfitCalculator.DataManager.load();
         if (data) {
             data.currentStockCode = stockCode;
-            StockProfitCalculator.DataManager.save(data);
+            await StockProfitCalculator.DataManager.save(data);
         }
     },
 
@@ -149,9 +149,9 @@ const DataService = {
      * @param {string} stockCode - 股票代码
      * @returns {Object|null} 快照数据
      */
-    getSnapshot(stockCode) {
+    async getSnapshot(stockCode) {
         if (StockProfitCalculator.StockSnapshot) {
-            return StockProfitCalculator.StockSnapshot.getBaseSnapshot(stockCode);
+            return await StockProfitCalculator.StockSnapshot.getBaseSnapshot(stockCode);
         }
         return null;
     },

@@ -15,8 +15,8 @@ const StockSnapshot = {
      * @param {Object|null} quote - 行情对象 { price, change, changePercent }
      * @returns {Object|null} 页面级快照
      */
-    build(stockCode, quote = null) {
-        const base = this.getBaseSnapshot(stockCode);
+    async build(stockCode, quote = null) {
+        const base = await this.getBaseSnapshot(stockCode);
         if (!base) return null;
         return this.attachQuote(base, quote);
     },
