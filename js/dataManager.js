@@ -215,6 +215,11 @@ const DataManager = {
                 StockProfitCalculator.StockSnapshot.clear();
             }
 
+            // 清除 DataService 缓存
+            if (StockProfitCalculator.DataService && StockProfitCalculator.DataService.invalidateAllCache) {
+                StockProfitCalculator.DataService.invalidateAllCache();
+            }
+
             // 保存到 D1 数据库
             await this._doSave(data);
 
