@@ -1121,7 +1121,7 @@ const Detail = {
             changePercent: 0
         } : null);
         this.calcResult = this.snapshot.calcResult;
-        this.updateAll(updatedStock);
+        await this.updateAll(updatedStock);
         this.toggleAddTradeForm();
     },
 
