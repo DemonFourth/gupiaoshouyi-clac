@@ -348,11 +348,19 @@ const TradeRecords = {
             this._domCache.tradeRecordsEndDate.value = formatDateForInput(lastDay);
         }
 
+        // 异步加载数据
+        this._loadDataAsync(year, month, startDate, endDate);
+    },
+
+    /**
+     * 异步加载数据
+     */
+    async _loadDataAsync(year, month, startDate, endDate) {
         // 获取数据
         const DataService = StockProfitCalculator.DataService;
         const Calculator = StockProfitCalculator.Calculator;
 
-        const stocks = DataService.getAllStocks();
+        const stocks = await DataService.getAllStocks();
 
         // 调试日志
         console.log('=== TradeRecords.load ===');
@@ -674,10 +682,18 @@ const TradeRecords = {
             return;
         }
 
+        // 异步加载数据
+        this._loadDataForExportAsync();
+    },
+
+    /**
+     * 异步加载数据用于导出
+     */
+    async _loadDataForExportAsync() {
         const DataService = StockProfitCalculator.DataService;
         const Calculator = StockProfitCalculator.Calculator;
 
-        const data = DataService.getAllStocks();
+        const data = await DataService.getAllStocks();
         const stocks = data.stocks || [];
 
         // 收集所有股票的交易记录

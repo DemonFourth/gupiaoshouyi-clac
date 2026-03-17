@@ -190,7 +190,7 @@ const Overview = {
         this._domCache.stockInfo.textContent = '支持多股票管理 | FIFO先进先出计算';
 
         // 加载数据（通过 DataService）
-        this.stocks = StockProfitCalculator.DataService.getAllStocks();
+        this.stocks = await StockProfitCalculator.DataService.getAllStocks();
         this.rebuildSnapshots();
 
         // 渲染汇总统计

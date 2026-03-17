@@ -47,10 +47,10 @@ const DataService = {
 
     /**
      * 获取所有股票数据
-     * @returns {Array} 股票数据数组
+     * @returns {Promise<Array>} 股票数据数组
      */
-    getAllStocks() {
-        const data = StockProfitCalculator.DataManager.load();
+    async getAllStocks() {
+        const data = await StockProfitCalculator.DataManager.load();
         if (!data || !data.stocks) return [];
 
         return data.stocks;
