@@ -143,7 +143,7 @@ const StockManager = {
             // 刷新页面：交给统一入口处理，避免模块间直接调用
             if (window.App && window.App.updateAll) {
                 console.log('[saveStock] 调用 App.updateAll()');
-                window.App.updateAll();
+                await window.App.updateAll();
             }
 
             ErrorHandler.showSuccess(result.message);
@@ -252,12 +252,12 @@ const StockManager = {
             return;
         }
 
-        const result = DataManager.deleteStock(data, stockCode);
+        const result = await DataManager.deleteStock(data, stockCode);
 
         if (result.success) {
             // 刷新页面：交给统一入口处理
             if (window.App && window.App.updateAll) {
-                window.App.updateAll();
+                await window.App.updateAll();
             }
             ErrorHandler.showSuccess(result.message);
         } else {
