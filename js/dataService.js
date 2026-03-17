@@ -34,12 +34,12 @@ const DataService = {
     /**
      * 获取股票数据
      * @param {string} stockCode - 股票代码
-     * @returns {Object|null} 股票数据
+     * @returns {Promise<Object|null>} 股票数据
      */
-    getStock(stockCode) {
+    async getStock(stockCode) {
         if (!stockCode) return null;
 
-        const data = StockProfitCalculator.DataManager.load();
+        const data = await StockProfitCalculator.DataManager.load();
         if (!data || !data.stocks) return null;
 
         return data.stocks.find(s => s.code === stockCode) || null;
@@ -69,19 +69,19 @@ const DataService = {
     /**
      * 获取交易数据
      * @param {string} stockCode - 股票代码
-     * @returns {Array} 交易记录数组
+     * @returns {Promise<Array>} 交易记录数组
      */
-    getTradeData(stockCode) {
-        const stock = this.getStock(stockCode);
+    async getTradeData(stockCode) {
+        const stock = await this.getStock(stockCode);
         return stock ? (stock.trades || []) : [];
     },
 
     /**
      * 获取计算结果
      * @param {string} stockCode - 股票代码
-     * @returns {Object|null} 计算结果
+     * @returns {Promise<Object|null>} 计算结果
      */
-    getCalculationResult(stockCode) {
+    async getCalculationResult(stockCode) {
         if (!stockCode) return null;
 
         // 检查缓存
@@ -91,40 +91,9 @@ const DataService = {
         }
 
         // 重新计算
-        const trades = this.getTradeData(stockCode);
+        const trades = await this.getTradeData(stockCode);
         if (!trades || trades.length === 0) {
-            return {
-                summary: {
-                    totalBuyCost: 0,
-                    totalSellAmount: 0,
-                    totalProfit: 0,
-                    totalFee: 0,
-                    totalReturnRate: 0,
-                    currentHolding: 0,
-                    currentCost: 0,
-                    currentCycleProfit: 0
-                },
-                holdingQueue: [],
-                sellRecords: [],
-                holdingDetail: [],
-                statistics: {
-                    buyCount: 0,
-                    sellCount: 0,
-                    totalTrades: 0,
-                    profitTrades: 0,
-                    lossTrades: 0,
-                    winRate: 0,
-                    avgReturnRate: 0,
-                    maxProfit: 0,
-                    maxLoss: 0,
-                    holdingDays: 0
-                },
-                timeSeries: { dates: [], holdings: [], costs: [], profits: [], cumulativeProfits: [], returnRates: [], costPerShares: [], dilutedCostPerShares: [] },
-                cycleInfo: {},
-                additionComparisons: [],
-                weeklyProfit: 0,
-                monthlyProfit: 0
-            };
+            return null;
         }
 
         const result = StockProfitCalculator.Calculator.calculateAll(trades);

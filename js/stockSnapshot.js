@@ -22,11 +22,11 @@ const StockSnapshot = {
     },
 
     /**
-     * 获取基础快照
+     * 获取基础快照（不包含实时行情）
      * @param {string} stockCode - 股票代码
-     * @returns {Object|null} 基础快照
+     * @returns {Promise<Object|null>} 基础快照
      */
-    getBaseSnapshot(stockCode) {
+    async getBaseSnapshot(stockCode) {
         if (!stockCode) return null;
 
         const today = new Date().toISOString().split('T')[0];
@@ -37,10 +37,10 @@ const StockSnapshot = {
         }
 
         // 通过 DataService 获取计算结果，而不是直接调用 Calculator
-        const calcResult = StockProfitCalculator.DataService.getCalculationResult(stockCode);
-        if (!calcResult) return null;
+        const calcResult = await StockProfitCalculator.DataService.getCalculationResult(stockCode);
+        if (!calcResult || !calcResult.summary) return null;
 
-        const stock = StockProfitCalculator.DataService.getStock(stockCode);
+        const stock = await StockProfitCalculator.DataService.getStock(stockCode);
         if (!stock) return null;
 
         const summary = calcResult.summary;

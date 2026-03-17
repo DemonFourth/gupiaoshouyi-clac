@@ -191,7 +191,7 @@ const Overview = {
 
         // 加载数据（通过 DataService）
         this.stocks = await StockProfitCalculator.DataService.getAllStocks();
-        this.rebuildSnapshots();
+        await this.rebuildSnapshots();
 
         // 渲染汇总统计
         this.renderSummary();
@@ -296,16 +296,16 @@ const Overview = {
         this.renderCharts();
     },
 
-    rebuildSnapshots() {
+    async rebuildSnapshots() {
         this.stockSnapshots = {};
-        (this.stocks || []).forEach(stock => {
-            const snapshot = StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
+        for (const stock of (this.stocks || [])) {
+            const snapshot = await StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
             if (snapshot) {
                 this.stockSnapshots[stock.code] = snapshot;
             } else {
                 console.error(`[Overview] Failed to build snapshot for stock: ${stock.code}`);
             }
-        });
+        }
         this.buildAggregatedChartData();
     },
 
