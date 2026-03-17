@@ -355,7 +355,7 @@ const Detail = {
         // 同步设置 TradeManager 的当前股票代码
         TradeManager.setCurrentStock(stockCode);
 
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === stockCode);
 
         if (!stock) {
@@ -790,7 +790,7 @@ const Detail = {
         const StockSnapshot = StockProfitCalculator.StockSnapshot;
         const StockPriceAPI = StockProfitCalculator.StockPriceAPI;
         const Utils = StockProfitCalculator.Utils;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === this.currentStockCode);
         if (!stock) return;
 
@@ -986,7 +986,7 @@ const Detail = {
     /**
      * 添加交易记录
      */
-    addTrade() {
+    async addTrade() {
         const date = document.getElementById('tradeDate').value;
         const type = document.getElementById('tradeType').value;
 
@@ -1044,7 +1044,7 @@ const Detail = {
         const DataService = StockProfitCalculator.DataService;
         const EventBus = StockProfitCalculator.EventBus;
         
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === this.currentStockCode);
         if (!stock) return;
 
