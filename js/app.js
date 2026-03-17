@@ -362,6 +362,7 @@ window.App = {
         document.getElementById('settingsStockCount').textContent = stats.stockCount + '只';
         document.getElementById('settingsTradeCount').textContent = stats.tradeCount + '条';
         document.getElementById('settingsDataSize').textContent = stats.dataSize;
+        document.getElementById('settingsStorageLocation').textContent = 'Cloudflare D1 数据库';
     },
 
     // ==================== 数据导入导出 ====================

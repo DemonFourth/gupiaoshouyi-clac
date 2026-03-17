@@ -2012,12 +2012,21 @@ const Overview = {
      */
     _setupFieldSettingsButton() {
         const fieldSettingsBtn = document.getElementById('fieldSettingsBtn');
-        if (fieldSettingsBtn) {
-            fieldSettingsBtn.addEventListener('click', () => {
-                const viewType = this.viewMode === 'list' ? 'list' : 'card';
-                this._openFieldSettingsModal(viewType);
-            });
+        if (!fieldSettingsBtn) return;
+
+        // 移除旧的监听器（如果存在）
+        if (this._fieldSettingsBtnHandler) {
+            fieldSettingsBtn.removeEventListener('click', this._fieldSettingsBtnHandler);
         }
+
+        // 创建并存储新的监听器函数
+        this._fieldSettingsBtnHandler = () => {
+            const viewType = this.viewMode === 'list' ? 'list' : 'card';
+            this._openFieldSettingsModal(viewType);
+        };
+
+        // 添加新的监听器
+        fieldSettingsBtn.addEventListener('click', this._fieldSettingsBtnHandler);
     }
 };
 
