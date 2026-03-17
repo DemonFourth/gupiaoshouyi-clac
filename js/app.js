@@ -346,10 +346,10 @@ window.App = {
         }
     },
 
-    updateSettingsInfo() {
+    async updateSettingsInfo() {
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         const stats = FileStorage.getStorageStats(data);
 
         document.getElementById('settingsStockCount').textContent = stats.stockCount + '只';
@@ -359,10 +359,10 @@ window.App = {
 
     // ==================== 数据导入导出 ====================
 
-    exportData() {
+    async exportData() {
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         if (FileStorage.exportData(data)) {
             ErrorHandler.showSuccess('JSON数据导出成功！');
         }
@@ -451,16 +451,16 @@ window.App = {
         this.pendingImportData = null;
     },
 
-    confirmImport(action) {
+    async confirmImport(action) {
         if (!this.pendingImportData) return;
 
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
-        const currentData = DataManager.load();
+        const currentData = await DataManager.load();
 
         if (action === 'merge') {
             const mergedData = FileStorage.mergeData(currentData, this.pendingImportData);
-            DataManager.save(mergedData);
+            await DataManager.save(mergedData);
             this.data = mergedData;
 
             // 刷新当前页面：统一入口
@@ -468,7 +468,7 @@ window.App = {
             ErrorHandler.showSuccess('数据合并成功！');
         } else if (action === 'overwrite') {
             if (confirm('确定要覆盖当前所有数据吗？此操作不可恢复！')) {
-                DataManager.save(this.pendingImportData);
+                await DataManager.save(this.pendingImportData);
                 this.data = this.pendingImportData;
 
                 // 刷新当前页面：统一入口（若当前详情股票已不存在，Router 会在加载失败后回到概览）
@@ -484,10 +484,10 @@ window.App = {
 
     // ==================== CSV 导出功能 ====================
 
-    exportCSV() {
+    async exportCSV() {
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         if (!data || !data.stocks || data.stocks.length === 0) {
             ErrorHandler.showWarning('没有数据可导出');
             return;
@@ -499,10 +499,10 @@ window.App = {
         this.closeSettingsModal();
     },
 
-    exportSummaryCSV() {
+    async exportSummaryCSV() {
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
-        const data = DataManager.load();
+        const data = await DataManager.load();
         if (!data || !data.stocks || data.stocks.length === 0) {
             ErrorHandler.showWarning('没有数据可导出');
             return;
@@ -532,10 +532,10 @@ window.App = {
         }
     },
 
-    createBackup() {
+    async createBackup() {
         const DataManager = StockProfitCalculator.DataManager;
-        const data = DataManager.load();
-        if (DataManager.createBackup(data)) {
+        const data = await DataManager.load();
+        if (DataManager.createBackup && DataManager.createBackup(data)) {
             ErrorHandler.showSuccess('备份创建成功！');
             this.openBackupModal(); // 刷新备份列表
         } else {
@@ -598,13 +598,13 @@ window.App = {
         });
     },
 
-    restoreBackup(dateStr) {
+    async restoreBackup(dateStr) {
         if (confirm(`确定要恢复 ${dateStr} 的备份吗？当前数据将被覆盖！`)) {
             const DataManager = StockProfitCalculator.DataManager;
-            const result = DataManager.restoreBackup(dateStr);
+            const result = DataManager.restoreBackup ? DataManager.restoreBackup(dateStr) : { success: false, message: '备份功能已移除' };
             if (result.success) {
                 ErrorHandler.showSuccess(result.message);
-                this.data = DataManager.load();
+                this.data = await DataManager.load();
                 this.updateAll();
                 this.closeBackupModal();
             } else {
