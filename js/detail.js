@@ -326,6 +326,8 @@ const Detail = {
      * @param {string} stockCode - 股票代码
      */
     async loadStock(stockCode) {
+        console.log('[loadStock] 开始执行, stockCode:', stockCode);
+        
         const TradeManager = StockProfitCalculator.TradeManager;
         const DataManager = StockProfitCalculator.DataManager;
         const Router = StockProfitCalculator.Router;
@@ -333,6 +335,7 @@ const Detail = {
 
         const perfToken = window.Perf ? window.Perf.start('Detail.loadStock') : null;
         this.currentStockCode = stockCode;
+        console.log('[loadStock] 设置 currentStockCode:', this.currentStockCode);
 
         // 确保 DOM 缓存已初始化
         this._ensureDOMCache();
@@ -368,28 +371,37 @@ const Detail = {
 
         // 检查是否有交易记录
         if (!stock.trades || stock.trades.length === 0) {
+            console.log('[loadStock] 股票没有交易记录，显示空状态提示');
             // 显示空状态提示
             this._showEmptyState();
+        } else {
+            console.log('[loadStock] 股票有交易记录，数量:', stock.trades.length);
         }
 
         // 更新页面标题
         document.querySelector('h1').textContent = `${stock.name}(${stock.code})`;
         document.getElementById('stockInfo').textContent = '点击返回查看所有股票';
+        console.log('[loadStock] 更新页面标题:', stock.name);
 
         // 显示返回按钮
         document.getElementById('backBtn').style.display = 'inline-flex';
 
         // 先构建 snapshot（包含数据计算），避免重复计算
+        console.log('[loadStock] 开始构建 snapshot');
         this.snapshot = await StockSnapshot.build(stockCode, null);
+        console.log('[loadStock] snapshot 构建完成');
         this.calcResult = this.snapshot.calcResult;
 
         // 更新UI
+        console.log('[loadStock] 更新 UI');
         this.updateAll(stock);
 
         // 获取实时股价
+        console.log('[loadStock] 获取实时股价');
         await this.fetchStockPrice();
 
         // 绑定表单事件
+        console.log('[loadStock] 绑定表单事件');
         this.bindFormEvents();
 
         // 绑定 tooltip 自动左右翻转（仅详情页 realtime/summary）

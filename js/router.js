@@ -129,11 +129,14 @@ const Router = {
      * @param {boolean} saveState - 是否保存状态
      */
     async showDetail(stockCode, saveState = true) {
+        console.log('[showDetail] 开始执行, stockCode:', stockCode, ', saveState:', saveState);
+        
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
         // 保存当前页面（汇总页）的滚动位置
         const scrollPosition = window.scrollY || window.pageYOffset || 0;
         this.state.scrollPositions.overview = scrollPosition;
+        console.log('[showDetail] 保存滚动位置:', scrollPosition);
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-detail');

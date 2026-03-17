@@ -295,11 +295,14 @@ window.App = {
      * @param {string|null} stockCode
      */
     async handleRouteChange(page, stockCode = null) {
+        console.log('[handleRouteChange] 开始执行, page:', page, ', stockCode:', stockCode);
+        
         const Overview = StockProfitCalculator.Overview;
         const Detail = StockProfitCalculator.Detail;
         const Router = StockProfitCalculator.Router;
 
         if (page === 'overview') {
+            console.log('[handleRouteChange] 切换到汇总页');
             if (typeof Overview !== 'undefined') {
                 Overview.init();
             }
@@ -307,14 +310,20 @@ window.App = {
         }
 
         if (page === 'detail' && stockCode) {
+            console.log('[handleRouteChange] 切换到详情页, stockCode:', stockCode);
             if (typeof Detail !== 'undefined') {
+                console.log('[handleRouteChange] 调用 Router.showDetail()');
                 await Router.showDetail(stockCode);  // 先切换页面
-                await Detail.loadStock(stockCode);  // 再加载股票数据（添加 await）
+                console.log('[handleRouteChange] Router.showDetail() 完成');
+                console.log('[handleRouteChange] 调用 Detail.loadStock()');
+                await Detail.loadStock(stockCode);  // 再加载股票数据
+                console.log('[handleRouteChange] Detail.loadStock() 完成');
             }
             return;
         }
 
         // tradeRecords 页面：Router.showTradeRecords() 已经调用了 TradeRecords.load()，不需要再次调用
+        console.log('[handleRouteChange] 其他页面:', page);
     },
 
     /**
