@@ -63,6 +63,8 @@ const DataManager = {
 
     // 初始化数据
     async init() {
+        console.log('[DataManager.init] 开始初始化数据');
+
         // 从 Config 加载防抖延迟配置
         const Config = StockProfitCalculator.Config;
         this._saveDebounceDelay = Config.get('performance.debounce.save', 1000);
@@ -78,6 +80,8 @@ const DataManager = {
 
         // 初始化边界：确保分组与持仓一致
         this.normalizeAllGroups(data);
+        
+        console.log('[DataManager.init] 初始化完成，股票数量:', data.stocks.length);
         return data;
     },
 
@@ -132,8 +136,11 @@ const DataManager = {
      * 加载数据（带缓存）
      */
     async load() {
+        console.log('[DataManager.load] 开始加载数据');
+
         // 如果缓存有效，直接返回缓存
         if (this._cacheValid && this._cache) {
+            console.log('[DataManager.load] 从缓存加载数据');
             return Utils.deepClone(this._cache);
         }
 
@@ -149,11 +156,12 @@ const DataManager = {
             if (!contentType || !contentType.includes('application/json')) {
                 // 读取响应文本以提供更好的错误信息
                 const responseText = await response.text();
-                console.error('API 返回非 JSON 响应:', responseText.substring(0, 200));
+                console.error('[DataManager.load] API 返回非 JSON 响应:', responseText.substring(0, 200));
                 throw new Error('API 返回的数据格式不正确，请检查 Worker Functions 是否正确部署');
             }
 
             const data = await response.json();
+            console.log('[DataManager.load] 从 API 加载数据成功，股票数量:', data.stocks?.length || 0);
 
             // 数据验证
             if (this.validateData(data)) {
@@ -171,7 +179,7 @@ const DataManager = {
 
             return null;
         } catch (error) {
-            console.error('加载数据失败:', error);
+            console.error('[DataManager.load] 加载数据失败:', error);
 
             // 显示用户友好的错误提示
             if (window.StockProfitCalculator && window.StockProfitCalculator.ErrorHandler) {

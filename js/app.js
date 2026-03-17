@@ -52,6 +52,8 @@ window.App = {
      * 初始化应用
      */
     async init() {
+        console.log('[App] 初始化开始');
+
         const FileStorage = StockProfitCalculator.FileStorage;
         const DataManager = StockProfitCalculator.DataManager;
         const StockManager = StockProfitCalculator.StockManager;
@@ -93,6 +95,8 @@ window.App = {
         Router.init();
 
         if (window.Perf) window.Perf.end(perfToken);
+
+        console.log('[App] 初始化完成');
     },
 
     bindGlobalEvents() {
