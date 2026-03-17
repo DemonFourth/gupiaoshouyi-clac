@@ -136,13 +136,13 @@ const DataManager = {
      * 加载数据（带缓存）
      */
     async load() {
-        console.log('[DataManager.load] 开始加载数据');
-
-        // 如果缓存有效，直接返回缓存
+        // 如果缓存有效，直接返回缓存（不打印日志）
         if (this._cacheValid && this._cache) {
-            console.log('[DataManager.load] 从缓存加载数据');
             return Utils.deepClone(this._cache);
         }
+
+        // 从 API 加载
+        console.log('[DataManager.load] 开始从 API 加载数据');
 
         try {
             const response = await fetch(`${this.API_BASE}/data`);

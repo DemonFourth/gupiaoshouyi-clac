@@ -39,6 +39,12 @@ const DataService = {
     async getStock(stockCode) {
         if (!stockCode) return null;
 
+        // 使用缓存
+        if (this._stockDataCache && this._stockDataCache.stocks) {
+            return this._stockDataCache.stocks.find(s => s.code === stockCode) || null;
+        }
+
+        // 从 DataManager 加载
         const data = await StockProfitCalculator.DataManager.load();
         if (!data || !data.stocks) return null;
 
@@ -50,9 +56,18 @@ const DataService = {
      * @returns {Promise<Array>} 股票数据数组
      */
     async getAllStocks() {
+        // 使用缓存
+        if (this._stockDataCache && this._stockDataCache.stocks) {
+            return this._stockDataCache.stocks;
+        }
+
+        // 从 DataManager 加载
         const data = await StockProfitCalculator.DataManager.load();
         if (!data || !data.stocks) return [];
 
+        // 更新缓存
+        this._stockDataCache = data;
+        
         return data.stocks;
     },
 
