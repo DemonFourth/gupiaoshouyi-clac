@@ -183,6 +183,9 @@ const DataService = {
             cached.invalid = true;
         }
 
+        // 使股票数据缓存失效
+        this._stockDataCache = null;
+
         // 使快照缓存失效
         if (StockProfitCalculator.StockSnapshot) {
             StockProfitCalculator.StockSnapshot.invalidate(stockCode);
