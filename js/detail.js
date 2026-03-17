@@ -470,7 +470,7 @@ const Detail = {
         DataService.invalidateCache(stock.code);
 
         // 重新构建 snapshot（如果有股价则包含股价，否则不含）
-        this.snapshot = StockSnapshot.build(stock.code, this.currentStockPrice !== null ? {
+        this.snapshot = await StockSnapshot.build(stock.code, this.currentStockPrice !== null ? {
             price: this.currentStockPrice,
             change: 0,
             changePercent: 0
@@ -822,7 +822,7 @@ const Detail = {
             }
 
             this.currentStockPrice = quote.price;
-            this.snapshot = StockSnapshot.build(stock.code, {
+            this.snapshot = await StockSnapshot.build(stock.code, {
                 price: quote.price,
                 change: quote.change,
                 changePercent: quote.changePercent
@@ -1072,7 +1072,7 @@ const Detail = {
 
         // 重新计算
         this.currentStock = updatedStock;
-        this.snapshot = StockSnapshot.build(updatedStock.code, this.currentStockPrice !== null ? {
+        this.snapshot = await StockSnapshot.build(updatedStock.code, this.currentStockPrice !== null ? {
             price: this.currentStockPrice,
             change: 0,
             changePercent: 0
