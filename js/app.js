@@ -92,7 +92,7 @@ window.App = {
         }
 
         // 初始化路由（会触发 route:change）
-        Router.init();
+        await Router.init();
 
         if (window.Perf) window.Perf.end(perfToken);
 
@@ -259,10 +259,10 @@ window.App = {
             // 初始化 UI 状态
             holdingDetailToggle.checked = Config.get('ui.preferences.showHoldingDetail', true);
             // 绑定事件
-            holdingDetailToggle.onchange = () => {
+            holdingDetailToggle.onchange = async () => {
                 Config.set('ui.preferences.showHoldingDetail', holdingDetailToggle.checked);
                 Config.save();
-                this.updateAll(); // 刷新当前页面
+                await this.updateAll(); // 刷新当前页面
             };
         }
 
@@ -291,7 +291,7 @@ window.App = {
      * @param {'overview'|'detail'} page
      * @param {string|null} stockCode
      */
-    handleRouteChange(page, stockCode = null) {
+    async handleRouteChange(page, stockCode = null) {
         const Overview = StockProfitCalculator.Overview;
         const Detail = StockProfitCalculator.Detail;
         const Router = StockProfitCalculator.Router;
@@ -305,7 +305,7 @@ window.App = {
 
         if (page === 'detail' && stockCode) {
             if (typeof Detail !== 'undefined') {
-                Router.showDetail(stockCode);  // 先切换页面
+                await Router.showDetail(stockCode);  // 先切换页面
                 Detail.loadStock(stockCode);  // 再加载股票数据
             }
             return;
@@ -317,11 +317,11 @@ window.App = {
     /**
      * 更新当前页面UI
      */
-    updateAll() {
+    async updateAll() {
         const Router = StockProfitCalculator.Router;
         const currentPage = Router.getCurrentPage();
         const stockCode = Router.getCurrentStockCode();
-        this.handleRouteChange(currentPage, stockCode);
+        await this.handleRouteChange(currentPage, stockCode);
     },
 
     /**
@@ -468,7 +468,7 @@ window.App = {
             this.data = mergedData;
 
             // 刷新当前页面：统一入口
-            this.updateAll();
+            await this.updateAll();
             ErrorHandler.showSuccess('数据合并成功！');
         } else if (action === 'overwrite') {
             if (confirm('确定要覆盖当前所有数据吗？此操作不可恢复！')) {
@@ -476,7 +476,7 @@ window.App = {
                 this.data = this.pendingImportData;
 
                 // 刷新当前页面：统一入口（若当前详情股票已不存在，Router 会在加载失败后回到概览）
-                this.updateAll();
+                await this.updateAll();
                 ErrorHandler.showSuccess('数据已覆盖！');
             } else {
                 return;
@@ -609,7 +609,7 @@ window.App = {
             if (result.success) {
                 ErrorHandler.showSuccess(result.message);
                 this.data = await DataManager.load();
-                this.updateAll();
+                await this.updateAll();
                 this.closeBackupModal();
             } else {
                 ErrorHandler.showErrorSimple(result.message);

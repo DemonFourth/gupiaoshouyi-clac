@@ -23,9 +23,9 @@ const Router = {
     /**
      * 初始化路由
      */
-    init() {
-        // 从localStorage恢复页面状态
-        this.loadState();
+    async init() {
+        // 从 D1 数据库恢复页面状态
+        await this.loadState();
 
         console.log('[Router.init] 准备显示页面:');
         console.log('  currentPage:', this.state.currentPage);
@@ -56,7 +56,7 @@ const Router = {
      * 切换到汇总页面
      * @param {boolean} saveState - 是否保存状态
      */
-    showOverview(saveState = true) {
+    showOverview(saveState = true) async {
         const perfToken = window.Perf ? window.Perf.start('Router.showOverview') : null;
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.remove('page-detail');
@@ -105,7 +105,7 @@ const Router = {
         this.state.currentStockCode = null;
 
         if (saveState) {
-            this.saveState();
+            await this.saveState();
         }
 
         // 更新页面标题
@@ -128,7 +128,7 @@ const Router = {
      * @param {string} stockCode - 股票代码
      * @param {boolean} saveState - 是否保存状态
      */
-    showDetail(stockCode, saveState = true) {
+    showDetail(stockCode, saveState = true) async {
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
         // 保存当前页面（汇总页）的滚动位置
@@ -188,7 +188,7 @@ const Router = {
         this.state.currentStockCode = stockCode;
 
         if (saveState) {
-            this.saveState();
+            await this.saveState();
         }
 
         // 滚动到页面顶部
@@ -201,12 +201,12 @@ const Router = {
     },
 
     /**
-     * 保存状态到localStorage
+     * 保存状态到 D1 数据库
      */
-    saveState() {
+    async saveState() {
         try {
             const DataManager = StockProfitCalculator.DataManager;
-            const data = DataManager.load();
+            const data = await DataManager.load();
             if (data) {
                 data.lastPage = this.state.currentPage;
                 data.lastViewedStock = this.state.currentStockCode;
@@ -229,14 +229,14 @@ const Router = {
                 }
                 
                 // 添加调试日志
-                console.log('[Router.saveState] 保存状态到 localStorage:');
+                console.log('[Router.saveState] 保存状态到 D1 数据库:');
                 console.log('  currentPage:', data.lastPage);
                 console.log('  currentYear:', data.currentYear);
                 console.log('  currentMonth:', data.currentMonth);
                 console.log('  startDate:', data.startDate);
                 console.log('  endDate:', data.endDate);
                 
-                DataManager.save(data);
+                await DataManager.save(data);
             }
         } catch (e) {
             console.error('保存页面状态失败:', e);
@@ -244,12 +244,12 @@ const Router = {
     },
 
     /**
-     * 从localStorage加载状态
+     * 从 D1 数据库加载状态
      */
-    loadState() {
+    async loadState() {
         try {
             const DataManager = StockProfitCalculator.DataManager;
-            const data = DataManager.load();
+            const data = await DataManager.load();
             if (data) {
                 if (data.lastPage) {
                     this.state.currentPage = data.lastPage;
@@ -281,7 +281,7 @@ const Router = {
                 }
                 
                 // 添加调试日志
-                console.log('[Router.loadState] 从 localStorage 加载状态:');
+                console.log('[Router.loadState] 从 D1 数据库加载状态:');
                 console.log('  currentPage:', this.state.currentPage);
                 console.log('  currentYear:', this.state.currentYear);
                 console.log('  currentMonth:', this.state.currentMonth);
@@ -343,7 +343,7 @@ const Router = {
      * @param {number} year - 年份
      * @param {number|null} month - 月份（null 表示全年）
      */
-    showTradeRecords(year, month = null, startDate = null, endDate = null) {
+    showTradeRecords(year, month = null, startDate = null, endDate = null) async {
         console.log('[Router.showTradeRecords] 收到参数:');
         console.log('  year:', year);
         console.log('  month:', month);
@@ -438,7 +438,7 @@ const Router = {
         // 加载交易记录
         const TradeRecords = StockProfitCalculator.TradeRecords;
         if (TradeRecords) {
-            TradeRecords.load(year, month, startDate, endDate);
+            await TradeRecords.load(year, month, startDate, endDate);
         }
 
         // 触发页面切换事件
