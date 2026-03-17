@@ -366,6 +366,12 @@ const Detail = {
 
         this.currentStock = stock;
 
+        // 检查是否有交易记录
+        if (!stock.trades || stock.trades.length === 0) {
+            // 显示空状态提示
+            this._showEmptyState();
+        }
+
         // 更新页面标题
         document.querySelector('h1').textContent = `${stock.name}(${stock.code})`;
         document.getElementById('stockInfo').textContent = '点击返回查看所有股票';
@@ -433,6 +439,31 @@ const Detail = {
             if (!container) return;
             update(container);
         });
+    },
+
+    /**
+     * 显示空状态提示
+     * @private
+     */
+    _showEmptyState() {
+        // 显示提示消息
+        const ErrorHandler = StockProfitCalculator.ErrorHandler;
+        if (ErrorHandler && ErrorHandler.showInfo) {
+            ErrorHandler.showInfo('该股票暂无交易记录，请添加第一笔交易');
+        }
+        
+        // 自动打开添加交易表单
+        setTimeout(() => {
+            const container = document.getElementById('addTradeFormContainer');
+            if (container) {
+                container.style.display = 'block';
+                // 预填充日期
+                const dateInput = document.getElementById('tradeDate');
+                if (dateInput && !dateInput.value) {
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                }
+            }
+        }, 500);
     },
 
     /**

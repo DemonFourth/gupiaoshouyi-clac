@@ -136,6 +136,11 @@ const StockManager = {
 
             ErrorHandler.showSuccess(result.message);
 
+            // 添加新股票成功后，提示用户添加交易记录
+            if (!isEdit) {
+                ErrorHandler.showInfo('股票添加成功！请添加第一笔交易记录');
+            }
+
             // 添加新股票成功后，自动跳转到详情页，让用户开始添加交易记录
             if (!isEdit) {
                 // 使用统一的路由处理函数，确保 Detail.loadStock() 被调用
