@@ -299,7 +299,12 @@ const Overview = {
     rebuildSnapshots() {
         this.stockSnapshots = {};
         (this.stocks || []).forEach(stock => {
-            this.stockSnapshots[stock.code] = StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
+            const snapshot = StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
+            if (snapshot) {
+                this.stockSnapshots[stock.code] = snapshot;
+            } else {
+                console.error(`[Overview] Failed to build snapshot for stock: ${stock.code}`);
+            }
         });
         this.buildAggregatedChartData();
     },
@@ -308,7 +313,16 @@ const Overview = {
         if (!this.stockSnapshots[stock.code]) {
             this.stockSnapshots[stock.code] = StockProfitCalculator.StockSnapshot.getBaseSnapshot(stock.code);
         }
-        return StockProfitCalculator.StockSnapshot.attachQuote(this.stockSnapshots[stock.code], this.getQuoteInfo(stock.code));
+        const baseSnapshot = this.stockSnapshots[stock.code];
+        if (!baseSnapshot) {
+            console.error(`[Overview] StockSnapshot is null for stock: ${stock.code}`);
+            return {
+                stockCode: stock.code,
+                stock: stock,
+                summary: { currentHolding: 0, currentCost: 0, totalProfit: 0, totalReturnRate: 0 },
+            };
+        }
+        return StockProfitCalculator.StockSnapshot.attachQuote(baseSnapshot, this.getQuoteInfo(stock.code));
     },
 
     buildAggregatedChartData() {
