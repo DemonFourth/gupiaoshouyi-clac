@@ -3325,3 +3325,130 @@
 .field-settings-modal .modal-footer .btn:hover {
     transform: translateY(-1px);
 }
+
+/* ==================== 数据同步差异弹窗样式 ==================== */
+.sync-info {
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.sync-diff-details {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: #f8f9fa;
+}
+
+.sync-diff-section {
+    margin-bottom: 16px;
+}
+
+.sync-diff-section:last-child {
+    margin-bottom: 0;
+}
+
+.sync-diff-section h4 {
+    font-size: 14px;
+    color: #333;
+    margin: 0 0 8px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sync-diff-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sync-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #e3f2fd;
+    color: #1976d2;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.sync-tag.d1 {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.sync-tag.local {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.sync-trade-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    width: 100%;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+.sync-trade-item:last-child {
+    border-bottom: none;
+}
+
+.sync-warning {
+    background: #fff3e0;
+    border: 1px solid #ffe0b2;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 13px;
+    color: #e65100;
+    line-height: 1.5;
+}
+
+#syncDiffModal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+#syncDiffModal .btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#syncDiffModal .btn-primary {
+    background: #667eea;
+    color: white;
+    border: none;
+}
+
+#syncDiffModal .btn-primary:hover {
+    background: #5a6fd6;
+}
+
+#syncDiffModal .btn-secondary {
+    background: #4caf50;
+    color: white;
+    border: none;
+}
+
+#syncDiffModal .btn-secondary:hover {
+    background: #43a047;
+}
+
+#syncDiffModal .btn-outline {
+    background: white;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+#syncDiffModal .btn-outline:hover {
+    background: #f5f5f5;
+}

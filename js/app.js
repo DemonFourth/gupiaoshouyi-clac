@@ -89,6 +89,11 @@ window.App = {
             StockProfitCalculator.EventBus.on(StockProfitCalculator.EventBus.EventTypes.ROUTE_CHANGE, ({ page, stockCode }) => {
                 this.handleRouteChange(page, stockCode);
             });
+
+            // 订阅数据同步差异事件（localStorage vs D1）
+            StockProfitCalculator.EventBus.on('data:sync_diff', ({ localData, d1Data, diff }) => {
+                this._handleDataSyncDiff(localData, d1Data, diff);
+            });
         }
 
         // 初始化路由（会触发 route:change）
@@ -643,6 +648,153 @@ window.App = {
         }
     }
     */
+
+    // ==================== 数据同步差异处理 ====================
+
+    /**
+     * 处理数据同步差异
+     * @param {Object} localData - 本地数据
+     * @param {Object} d1Data - D1 数据
+     * @param {Object} diff - 差异信息
+     */
+    async _handleDataSyncDiff(localData, d1Data, diff) {
+        console.log('[App] 检测到数据同步差异:', diff);
+
+        const DataManager = StockProfitCalculator.DataManager;
+        const ErrorHandler = StockProfitCalculator.ErrorHandler;
+
+        // 构建差异详情
+        let detailsHtml = '';
+
+        if (diff.newStocksInD1.length > 0) {
+            detailsHtml += `<div class="sync-diff-section">
+                <h4>D1 新增股票（${diff.newStocksInD1.length}只）</h4>
+                <div class="sync-diff-list">
+                    ${diff.newStocksInD1.map(s => `<span class="sync-tag">${s.name}(${s.code})</span>`).join('')}
+                </div>
+            </div>`;
+        }
+
+        if (diff.newStocksInLocal.length > 0) {
+            detailsHtml += `<div class="sync-diff-section">
+                <h4>本地新增股票（${diff.newStocksInLocal.length}只）</h4>
+                <div class="sync-diff-list">
+                    ${diff.newStocksInLocal.map(s => `<span class="sync-tag">${s.name}(${s.code})</span>`).join('')}
+                </div>
+            </div>`;
+        }
+
+        if (diff.newTradesInD1 > 0 || diff.newTradesInLocal > 0) {
+            const tradeDetails = diff.details.filter(d => d.d1New > 0 || d.localNew > 0);
+            detailsHtml += `<div class="sync-diff-section">
+                <h4>交易记录差异</h4>
+                <div class="sync-diff-list">
+                    ${tradeDetails.map(d => `
+                        <div class="sync-trade-item">
+                            <span>${d.name}(${d.code})</span>
+                            ${d.d1New > 0 ? `<span class="sync-tag d1">D1新增${d.d1New}条</span>` : ''}
+                            ${d.localNew > 0 ? `<span class="sync-tag local">本地新增${d.localNew}条</span>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }
+
+        // 显示同步差异弹窗
+        this._showSyncDiffModal(detailsHtml, localData, d1Data);
+    },
+
+    /**
+     * 显示同步差异弹窗
+     * @param {string} detailsHtml - 差异详情 HTML
+     * @param {Object} localData - 本地数据
+     * @param {Object} d1Data - D1 数据
+     */
+    _showSyncDiffModal(detailsHtml, localData, d1Data) {
+        // 创建弹窗
+        const modalHtml = `
+            <div id="syncDiffModal" class="modal" style="display: block;">
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h3>检测到数据差异</h3>
+                        <span class="close" onclick="App._closeSyncDiffModal()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <p class="sync-info">检测到本地数据与云端数据存在差异，请选择如何处理：</p>
+                        <div class="sync-diff-details">
+                            ${detailsHtml}
+                        </div>
+                        <div class="sync-warning">
+                            <strong>提示：</strong>选择"使用云端数据"会用 D1 数据覆盖本地数据；选择"合并数据"会保留双方的所有数据。
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="App._useD1Data()">使用云端数据</button>
+                        <button class="btn btn-secondary" onclick="App._mergeData()">合并数据</button>
+                        <button class="btn btn-outline" onclick="App._closeSyncDiffModal()">保持本地数据</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // 添加到页面
+        const existing = document.getElementById('syncDiffModal');
+        if (existing) existing.remove();
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        // 保存数据供后续使用
+        this._syncDiffData = { localData, d1Data };
+    },
+
+    /**
+     * 关闭同步差异弹窗
+     */
+    _closeSyncDiffModal() {
+        const modal = document.getElementById('syncDiffModal');
+        if (modal) modal.remove();
+        this._syncDiffData = null;
+    },
+
+    /**
+     * 使用 D1 数据
+     */
+    async _useD1Data() {
+        if (!this._syncDiffData) return;
+
+        const DataManager = StockProfitCalculator.DataManager;
+        const ErrorHandler = StockProfitCalculator.ErrorHandler;
+        const { d1Data } = this._syncDiffData;
+
+        const success = await DataManager.useD1Data(d1Data);
+        if (success) {
+            this.data = d1Data;
+            await this.updateAll();
+            ErrorHandler.showSuccess('已使用云端数据');
+        }
+
+        this._closeSyncDiffModal();
+    },
+
+    /**
+     * 合并数据
+     */
+    async _mergeData() {
+        if (!this._syncDiffData) return;
+
+        const DataManager = StockProfitCalculator.DataManager;
+        const ErrorHandler = StockProfitCalculator.ErrorHandler;
+        const { localData, d1Data } = this._syncDiffData;
+
+        const success = await DataManager.mergeAndUse(localData, d1Data);
+        if (success) {
+            this.data = await DataManager.load();
+            await this.updateAll();
+            ErrorHandler.showSuccess('数据已合并');
+        }
+
+        this._closeSyncDiffModal();
+    }
 };
 
 // 挂载到命名空间
