@@ -274,35 +274,36 @@ gupiaoshouyi-clac/
 ├── ARCHIVE.md               # 功能存档文档
 ├── AGENTS.md                # AI助手上下文文档
 ├── CONTRIBUTING.md          # 开发规范文档
-├── CACHE_TROUBLESHOOTING.md # 缓存问题排查文档（新增 v2.2.1）
+├── CACHE_TROUBLESHOOTING.md # 缓存问题排查文档（v2.2.1新增）
+├── wrangler.toml            # Cloudflare Pages 配置文件（v2.4.0新增）
 ├── css/
 │   └── style.css            # 样式文件
 ├── js/
-│   ├── namespace.js         # 命名空间模块（新增 v2.2.0）
+│   ├── namespace.js         # 命名空间模块（v2.2.0新增）
 │   ├── app.js               # 主程序入口
 │   ├── router.js            # 汇总页 / 详情页切换
 │   ├── overview.js          # 汇总页渲染、年度/月度图表、Top5榜单
 │   ├── detail.js            # 股票详情页面、收益展示、添加交易
 │   ├── calculator.js        # FIFO计算、统一收益统计、时间序列计算、加仓对比
-│   ├── dataManager.js       # 数据管理、数据迁移
-│   ├── dataService.js       # 数据服务层（新增 v2.2.0）
+│   ├── dataManager.js       # 数据管理、混合存储、数据迁移（v2.4.0重构）
+│   ├── dataService.js       # 数据服务层（v2.2.0新增）
 │   ├── fileStorage.js       # 导入导出功能
 │   ├── stockManager.js      # 股票管理
 │   ├── tradeManager.js      # 交易记录管理、编辑功能
-│   ├── tradeRecords.js      # 交易记录查询页面（新增 v2.3.0）
-│   ├── stockPriceAPI.js     # 股价API模块（新增 v2.2.0）
+│   ├── tradeRecords.js      # 交易记录查询页面（v2.3.0新增）
+│   ├── stockPriceAPI.js     # 股价API模块（v2.2.0新增）
 │   ├── chartManager.js      # 图表管理
 │   ├── config.js            # 配置管理
 │   ├── pagination.js        # 分页功能
-│   ├── tableHelper.js       # 表格工具模块（新增 v2.2.0）
-│   ├── formHelper.js        # 表单工具模块（新增 v2.2.0）
+│   ├── tableHelper.js       # 表格工具模块（v2.2.0新增）
+│   ├── formHelper.js        # 表单工具模块（v2.2.0新增）
 │   ├── eventBus.js          # 事件总线
 │   ├── stockSnapshot.js     # 股票快照
 │   ├── perf.js              # 性能监控
 │   └── utils.js             # 工具函数（ErrorHandler、Validator、Loading）
-├── ~~tests/~~               # ~~测试目录（已移除）~~
-│   ├── ~~calculator-period-profit.test.js~~
-│   └── ~~ui-period-profit-render.test.js~~
+├── functions/               # Cloudflare Pages Functions（v2.4.0新增）
+│   └── api/
+│       └── [[path]].js      # D1 数据库 API 端点
 └── lib/
     └── echarts.min.js       # ECharts图表库
 ```
@@ -311,14 +312,50 @@ gupiaoshouyi-clac/
 
 ### 存储方式
 
-数据存储在浏览器的 **localStorage** 中。
+项目采用 **localStorage + Cloudflare D1 混合存储** 策略，实现本地快速响应和云端数据持久化。
 
-| 特点 | 说明 |
+| 存储层 | 说明 | 特点 |
+|--------|------|------|
+| **localStorage** | 浏览器本地存储 | 零延迟、即时响应 |
+| **Cloudflare D1** | SQLite 边缘数据库 | 云端持久化、跨设备同步 |
+
+### 混合存储策略
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    读取流程                                  │
+├─────────────────────────────────────────────────────────────┤
+│  1. 优先读取 localStorage（零延迟显示）                      │
+│  2. 后台异步检查 D1 数据差异                                │
+│  3. 有差异时弹窗提示用户选择处理方式                        │
+├─────────────────────────────────────────────────────────────┤
+│                    写入流程                                  │
+├─────────────────────────────────────────────────────────────┤
+│  1. 先保存到 localStorage（立即生效）                       │
+│  2. 更新内存缓存                                            │
+│  3. 异步同步到 D1（不阻塞 UI）                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 数据同步选项
+
+当检测到本地数据与云端数据存在差异时，提供三种选择：
+
+| 选项 | 说明 |
 |------|------|
-| 存储位置 | 浏览器本地 |
-| 数据格式 | JSON |
-| 持久性 | 清除浏览器数据会丢失 |
-| 跨设备 | 不支持，需手动导出导入 |
+| **使用云端数据** | 用 D1 数据覆盖本地数据 |
+| **合并数据** | 保留双方所有数据（推荐） |
+| **保持本地数据** | 忽略云端数据，继续使用本地数据 |
+
+### D1 数据库结构
+
+```sql
+CREATE TABLE app_data (
+    key VARCHAR(50) PRIMARY KEY,
+    value TEXT NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+```
 
 ### 数据备份
 
@@ -579,7 +616,9 @@ B1: 买入 200股，手续费 5元
 
 - **前端**：原生HTML + CSS + JavaScript（零构建、零框架）
 - **图表**：ECharts 5.x
-- **存储**：localStorage（浏览器本地存储）
+- **存储**：localStorage + Cloudflare D1（混合存储策略）
+- **部署**：Cloudflare Pages（边缘部署，全球加速）
+- **数据库**：Cloudflare D1（SQLite 边缘数据库）
 - **API**：腾讯股票API（用于获取最新股价计算浮动盈亏，非盯盘功能）
 - **架构模式**：
   - 命名空间系统（StockProfitCalculator）
@@ -592,6 +631,7 @@ B1: 买入 200股，手续费 5元
   - 图表懒加载（IntersectionObserver）
   - 防抖节流
   - 数据计算缓存
+  - 混合存储策略（本地优先，云端同步）
 - **工具模块**：
   - StockPriceAPI：股价获取
   - TableHelper：表格工具
@@ -602,6 +642,51 @@ B1: 买入 200股，手续费 5元
   - Config：配置管理
   - Pagination：分页功能
   - ChartManager：图表管理
+
+## 部署说明
+
+### Cloudflare Pages 部署
+
+本项目部署在 Cloudflare Pages 上，使用 D1 数据库进行数据持久化。
+
+#### 部署步骤
+
+1. **创建 D1 数据库**
+   ```bash
+   # 使用 Wrangler CLI 创建数据库
+   npx wrangler d1 create stock-calculator-db
+   ```
+
+2. **绑定 D1 数据库**
+   - 在 Cloudflare Pages 项目设置中
+   - Settings → Functions → D1 database bindings
+   - Variable name: `D1`
+   - D1 database: `stock-calculator-db`
+
+3. **部署项目**
+   ```bash
+   # 连接 GitHub 仓库自动部署
+   # 或使用 Wrangler 手动部署
+   npx wrangler pages deploy
+   ```
+
+#### API 端点
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/api/data` | GET | 获取所有数据 |
+| `/api/data` | PUT | 保存所有数据 |
+| `/api/import` | POST | 导入JSON数据 |
+| `/api/health` | GET | 健康检查 |
+
+#### 本地开发
+
+本地开发时无需配置 D1 数据库，应用会自动降级使用 localStorage 存储。
+
+```bash
+# 本地开发（使用 live-server 或其他静态服务器）
+npx live-server .
+```
 
 ## 浏览器兼容性
 
@@ -705,6 +790,35 @@ B1: 买入 200股，手续费 5元
 4. 使用事件总线与其他模块通信
 
 ## 更新日志
+
+### v2.4.0 (2026-03-18)
+- **架构升级 - Cloudflare Pages 部署**：
+  - 新增 Cloudflare D1 数据库支持
+  - 实现 localStorage + D1 混合存储策略
+  - 新增 Cloudflare Pages Functions API
+  - 新增 `wrangler.toml` 配置文件
+- **新增功能**：
+  - **混合存储策略**：读取优先 localStorage（零延迟），后台异步检查 D1
+  - **数据差异检测**：自动检测本地与云端数据差异
+  - **同步差异弹窗**：用户友好的数据同步选择界面
+  - **三种同步选项**：使用云端数据、合并数据、保持本地数据
+- **API 端点**：
+  - `GET /api/data` - 获取所有数据
+  - `PUT /api/data` - 保存所有数据
+  - `POST /api/import` - 导入JSON数据
+  - `GET /api/health` - 健康检查
+- **Bug 修复**：
+  - **Bug 1**：修复交易记录添加后不刷新的问题（`DataService._invalidateStock()` 未清除 `_stockDataCache`）
+  - **Bug 2**：修复新股票添加后跳转详情页报错（`DataManager.save()` 未清除 `DataService._stockDataCache`）
+- **性能优化**：
+  - 本地优先策略，零延迟读取
+  - 异步云端同步，不阻塞 UI
+- **文件变更**：
+  - 新增 `functions/api/[[path]].js`：D1 数据库 API
+  - 新增 `wrangler.toml`：Cloudflare Pages 配置
+  - 修改 `js/dataManager.js`：混合存储逻辑
+  - 修改 `js/app.js`：同步差异处理
+  - 修改 `css/style.css`：同步弹窗样式
 
 ### v2.3.1 (2026-03-16)
 - **功能改进（2 项）**：

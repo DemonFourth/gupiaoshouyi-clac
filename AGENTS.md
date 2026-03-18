@@ -2,12 +2,12 @@
 
 ## 项目概述
 
-这是一个纯前端股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，使用 localStorage 进行数据持久化，适合个人投资记录和分析使用。
+这是一个股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，适合个人投资记录和分析使用。
 
-**当前版本**：v2.3.1
-**存档日期**：2026-03-16
+**当前版本**：v2.4.0
+**存档日期**：2026-03-18
 
-**项目类型**：前端 Web 应用（纯静态文件，无需后端服务器）
+**项目类型**：前端 Web 应用（部署在 Cloudflare Pages）
 
 **主要用途**：
 - 记录股票买卖交易（买入、卖出、分红、红利税）
@@ -18,6 +18,8 @@
 - 备份管理和数据导入导出（JSON、CSV）
 - 交易记录查询和分析（支持时间段筛选、多维度图表展示）
 - 图表自由选择和响应式布局
+- **云端数据持久化**（Cloudflare D1 数据库）
+- **本地+云端混合存储**（零延迟读取，异步同步）
 
 **项目定位**：本工具专注于交易记录和收益计算，不是股票盯盘软件或自选股管理工具。
 
@@ -25,7 +27,9 @@
 
 - **前端框架**：原生 JavaScript（无框架）
 - **图表库**：ECharts 5.x（`lib/echarts.min.js`）
-- **数据存储**：浏览器 localStorage
+- **数据存储**：localStorage + Cloudflare D1（混合存储策略）
+- **部署平台**：Cloudflare Pages（边缘部署，全球加速）
+- **数据库**：Cloudflare D1（SQLite 边缘数据库）
 - **股价 API**：腾讯股票 API（用于获取最新股价计算浮动盈亏）
 - **兼容性**：Chrome、Edge、Firefox、Safari（现代浏览器）
 
@@ -39,8 +43,12 @@ gupiaoshouyi-clac/
 ├── AGENTS.md               # 本文件（AI 助手上下文）
 ├── CONTRIBUTING.md         # 开发规范文档
 ├── CACHE_TROUBLESHOOTING.md # 缓存问题排查文档（v2.2.1新增）
+├── wrangler.toml           # Cloudflare Pages 配置（v2.4.0新增）
 ├── css/
 │   └── style.css           # 全局样式
+├── functions/              # Cloudflare Pages Functions（v2.4.0新增）
+│   └── api/
+│       └── [[path]].js     # D1 数据库 API 端点
 ├── js/
 │   ├── namespace.js        # 命名空间模块（v2.2.0新增）
 │   ├── app.js              # 主程序入口、全局事件绑定
@@ -49,7 +57,7 @@ gupiaoshouyi-clac/
 │   ├── overview.js         # 汇总页面逻辑、图表渲染、排序
 │   ├── detail.js           # 详情页面逻辑、股价获取、UI更新
 │   ├── calculator.js       # 核心计算模块（FIFO算法、收益率计算）
-│   ├── dataManager.js      # 数据管理（localStorage读写、备份管理）
+│   ├── dataManager.js      # 数据管理（localStorage + D1 混合存储）
 │   ├── dataService.js      # 数据服务层（v2.2.0新增）
 │   ├── fileStorage.js      # 文件导入导出（JSON、CSV）
 │   ├── stockManager.js     # 股票增删改查
@@ -641,23 +649,70 @@ const Loading = {
 
 ## 数据流
 
+### 混合存储数据流（v2.4.0）
+
 ```
-用户操作 → 页面模块（Overview/Detail）
-    ↓
-TradeManager/StockManager（业务逻辑）
-    ↓
-DataManager（数据持久化 + 备份管理）
-    ↓
-Calculator（计算核心）
-    ↓
-UI 更新（页面刷新）
+┌─────────────────────────────────────────────────────────────────────┐
+│                        读取流程                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  用户操作 → 页面模块（Overview/Detail）                              │
+│       ↓                                                             │
+│  DataManager.load()                                                 │
+│       ↓                                                             │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 1. 检查内存缓存 → 命中：返回缓存数据                          │   │
+│  │ 2. 读取 localStorage → 有数据：立即返回                       │   │
+│  │ 3. 后台异步检查 D1 数据差异                                   │   │
+│  │    ├─ 无差异：更新时间戳                                      │   │
+│  │    └─ 有差异：触发 data:sync_diff 事件                        │   │
+│  │ 4. 无本地数据：从 D1 加载                                     │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│       ↓                                                             │
+│  Calculator（计算核心）                                              │
+│       ↓                                                             │
+│  UI 更新（页面刷新）                                                 │
+└─────────────────────────────────────────────────────────────────────┘
 
-配置管理流程：
-Config.get/set → Config.save → localStorage (stockProfitCalculator_config)
+┌─────────────────────────────────────────────────────────────────────┐
+│                        写入流程                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  用户操作 → TradeManager/StockManager（业务逻辑）                    │
+│       ↓                                                             │
+│  DataManager.save(data)                                             │
+│       ↓                                                             │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │ 1. 保存到 localStorage（立即生效）                           │   │
+│  │ 2. 更新内存缓存                                              │   │
+│  │ 3. 清除 StockSnapshot/DataService 缓存                       │   │
+│  │ 4. 异步保存到 D1（不阻塞 UI）                                │   │
+│  │ 5. 触发 DATA_CHANGED 事件                                    │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+│       ↓                                                             │
+│  UI 更新（页面刷新）                                                 │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-事件总线流程：
+### 事件总线流程
+
+```
 Router → EventBus.emit('route:change') → App 订阅事件 → 更新所有模块
+DataManager → EventBus.emit('data:sync_diff') → App 显示同步弹窗
 ```
+
+### 配置管理流程
+
+```
+Config.get/set → Config.save → localStorage (stockProfitCalculator_config)
+```
+
+### API 端点（Cloudflare Pages Functions）
+
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/api/data` | GET | 获取所有数据 |
+| `/api/data` | PUT | 保存所有数据 |
+| `/api/import` | POST | 导入JSON数据 |
+| `/api/health` | GET | 健康检查 |
 
 ## UI 元素说明
 
@@ -1113,9 +1168,39 @@ console.log(backups);
 
 ## 版本信息
 
-**当前版本**：v2.3.1（2026-03-16）
+**当前版本**：v2.4.0（2026-03-18）
 
-**最新更新**（v2.3.1）：
+**最新更新**（v2.4.0）：
+- **架构升级 - Cloudflare Pages 部署**：
+  - 新增 Cloudflare D1 数据库支持
+  - 实现 localStorage + D1 混合存储策略
+  - 新增 Cloudflare Pages Functions API
+  - 新增 `wrangler.toml` 配置文件
+  - 新增 `functions/api/[[path]].js` API 端点
+- **新增功能**：
+  - **混合存储策略**：读取优先 localStorage（零延迟），后台异步检查 D1
+  - **数据差异检测**：自动检测本地与云端数据差异
+  - **同步差异弹窗**：用户友好的数据同步选择界面
+  - **三种同步选项**：使用云端数据、合并数据、保持本地数据
+- **API 端点**：
+  - `GET /api/data` - 获取所有数据
+  - `PUT /api/data` - 保存所有数据
+  - `POST /api/import` - 导入JSON数据
+  - `GET /api/health` - 健康检查
+- **Bug 修复**：
+  - **Bug 1**：修复交易记录添加后不刷新的问题（`DataService._invalidateStock()` 未清除 `_stockDataCache`）
+  - **Bug 2**：修复新股票添加后跳转详情页报错（`DataManager.save()` 未清除 `DataService._stockDataCache`）
+- **性能优化**：
+  - 本地优先策略，零延迟读取
+  - 异步云端同步，不阻塞 UI
+- **文件变更**：
+  - 新增 `functions/api/[[path]].js`：D1 数据库 API
+  - 新增 `wrangler.toml`：Cloudflare Pages 配置
+  - 修改 `js/dataManager.js`：混合存储逻辑
+  - 修改 `js/app.js`：同步差异处理
+  - 修改 `css/style.css`：同步弹窗样式
+
+**历史版本**（v2.3.1）：
 - **功能改进（2 项）**：
   - **功能 1**：图表选择功能（全新功能）
     - 交易记录页面添加图表选择控件

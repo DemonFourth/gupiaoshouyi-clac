@@ -1,11 +1,11 @@
 # 股票收益计算器 - 功能存档
 
-> 存档日期：2026-03-16
-> 版本：v2.3.1
+> 存档日期：2026-03-18
+> 版本：v2.4.0
 
 ## 一、项目概述
 
-这是一个股票收益计算器，采用纯前端技术栈（HTML + CSS + JavaScript），支持多股票管理、FIFO先进先出计算、实时股价获取、持仓周期追踪、分红/红利税记录、统一收益口径统计、汇总页面排序和视图切换、加仓对比分析等功能。
+这是一个股票收益计算器，采用纯前端技术栈（HTML + CSS + JavaScript），部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，支持多股票管理、FIFO先进先出计算、实时股价获取、持仓周期追踪、分红/红利税记录、统一收益口径统计、汇总页面排序和视图切换、加仓对比分析、云端数据持久化等功能。
 
 ## 二、核心功能
 
@@ -838,6 +838,49 @@ myChart.setOption({
 ```
 
 ## 五、版本历史
+
+### v2.4.0 (2026-03-18)
+- **架构升级 - Cloudflare Pages 部署**：
+  - 新增 Cloudflare D1 数据库支持
+  - 实现 localStorage + D1 混合存储策略
+  - 新增 Cloudflare Pages Functions API
+  - 新增 `wrangler.toml` 配置文件
+  - 新增 `functions/api/[[path]].js` API 端点
+- **新增功能**：
+  - **混合存储策略**：
+    - 读取：优先 localStorage（零延迟），后台异步检查 D1 数据差异
+    - 写入：先保存 localStorage（立即生效），异步同步到 D1
+    - 数据差异检测：自动检测本地与云端数据差异
+    - 同步差异弹窗：用户友好的数据同步选择界面
+    - 三种同步选项：使用云端数据、合并数据、保持本地数据
+  - **Cloudflare Pages Functions API**：
+    - `GET /api/data` - 获取所有数据
+    - `PUT /api/data` - 保存所有数据
+    - `POST /api/import` - 导入JSON数据
+    - `GET /api/health` - 健康检查
+  - **D1 数据库**：
+    - SQLite 边缘数据库
+    - 自动初始化数据库表
+    - 表结构：`app_data (key, value, last_updated)`
+- **Bug 修复**：
+  - **Bug 1**：修复交易记录添加后不刷新的问题
+    - 原因：`DataService._invalidateStock()` 未清除 `_stockDataCache`
+    - 修复：添加 `this._stockDataCache = null;`
+    - 修改文件：`js/dataService.js`
+  - **Bug 2**：修复新股票添加后跳转详情页报错
+    - 原因：`DataManager.save()` 未清除 `DataService._stockDataCache`
+    - 修复：添加 `DataService.invalidateAllCache()` 调用
+    - 修改文件：`js/dataManager.js`
+- **性能优化**：
+  - 本地优先策略，零延迟读取
+  - 异步云端同步，不阻塞 UI
+  - 混合存储减少 D1 访问次数
+- **文件变更**：
+  - 新增 `functions/api/[[path]].js`：D1 数据库 API（约 250 行）
+  - 新增 `wrangler.toml`：Cloudflare Pages 配置
+  - 修改 `js/dataManager.js`：添加 localStorage 操作、混合存储逻辑、数据比较方法（约 300 行新增）
+  - 修改 `js/app.js`：添加同步差异事件监听、弹窗处理方法（约 150 行新增）
+  - 修改 `css/style.css`：添加同步差异弹窗样式
 
 ### v2.3.1 (2026-03-16)
 - **功能改进（2 项）**：

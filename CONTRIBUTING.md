@@ -1,7 +1,7 @@
 # 股票收益计算器 - 开发规范文档
 
-> 版本：v2.3.1
-> 更新日期：2026-03-16
+> 版本：v2.4.0
+> 更新日期：2026-03-18
 
 ## 目录
 
@@ -18,6 +18,7 @@
 - [图表开发规范](#图表开发规范)
 - [测试规范](#测试规范)
 - [Git提交规范](#git提交规范)
+- [Cloudflare 部署规范](#cloudflare-部署规范)
 - [常见问题和解决方案](#常见问题和解决方案)
 
 ---
@@ -1341,6 +1342,99 @@ _initChartObserver() {
 
 ---
 
+## Cloudflare 部署规范
+
+### 1. 混合存储策略
+
+**必须遵循**：
+- 读取时优先使用 localStorage（零延迟）
+- 后台异步检查 D1 数据差异
+- 写入时先保存 localStorage，再异步同步到 D1
+- 数据变更时正确失效所有缓存
+
+**数据流**：
+```
+读取：localStorage → 后台检查 D1 → 差异时弹窗提示
+写入：localStorage → 异步同步 D1 → 触发事件
+```
+
+### 2. API 端点规范
+
+**必须遵循**：
+- 所有 API 端点必须返回 JSON 格式
+- 必须设置正确的 CORS 头
+- 必须处理 OPTIONS 预检请求
+- 错误响应必须包含 `error` 字段
+
+**端点列表**：
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/api/data` | GET | 获取所有数据 |
+| `/api/data` | PUT | 保存所有数据 |
+| `/api/import` | POST | 导入JSON数据 |
+| `/api/health` | GET | 健康检查 |
+
+### 3. 缓存失效规范（v2.4.0 新增）
+
+**必须遵循**：
+- 在修改数据前失效所有缓存（StockSnapshot、DataService、DataManager）
+- 触发完整事件链，确保所有监听器收到通知
+- 强制重新加载，不依赖缓存
+- 确保缓存失效顺序正确
+
+**正确示例**：
+```javascript
+// 在修改数据前失效所有缓存
+StockProfitCalculator.StockSnapshot?.clear();
+StockProfitCalculator.DataService?.invalidateAllCache();
+DataManager.invalidateCache();
+
+// 修改数据
+stock.trades.push(newTrade);
+await DataManager.save(data);
+
+// 触发事件
+EventBus.emit(EventBus.EventTypes.TRADE_ADDED, { stockCode, trade });
+```
+
+### 4. 同步差异处理规范
+
+**必须遵循**：
+- 检测到数据差异时触发 `data:sync_diff` 事件
+- 提供三种同步选项：使用云端数据、合并数据、保持本地数据
+- 用户选择后正确更新 UI
+
+**事件数据结构**：
+```javascript
+EventBus.emit('data:sync_diff', {
+    localData,  // 本地数据
+    d1Data,     // D1 数据
+    diff: {     // 差异信息
+        hasDiff: true,
+        newStocksInLocal: [],
+        newStocksInD1: [],
+        newTradesInLocal: 0,
+        newTradesInD1: 0,
+        details: []
+    }
+});
+```
+
+### 5. 本地开发规范
+
+**本地开发**：
+- 本地开发时无需配置 D1 数据库
+- 应用会自动降级使用 localStorage 存储
+- 使用 `live-server` 或其他静态服务器运行
+
+**部署前检查**：
+- [ ] D1 数据库已创建并绑定
+- [ ] `wrangler.toml` 配置正确
+- [ ] API 端点测试通过
+- [ ] 健康检查返回正常
+
+---
+
 ## 附录
 
 ### A. 性能优化检查清单
@@ -1353,6 +1447,8 @@ _initChartObserver() {
 - [ ] 事件监听器正确解绑
 - [ ] 使用事件总线解耦模块
 - [ ] 使用数据服务层访问数据
+- [ ] 混合存储策略正确实现（v2.4.0 新增）
+- [ ] 缓存失效顺序正确（v2.4.0 新增）
 
 ### B. 代码审查检查清单
 
@@ -1374,5 +1470,5 @@ _initChartObserver() {
 ---
 
 **维护者**：iFlow CLI
-**最后更新**：2026-03-13
-**版本**：v2.2.2
+**最后更新**：2026-03-18
+**版本**：v2.4.0
