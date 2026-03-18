@@ -106,6 +106,11 @@ const FileStorage = {
      * @returns {Object} 分析结果
      */
     analyzeImportData(currentData, importData) {
+        // 处理 currentData 为 null 的情况（本地模式首次导入）
+        if (!currentData) {
+            currentData = { stocks: [], currentStockCode: null, version: '1.0.0' };
+        }
+
         const result = {
             newStocks: [],
             existingStocks: [],

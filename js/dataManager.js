@@ -1,6 +1,8 @@
 /**
  * 数据管理模块
- * 负责数据的存储、读取（使用 Cloudflare D1 数据库）
+ * 负责数据的存储、读取
+ * - 本地开发（file://）：仅使用 localStorage
+ * - 部署环境：localStorage + Cloudflare D1 混合存储
  */
 
 const DataManager = {
@@ -21,6 +23,42 @@ const DataManager = {
 
     // 同步状态
     _syncChecked: false,
+
+    // 存储模式缓存
+    _storageMode: null,
+
+    /**
+     * 检测是否是本地开发环境
+     * file:// 协议表示本地打开
+     * @returns {boolean}
+     */
+    _isLocalDevelopment() {
+        return window.location.protocol === 'file:';
+    },
+
+    /**
+     * 获取当前存储模式
+     * @returns {Object} { mode: 'local'|'hybrid', label: string }
+     */
+    getStorageMode() {
+        if (this._storageMode) {
+            return this._storageMode;
+        }
+
+        if (this._isLocalDevelopment()) {
+            this._storageMode = {
+                mode: 'local',
+                label: '浏览器本地存储'
+            };
+        } else {
+            this._storageMode = {
+                mode: 'hybrid',
+                label: '本地 + 云端混合存储'
+            };
+        }
+
+        return this._storageMode;
+    },
 
     // 默认数据结构
     getDefaultData() {
@@ -386,6 +424,11 @@ const DataManager = {
      * @param {Object} localData - 本地数据
      */
     async _asyncCheckD1Sync(localData) {
+        // 本地开发环境，不检查 D1 同步
+        if (this._isLocalDevelopment()) {
+            return;
+        }
+
         try {
             const response = await fetch(`${this.API_BASE}/data`);
             if (!response.ok) return;
@@ -418,6 +461,12 @@ const DataManager = {
      * 从 D1 加载数据
      */
     async _loadFromD1() {
+        // 本地开发环境，不尝试连接 D1 API
+        if (this._isLocalDevelopment()) {
+            console.log('[DataManager._loadFromD1] 本地开发环境，跳过 D1 加载');
+            return null;
+        }
+
         console.log('[DataManager._loadFromD1] 开始从 API 加载数据');
 
         try {
@@ -498,8 +547,11 @@ const DataManager = {
                 StockProfitCalculator.DataService.invalidateAllCache();
             }
 
-            // 4. 异步保存到 D1（不阻塞，但等待完成以确保返回值正确）
-            await this._doSave(data);
+            // 4. 本地开发环境跳过 D1 同步
+            if (!this._isLocalDevelopment()) {
+                // 异步保存到 D1（不阻塞，但等待完成以确保返回值正确）
+                await this._doSave(data);
+            }
 
             // 触发数据变更事件
             if (StockProfitCalculator.EventBus) {

@@ -839,6 +839,23 @@ myChart.setOption({
 
 ## 五、版本历史
 
+### v2.4.1 (2026-03-18)
+- **功能改进（2项）**：
+  - **功能 1**：本地开发支持
+    - 添加环境检测 `_isLocalDevelopment()` - 检测 file:// 协议
+    - 本地模式只使用 localStorage，不尝试连接 D1 API
+    - 添加 `getStorageMode()` 方法返回存储模式
+    - 修改文件：`js/dataManager.js`（添加环境检测方法、修改 load/save 逻辑）
+  - **功能 2**：存储模式提示
+    - 首次打开时显示当前存储模式提示
+    - 设置弹窗动态显示存储位置（"浏览器本地存储" 或 "本地 + 云端混合存储"）
+    - 修改文件：`js/app.js`（添加 `_showStorageModeTip` 方法）、`index.html`（默认文本改为"加载中..."）
+- **Bug 修复（1项）**：
+  - **Bug 1**：修复本地模式首次导入 JSON 数据报错
+    - 原因：`analyzeImportData` 未处理 `currentData` 为 null 的情况
+    - 修复：添加空值检查，使用默认空数据结构
+    - 修改文件：`js/fileStorage.js`
+
 ### v2.4.0 (2026-03-18)
 - **架构升级 - Cloudflare Pages 部署**：
   - 新增 Cloudflare D1 数据库支持

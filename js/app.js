@@ -99,9 +99,29 @@ window.App = {
         // 初始化路由（会触发 route:change）
         await Router.init();
 
+        // 显示存储模式提示（首次打开时）
+        this._showStorageModeTip();
+
         if (window.Perf) window.Perf.end(perfToken);
 
         console.log('[App] 初始化完成');
+    },
+
+    /**
+     * 显示存储模式提示（首次打开时）
+     */
+    _showStorageModeTip() {
+        const DataManager = StockProfitCalculator.DataManager;
+        const storageMode = DataManager.getStorageMode();
+
+        // 使用 info 级别提示，3秒后自动消失
+        const message = storageMode.mode === 'local'
+            ? '当前使用本地存储模式，数据仅保存在浏览器中'
+            : '当前使用本地+云端混合存储模式，数据自动同步到云端';
+
+        if (window.StockProfitCalculator && window.StockProfitCalculator.ErrorHandler) {
+            window.StockProfitCalculator.ErrorHandler.showInfo(message);
+        }
     },
 
     bindGlobalEvents() {
@@ -372,11 +392,12 @@ window.App = {
         const FileStorage = StockProfitCalculator.FileStorage;
         const data = await DataManager.load();
         const stats = FileStorage.getStorageStats(data);
+        const storageMode = DataManager.getStorageMode();
 
         document.getElementById('settingsStockCount').textContent = stats.stockCount + '只';
         document.getElementById('settingsTradeCount').textContent = stats.tradeCount + '条';
         document.getElementById('settingsDataSize').textContent = stats.dataSize;
-        document.getElementById('settingsStorageLocation').textContent = 'Cloudflare D1 数据库';
+        document.getElementById('settingsStorageLocation').textContent = storageMode.label;
     },
 
     // ==================== 数据导入导出 ====================
