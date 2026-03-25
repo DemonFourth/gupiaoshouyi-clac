@@ -653,6 +653,9 @@ const Detail = {
         } else {
             this._domCache.costPerShare.textContent = '¥' + (snapshot ? snapshot.costPerShare : 0).toFixed(3);
             this._domCache.dilutedCostPerShare.textContent = '--';
+            
+            // 重置持仓市值为 --（已清仓股票持仓股数为0）
+            this._domCache.marketValue.textContent = '--';
 
             // 更新当前持有股收益和收益率（显示为 --）
             this._domCache.latestProfit.textContent = '--';

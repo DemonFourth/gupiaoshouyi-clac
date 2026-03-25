@@ -1581,10 +1581,8 @@ const Overview = {
      * 批量获取所有股票价格
      */
     async fetchAllStockPrices() {
-        const stocks = this.stocks.filter(s => {
-            const snapshot = this.getStockSnapshot(s);
-            return snapshot.summary.currentHolding > 0;
-        });
+        // 获取所有股票的股价（包括已清仓），让已清仓股票也能显示"现价"和"涨幅"
+        const stocks = this.stocks;
 
         // 分批获取，每次最多5个
         const batchSize = 5;
