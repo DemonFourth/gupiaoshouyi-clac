@@ -125,13 +125,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .header-refresh-btn {
-            margin-right: 16px;
-            padding: 8px 15px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
         .header-right-actions {
             display: inline-flex;
             align-items: center;
@@ -351,6 +344,44 @@
             border-color: #667eea;
             color: white;
             transform: rotate(30deg);
+        }
+
+        /* 悬浮刷新股价按钮 */
+        .refresh-price-float {
+            position: fixed;
+            right: 18px;
+            bottom: 72px;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            border: 1px solid rgba(102, 126, 234, 0.35);
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: 0 10px 24px rgba(17, 17, 26, 0.18);
+            color: #4f46e5;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, opacity 0.2s, background 0.2s;
+            z-index: 1200;
+        }
+
+        .refresh-price-float:hover {
+            transform: translateY(-2px);
+            background: rgba(102, 126, 234, 0.12);
+        }
+
+        .refresh-price-float.is-visible {
+            display: inline-flex;
+        }
+
+        .refresh-price-float.loading {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* 回到顶部按钮 */

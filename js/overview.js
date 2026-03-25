@@ -31,7 +31,7 @@ const Overview = {
         },
         cleared: 'default'
     },  // 排序状态
-    viewMode: 'card',  // 视图模式：card | list
+    viewMode: 'list',  // 视图模式：card | list
 
     /**
      * 初始化 DOM 缓存
@@ -195,6 +195,9 @@ const Overview = {
 
         // 渲染汇总统计
         this.renderSummary();
+
+        // 初始化视图模式 UI 状态
+        this._initViewModeUI();
 
         // 渲染股票列表
         this.renderStockLists();
@@ -768,6 +771,39 @@ const Overview = {
             default:
                 return stockDataList;
         }
+    },
+
+    /**
+     * 初始化视图模式 UI 状态
+     */
+    _initViewModeUI() {
+        this._ensureDOMCache();
+
+        // 更新按钮图标
+        const gridIcon = this._domCache.gridIcon;
+        const listIcon = this._domCache.listIcon;
+        if (gridIcon && listIcon) {
+            if (this.viewMode === 'list') {
+                gridIcon.style.display = 'none';
+                listIcon.style.display = 'inline';
+            } else {
+                gridIcon.style.display = 'inline';
+                listIcon.style.display = 'none';
+            }
+        }
+
+        // 更新容器样式
+        const holdingContainer = this._domCache.holdingStocksList;
+        const clearedContainer = this._domCache.clearedStocksList;
+        [holdingContainer, clearedContainer].forEach(container => {
+            if (container) {
+                if (this.viewMode === 'list') {
+                    container.classList.add('list-mode');
+                } else {
+                    container.classList.remove('list-mode');
+                }
+            }
+        });
     },
 
     /**
@@ -1555,11 +1591,14 @@ const Overview = {
         for (let i = 0; i < stocks.length; i += batchSize) {
             const batch = stocks.slice(i, i + batchSize);
             await Promise.all(batch.map(stock => this.fetchStockPrice(stock.code)));
-            
+
             // 更新汇总统计
             this.renderSummary();
             this.renderStockLists();
         }
+
+        // 刷新完成提示
+        ErrorHandler.showSuccess('刷新完成');
     },
 
     /**

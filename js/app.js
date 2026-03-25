@@ -243,9 +243,28 @@ window.App = {
             closeEditTradeModalBtn.onclick = () => TradeManager.closeEditModal();
         }
 
+        // 悬浮刷新股价按钮事件绑定
         const refreshPriceBtn = document.getElementById('refreshPriceBtn');
         if (refreshPriceBtn) {
-            refreshPriceBtn.onclick = () => Detail.fetchStockPrice();
+            refreshPriceBtn.onclick = async () => {
+                // 添加加载动画
+                refreshPriceBtn.classList.add('loading');
+
+                try {
+                    const currentPage = StockProfitCalculator.Router.getCurrentPage();
+
+                    if (currentPage === 'overview') {
+                        // 汇总页面：批量刷新所有持仓股票
+                        await StockProfitCalculator.Overview.fetchAllStockPrices();
+                    } else if (currentPage === 'detail') {
+                        // 详情页面：刷新当前股票
+                        await StockProfitCalculator.Detail.fetchStockPrice();
+                    }
+                } finally {
+                    // 移除加载动画
+                    refreshPriceBtn.classList.remove('loading');
+                }
+            };
         }
 
         const toggleAddTradeBtn = document.getElementById('toggleAddTradeBtn');

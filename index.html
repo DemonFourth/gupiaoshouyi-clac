@@ -68,9 +68,6 @@
             </div>
 
             <div class="header-right-actions">
-                <!-- 详情页刷新股价按钮：由 Router 切换时显示/隐藏 -->
-                <button type="button" class="refresh-btn header-refresh-btn" id="refreshPriceBtn" style="display: none;">刷新股价</button>
-
                 <!-- 搜索框 -->
                 <div class="search-container">
                     <input type="text" id="stockSearchInput" class="search-input" placeholder="搜索股票代码/名称">
@@ -702,6 +699,16 @@
     </div>
 </div>
 
+    <!-- 悬浮刷新股价按钮 -->
+    <button type="button" id="refreshPriceBtn" class="refresh-price-float" title="刷新股价" aria-label="刷新股价">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2v6h-6"></path>
+            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+            <path d="M3 22v-6h6"></path>
+            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+        </svg>
+    </button>
+
     <button type="button" id="scrollToTopBtn" class="scroll-to-top" title="回到顶部" aria-label="回到顶部">
         ↑
     </button>
@@ -816,7 +823,7 @@
             </div>
             <div class="backup-modal-body">
                 <div id="backupListContainer">
-                    <!-- 备份列表将通过JS动态生成 -->
+                    备份列表将通过JS动态生成
                 </div>
             </div>
         </div>

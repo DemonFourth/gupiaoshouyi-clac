@@ -58,14 +58,32 @@ const Router = {
      */
     async showOverview(saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showOverview') : null;
+
+        // 立即更新 UI 元素，确保用户界面立即响应
+        // 隐藏返回按钮
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) {
+            backBtn.style.display = 'none';
+        }
+
+        // 立即更新页面标题
+        this.updateTitle('股票收益计算器');
+
+        // 更新 stockInfo 副标题
+        const stockInfo = document.getElementById('stockInfo');
+        if (stockInfo) {
+            stockInfo.textContent = '支持多股票管理 | FIFO先进先出计算';
+        }
+
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.remove('page-detail');
             document.body.classList.remove('page-trade-records');
         }
 
+        // 显示悬浮刷新股价按钮（汇总页面）
         const refreshBtn = document.getElementById('refreshPriceBtn');
         if (refreshBtn) {
-            refreshBtn.style.display = 'none';
+            refreshBtn.classList.add('is-visible');
         }
 
         const headerQuote = document.getElementById('headerQuote');
@@ -108,9 +126,6 @@ const Router = {
             await this.saveState();
         }
 
-        // 更新页面标题
-        this.updateTitle('股票收益计算器');
-
         // 恢复汇总页的滚动位置
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
         if (savedScrollPosition > 0) {
@@ -143,9 +158,10 @@ const Router = {
             document.body.classList.remove('page-trade-records');
         }
 
+        // 显示悬浮刷新股价按钮（详情页面）
         const refreshBtn = document.getElementById('refreshPriceBtn');
         if (refreshBtn) {
-            refreshBtn.style.display = 'inline-flex';
+            refreshBtn.classList.add('is-visible');
         }
 
         const headerQuote = document.getElementById('headerQuote');
@@ -376,16 +392,16 @@ const Router = {
             document.body.classList.remove('page-detail');
         }
 
-        // 隐藏返回按钮
+        // 显示返回按钮
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
             backBtn.style.display = 'inline-flex';
         }
 
-        // 隐藏刷新股价按钮
+        // 隐藏悬浮刷新股价按钮（交易记录页面）
         const refreshBtn = document.getElementById('refreshPriceBtn');
         if (refreshBtn) {
-            refreshBtn.style.display = 'none';
+            refreshBtn.classList.remove('is-visible');
         }
 
         // 隐藏行情信息
