@@ -125,9 +125,9 @@ async function handleDataRequest(request, env, corsHeaders) {
  */
 async function getData(env, corsHeaders) {
     try {
-        // 查询所有数据
+        // 查询所有数据（包含 last_updated 字段）
         const results = await env.D1.prepare(
-            'SELECT key, value FROM app_data ORDER BY key'
+            'SELECT key, value, last_updated FROM app_data ORDER BY key'
         ).all();
 
         if (!results.results || results.results.length === 0) {
@@ -142,10 +142,16 @@ async function getData(env, corsHeaders) {
 
         // 解析数据
         const dataMap = {};
+        let latestUpdateTime = null;
+
         results.results.forEach(row => {
             try {
                 if (row.key === 'stocks') {
                     dataMap[row.key] = JSON.parse(row.value);
+                    // 记录 stocks 的更新时间
+                    if (row.last_updated) {
+                        latestUpdateTime = row.last_updated;
+                    }
                 } else {
                     dataMap[row.key] = row.value;
                 }
@@ -154,12 +160,12 @@ async function getData(env, corsHeaders) {
             }
         });
 
-        // 返回完整数据
+        // 返回完整数据，使用数据库中实际存储的时间戳
         return jsonResponse({
             stocks: dataMap.stocks || [],
             currentStockCode: dataMap.currentStockCode || null,
             version: '1.0.0',
-            last_updated: new Date().toISOString()
+            last_updated: latestUpdateTime
         }, 200, corsHeaders);
     } catch (error) {
         console.error('Failed to get data:', error);

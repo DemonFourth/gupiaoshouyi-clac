@@ -436,6 +436,20 @@ const DataManager = {
             const d1Data = await response.json();
             if (!d1Data || !d1Data.stocks) return;
 
+            // 时间戳比较：判断是本地更新还是真正的数据冲突
+            const localTime = localData.lastModified ? new Date(localData.lastModified).getTime() : 0;
+            const d1Time = d1Data.last_updated ? new Date(d1Data.last_updated).getTime() : 0;
+
+            // 如果本地更新时间 >= D1 更新时间，说明是本地更新，跳过差异检测
+            // 这可以避免 D1 边缘节点同步延迟导致的误判
+            if (localTime >= d1Time && localTime > 0) {
+                console.log('[DataManager] 本地数据更新时间 >= D1，跳过差异检测', {
+                    localTime: localData.lastModified,
+                    d1Time: d1Data.last_updated
+                });
+                return;
+            }
+
             const diff = this.compareData(localData, d1Data);
             
             if (diff.hasDiff) {
