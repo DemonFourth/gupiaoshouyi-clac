@@ -17,10 +17,10 @@ const Detail = {
     // DOM 元素缓存
     _domCache: null,
 
-    // 持仓明细分页状态
+    // 持仓明细分页状态（从 Config 读取配置）
     _holdingDetailPagination: {
         currentPage: 1,
-        itemsPerPage: 30,
+        itemsPerPage: 30,  // 默认值，会在 renderHoldingDetail 中从 Config 更新
         totalItems: 0
     },
 
@@ -754,29 +754,57 @@ const Detail = {
         const details = this.calcResult.holdingDetail;
         const tbody = holdingBody;
         const Pagination = StockProfitCalculator.Pagination;
+        const Config = StockProfitCalculator.Config;
 
         tbody.innerHTML = '';
 
+        // 从 Config 读取分页配置
+        const threshold = Config.get('ui.pagination.threshold', 50);
+        const itemsPerPage = Config.get('ui.pagination.itemsPerPage', 30);
+
         // 更新分页状态
         this._holdingDetailPagination.totalItems = details.length;
-        this._holdingDetailPagination.totalPages = Pagination.calculateTotalPages(
-            this._holdingDetailPagination.totalItems,
-            this._holdingDetailPagination.itemsPerPage
-        );
+        this._holdingDetailPagination.itemsPerPage = itemsPerPage;
 
-        // 创建分页状态对象
-        const paginationState = Pagination.createState(
-            this._holdingDetailPagination.totalItems,
-            this._holdingDetailPagination.itemsPerPage,
-            this._holdingDetailPagination.currentPage
-        );
+        // 判断是否需要分页（记录数 >= 阈值）
+        const shouldPaginate = details.length >= threshold;
 
-        // 获取当前页的数据
-        const paginatedDetails = Pagination.getPaginatedData(
-            details,
-            this._holdingDetailPagination.currentPage,
-            this._holdingDetailPagination.itemsPerPage
-        );
+        let paginationState;
+        let paginatedDetails;
+
+        if (shouldPaginate) {
+            // 启用分页
+            this._holdingDetailPagination.totalPages = Pagination.calculateTotalPages(
+                this._holdingDetailPagination.totalItems,
+                this._holdingDetailPagination.itemsPerPage
+            );
+
+            // 创建分页状态对象
+            paginationState = Pagination.createState(
+                this._holdingDetailPagination.totalItems,
+                this._holdingDetailPagination.itemsPerPage,
+                this._holdingDetailPagination.currentPage
+            );
+
+            // 获取当前页的数据
+            paginatedDetails = Pagination.getPaginatedData(
+                details,
+                this._holdingDetailPagination.currentPage,
+                this._holdingDetailPagination.itemsPerPage
+            );
+        } else {
+            // 不分页，显示全部
+            this._holdingDetailPagination.totalPages = 1;
+            this._holdingDetailPagination.currentPage = 1;
+
+            // 创建不分页的状态对象
+            paginationState = Pagination.createState(
+                this._holdingDetailPagination.totalItems,
+                this._holdingDetailPagination.totalItems,
+                1
+            );
+            paginatedDetails = details;
+        }
 
         // 使用 DocumentFragment 批量插入表格行，减少 DOM 重排
         const fragment = document.createDocumentFragment();

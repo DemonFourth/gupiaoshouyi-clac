@@ -328,6 +328,50 @@ window.App = {
             };
         }
 
+        // 分页设置
+        const paginationThreshold = document.getElementById('paginationThreshold');
+        const paginationItemsPerPage = document.getElementById('paginationItemsPerPage');
+        const savePaginationSettingsBtn = document.getElementById('savePaginationSettingsBtn');
+        const minValue = Config.get('ui.pagination.minValue', 5);
+
+        // 输入框值变化时只验证，不保存
+        if (paginationThreshold) {
+            paginationThreshold.value = Config.get('ui.pagination.threshold', 50);
+            paginationThreshold.onchange = () => {
+                let value = parseInt(paginationThreshold.value, 10);
+                if (isNaN(value) || value < minValue) {
+                    paginationThreshold.value = minValue;
+                    ErrorHandler.showWarning(`分页阈值最小为 ${minValue}，已自动调整为 ${minValue}`);
+                }
+            };
+        }
+
+        if (paginationItemsPerPage) {
+            paginationItemsPerPage.value = Config.get('ui.pagination.itemsPerPage', 30);
+            paginationItemsPerPage.onchange = () => {
+                let value = parseInt(paginationItemsPerPage.value, 10);
+                if (isNaN(value) || value < minValue) {
+                    paginationItemsPerPage.value = minValue;
+                    ErrorHandler.showWarning(`每页条数最小为 ${minValue}，已自动调整为 ${minValue}`);
+                }
+            };
+        }
+
+        // 保存按钮点击事件
+        if (savePaginationSettingsBtn) {
+            savePaginationSettingsBtn.onclick = async () => {
+                const thresholdValue = parseInt(paginationThreshold.value, 10);
+                const itemsPerPageValue = parseInt(paginationItemsPerPage.value, 10);
+
+                Config.set('ui.pagination.threshold', thresholdValue);
+                Config.set('ui.pagination.itemsPerPage', itemsPerPageValue);
+                Config.save();
+
+                ErrorHandler.showSuccess('分页设置已保存');
+                await this.updateAll();
+            };
+        }
+
         const scrollToTopBtn = document.getElementById('scrollToTopBtn');
         if (scrollToTopBtn) {
             const updateVisibility = () => {

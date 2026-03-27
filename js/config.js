@@ -158,8 +158,9 @@ const Config = {
             borderColor: '#e0e0e0'
         },
         pagination: {
-            itemsPerPage: 20,
-            maxPageButtons: 5
+            threshold: 50,      // 分页阈值（超过多少条记录开始分页）
+            itemsPerPage: 30,   // 每页显示条数
+            minValue: 5         // 最小值限制
         },
         preferences: {
             showHoldingDetail: true

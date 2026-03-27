@@ -1345,6 +1345,66 @@
             font-weight: 500;
         }
 
+        .storage-unit {
+            color: #666;
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        /* 分页设置输入框 */
+        .pagination-input {
+            width: 70px;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .pagination-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .pagination-input::-webkit-inner-spin-button,
+        .pagination-input::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+
+        /* 分页设置标题行（标题 + 保存按钮） */
+        .settings-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .settings-section-header h3 {
+            margin: 0;
+        }
+
+        /* 分页设置保存按钮 */
+        .btn-save-settings {
+            padding: 6px 12px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-save-settings:hover {
+            background: #5a6fd6;
+        }
+
+        .btn-save-settings:active {
+            transform: scale(0.98);
+        }
+
         /* 性能日志开关（设置弹窗） */
         .perf-switch {
             position: relative;

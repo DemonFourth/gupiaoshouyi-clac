@@ -15,10 +15,14 @@ const TradeManager = {
     // 当前操作的股票代码（由外部设置）
     _currentStockCode: null,
 
-    // 分页状态
+    // 交易记录和计算结果缓存（用于分页翻页时重新渲染）
+    _currentTrades: null,
+    _currentCalcResult: null,
+
+    // 分页状态（从 Config 读取配置）
     _pagination: {
         currentPage: 1,
-        itemsPerPage: 50,
+        itemsPerPage: 50,  // 默认值，会在 _updatePaginationAndGetPaginatedData 中从 Config 更新
         totalItems: 0
     },
 
@@ -87,22 +91,47 @@ const TradeManager = {
      * 处理分页页码变化
      * @param {string} action - 'prev' 或 'next'
      */
-    async handlePageChange(action) {
+    handlePageChange(action) {
         if (action === 'prev' && this._pagination.currentPage > 1) {
             this._pagination.currentPage--;
         } else if (action === 'next') {
             this._pagination.currentPage++;
         }
-        
-        // 重新渲染交易记录表格
-        const DataManager = StockProfitCalculator.DataManager;
-        const data = await DataManager.load();
-        const currentStock = DataManager.getCurrentStock(data);
-        if (currentStock) {
-            const Calculator = StockProfitCalculator.Calculator;
-            const result = Calculator.calculateAll(currentStock.trades);
-            this.renderTradeTable(currentStock.trades, result);
+
+        // 使用缓存的数据重新渲染交易记录表格
+        this.updateTradeTable();
+    },
+
+    /**
+     * 使用缓存数据更新交易记录表格（用于分页翻页）
+     */
+    updateTradeTable() {
+        if (!this._currentTrades || !this._currentCalcResult) {
+            return;
         }
+
+        this._ensureDOMCache();
+        const tbody = this._domCache.tradeTableBody;
+        if (!tbody) return;
+
+        const { result, sortedTrades } = this._getCalculationAndSortedTrades(this._currentTrades, this._currentCalcResult);
+
+        // 清空表格内容
+        tbody.innerHTML = '';
+
+        // 更新分页状态并获取当前页数据
+        const { paginationState, paginatedTrades } = this._updatePaginationAndGetPaginatedData(sortedTrades);
+
+        // 渲染表格行
+        this._renderTableRows(paginatedTrades, result, tbody);
+
+        // 绑定表格行事件
+        this._bindTableRowEvents(tbody);
+
+        // 渲染分页控件
+        this._renderPaginationControls(paginationState);
+
+        this.bindTooltipAutoFlip();
     },
     
     init() {
@@ -397,7 +426,7 @@ const TradeManager = {
      */
     _getCalculationAndSortedTrades(trades, calcResult) {
         const result = calcResult || StockProfitCalculator.Calculator.calculateAll(trades);
-        const sortedTrades = [...trades].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const sortedTrades = [...trades].sort((a, b) => new Date(b.date) - new Date(a.date));
         return { result, sortedTrades };
     },
 
@@ -408,25 +437,51 @@ const TradeManager = {
      * @returns {Object} 包含分页状态和当前页数据
      */
     _updatePaginationAndGetPaginatedData(sortedTrades) {
+        const Config = StockProfitCalculator.Config;
+
+        // 从 Config 读取分页配置
+        const threshold = Config.get('ui.pagination.threshold', 50);
+        const itemsPerPage = Config.get('ui.pagination.itemsPerPage', 30);
+
         this._pagination.totalItems = sortedTrades.length;
-        this._pagination.totalPages = Pagination.calculateTotalPages(
-            this._pagination.totalItems,
-            this._pagination.itemsPerPage
-        );
+        this._pagination.itemsPerPage = itemsPerPage;
 
-        const paginationState = Pagination.createState(
-            this._pagination.totalItems,
-            this._pagination.itemsPerPage,
-            this._pagination.currentPage
-        );
+        // 判断是否需要分页（记录数 >= 阈值）
+        const shouldPaginate = sortedTrades.length >= threshold;
 
-        const paginatedTrades = Pagination.getPaginatedData(
-            sortedTrades,
-            this._pagination.currentPage,
-            this._pagination.itemsPerPage
-        );
+        if (shouldPaginate) {
+            // 启用分页
+            this._pagination.totalPages = Pagination.calculateTotalPages(
+                this._pagination.totalItems,
+                this._pagination.itemsPerPage
+            );
 
-        return { paginationState, paginatedTrades };
+            const paginationState = Pagination.createState(
+                this._pagination.totalItems,
+                this._pagination.itemsPerPage,
+                this._pagination.currentPage
+            );
+
+            const paginatedTrades = Pagination.getPaginatedData(
+                sortedTrades,
+                this._pagination.currentPage,
+                this._pagination.itemsPerPage
+            );
+
+            return { paginationState, paginatedTrades };
+        } else {
+            // 不分页，显示全部
+            this._pagination.totalPages = 1;
+            this._pagination.currentPage = 1;
+
+            const paginationState = Pagination.createState(
+                this._pagination.totalItems,
+                this._pagination.totalItems,  // 显示全部时，每页条数等于总数
+                1
+            );
+
+            return { paginationState, paginatedTrades: sortedTrades };
+        }
     },
 
     /**
@@ -744,6 +799,13 @@ const TradeManager = {
     renderTradeTable(trades, calcResult) {
         const perfToken = window.Perf ? window.Perf.start('TradeManager.renderTradeTable') : null;
         this._ensureDOMCache();
+
+        // 缓存数据，用于分页翻页时重新渲染
+        this._currentTrades = trades;
+        this._currentCalcResult = calcResult;
+
+        // 重置分页状态
+        this._pagination.currentPage = 1;
 
         const tbody = this._domCache.tradeTableBody;
         if (!tbody) return;

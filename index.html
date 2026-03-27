@@ -751,6 +751,25 @@
                     <p class="settings-hint">开启后会在详情页显示持仓明细表格，包含FIFO先进先出成本计算详情。</p>
                 </div>
                 <div class="settings-section">
+                    <div class="settings-section-header">
+                        <h3>分页设置</h3>
+                        <button id="savePaginationSettingsBtn" class="btn-save-settings">保存</button>
+                    </div>
+                    <div class="storage-info">
+                        <div class="storage-item">
+                            <span class="storage-label">分页阈值：</span>
+                            <input type="number" id="paginationThreshold" class="pagination-input" min="5" value="50" title="超过多少条记录后启用分页">
+                            <span class="storage-unit">条</span>
+                        </div>
+                        <div class="storage-item">
+                            <span class="storage-label">每页条数：</span>
+                            <input type="number" id="paginationItemsPerPage" class="pagination-input" min="5" value="30" title="每页显示的记录数">
+                            <span class="storage-unit">条</span>
+                        </div>
+                    </div>
+                    <p class="settings-hint">交易记录和持仓明细在超过阈值后自动分页显示，最小值为5。</p>
+                </div>
+                <div class="settings-section">
                     <h3>数据管理</h3>
                     <div class="settings-actions">
                         <button type="button" class="btn btn-primary" id="exportDataBtn">导出JSON数据</button>
