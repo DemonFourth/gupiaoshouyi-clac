@@ -4,7 +4,7 @@
 
 这是一个股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，适合个人投资记录和分析使用。
 
-**当前版本**：v2.4.4
+**当前版本**：v2.4.5
 **存档日期**：2026-03-26
 
 **项目类型**：前端 Web 应用（部署在 Cloudflare Pages）
@@ -838,6 +838,30 @@ Config.get/set → Config.save → localStorage (stockProfitCalculator_config)
 - 页面切换时自动销毁旧图表
 - 自动管理窗口大小变化监听
 
+### ESLint 语法检查约定（v2.4.4新增）
+
+**工作流程**：
+1. 运行 `npm run lint` 检查语法
+2. 如果有错误，先修复错误
+3. 如果有警告，可以使用 `npm run lint:fix` 自动修复
+4. 确保没有错误后再测试页面功能
+
+**npm scripts 说明**：
+- `npm run lint` - 检查语法错误和代码风格警告
+- `npm run lint:fix` - 自动修复可修复的警告（如格式问题）
+- `npm run lint:check` - 严格检查（不允许任何警告）
+
+**预防目标**：
+- ❌ 缺少闭合的 `}`
+- ❌ 重复声明的变量
+- ❌ 未定义的变量
+- ❌ 其他语法错误
+
+**配置文件**：
+- `.eslintrc.json` - ESLint 配置（规则和全局变量）
+- `.eslintignore` - 忽略检查的文件（如第三方库）
+- `package.json` - npm scripts 配置
+
 ### 性能优化
 
 #### 1. DOM缓存优化
@@ -1168,17 +1192,56 @@ console.log(backups);
 
 ## 版本信息
 
-**当前版本**：v2.4.4（2026-03-26）
+**当前版本**：v2.4.5（2026-03-27）
 
-**最新更新**（v2.4.4）：
-- **Bug 修复（1项）**：
-  - **Bug 1**：修复新股票添加第一笔交易记录时误报"数据差异"的问题
-    - 原因：`_asyncCheckD1Sync()` 未区分"本地更新"和"真正的数据冲突"
-    - 修复：添加时间戳比较逻辑，本地 `lastModified` >= D1 `last_updated` 时跳过差异检测
-    - 同时修复 API `getData()` 返回当前时间而非数据库实际时间戳的问题
-    - 修改文件：`js/dataManager.js`、`functions/api/[[path]].js`
+**最新更新**（v2.4.5）：
+- **新功能（3项）**：
+  - **功能 1**：持仓周期历史显示
+    - 详情页显示"持仓轮次"字段（如"第3轮"）
+    - 点击可查看历史持仓周期弹窗，展示每轮的开始日期、结束日期、持仓天数、收益
+    - 支持多轮持仓的历史追溯
+    - 新增 `Calculator._extractHoldingCycleHistory()` 方法提取周期历史
+    - 新增 `StockSnapshot._getCurrentCycleNumber()` 方法计算当前轮次
+  - **功能 2**：已清仓独立功能完善
+    - 独立排序：支持按清仓日期、收益、收益率、建仓时间排序
+    - 独立视图切换：卡片视图/列表视图独立切换（按钮ID改为 `viewModeBtnHolding`/`viewModeBtnCleared`）
+    - 独立字段设置：已清仓卡片和列表视图有独立的字段配置（`cardFields.cleared`/`listFields.cleared`）
+  - **功能 3**：清仓日期字段
+    - 已清仓股票显示"上轮清仓"或"本轮清仓"日期
+    - 新增 `getClearDate()` 方法获取清仓日期
+    - 卡片视图和列表视图均支持显示
+- **功能改进（2项）**：
+  - **改进 1**：视图模式独立化
+    - `viewMode` 从字符串改为对象：`{ holding: 'list', cleared: 'list' }`
+    - 持仓中和已清仓区域的视图模式独立切换，互不影响
+    - 重写 `_initViewModeUI()` 方法，遍历分组检查
+  - **改进 2**：字段设置优化
+    - 已清仓独立字段配置，移除不适用字段（持仓成本、每股持仓成本、每股摊薄成本）
+    - 列表视图标签统一：与字段设置名称一致（"持仓"→"持仓股数"、"市值"→"持仓市值"等）
+    - 配置自动清理：新增 `_cleanupRemovedFields()` 方法自动清理旧版本遗留的无效字段配置
+- **Bug 修复（4项）**：
+  - **Bug 1**：修复视图模式类型比较错误
+    - 原因：`viewMode` 从字符串改为对象后，`_initViewModeUI()` 比较逻辑未更新
+    - 修复：遍历分组检查 `viewMode[group]` 而非 `viewMode === 'list'`
+  - **Bug 2**：修复 visible 属性访问报错
+    - 原因：已清仓字段配置缺少部分字段定义，访问 `fields.xxx.visible` 时报 undefined
+    - 修复：添加可选链操作符 `fields.xxx?.visible` 防御性编程
+  - **Bug 3**：修复列表视图标签不一致
+    - 原因：显示标签与字段设置名称不匹配
+    - 修复：统一标签命名，确保一致性
+  - **Bug 4**：修复旧版本配置遗留数据问题
+    - 原因：localStorage 缓存了已移除的字段配置，导致字段设置显示 undefined
+    - 修复：在 `Config.load()` 中调用 `_cleanupRemovedFields()` 自动清理无效配置
+- **修改文件**：
+  - 修改 `js/overview.js`：视图模式独立化、已清仓独立功能、字段渲染优化、清仓日期显示
+  - 修改 `js/config.js`：已清仓字段配置、配置清理方法
+  - 修改 `js/calculator.js`：持仓周期历史提取
+  - 修改 `js/stockSnapshot.js`：周期数据快照
+  - 修改 `js/detail.js`：持仓轮次显示、历史弹窗
+  - 修改 `index.html`：已清仓区域控件、持仓轮次元素
+  - 修改 `css/style.css`：周期历史弹窗样式
 
-**历史版本**（v2.4.3）：
+**历史版本**（v2.4.4）：
 - **Bug 修复（2项）**：
   - **Bug 1**：修复已清仓股票不显示"现价"和"涨幅"
   - **Bug 2**：修复已清仓股票详情页"持仓市值"显示错误

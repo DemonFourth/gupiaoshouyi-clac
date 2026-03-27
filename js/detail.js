@@ -72,6 +72,7 @@ const Detail = {
             dilutedCostPerShare: document.getElementById('dilutedCostPerShare'),
             holdingStartDate: document.getElementById('holdingStartDate'),
             holdingDays: document.getElementById('holdingDays'),
+            holdingCycle: document.getElementById('holdingCycle'),
             holdingTooltip: document.getElementById('holdingTooltip'),
 
             // 总收益信息元素
@@ -646,6 +647,24 @@ const Detail = {
             this._domCache.holdingStartDate.textContent = holdingInfo.startDate;
             this._domCache.holdingDays.textContent = holdingInfo.holdingDays + '天';
 
+            // 更新持仓轮次
+            const cycleHistory = snapshot.cycleHistory || [];
+            const currentCycleNumber = snapshot.currentCycleNumber;
+            const isHolding = snapshot.summary.currentHolding > 0;
+            
+            if (currentCycleNumber !== null && cycleHistory.length > 0) {
+                const cycleLabel = isHolding 
+                    ? `第${currentCycleNumber}轮持仓` 
+                    : `共${cycleHistory.length}轮持仓`;
+                this._domCache.holdingCycle.textContent = cycleLabel;
+                this._domCache.holdingCycle.style.cursor = 'pointer';
+                this._domCache.holdingCycle.onclick = () => this.showCycleHistoryModal();
+            } else {
+                this._domCache.holdingCycle.textContent = '--';
+                this._domCache.holdingCycle.style.cursor = 'default';
+                this._domCache.holdingCycle.onclick = null;
+            }
+
             const totalAllReturnRate = snapshot.totalAllReturnRate;
             const totalAllReturnRateElement = this._domCache.totalAllReturnRate;
             totalAllReturnRateElement.textContent = Utils.formatNullablePercent(totalAllReturnRate, 3);
@@ -675,6 +694,18 @@ const Detail = {
             const holdingInfo = snapshot.holdingInfo;
             this._domCache.holdingStartDate.textContent = holdingInfo.startDate;
             this._domCache.holdingDays.textContent = holdingInfo.holdingDays + '天';
+
+            // 更新持仓轮次（已清仓）
+            const cycleHistory = snapshot.cycleHistory || [];
+            if (cycleHistory.length > 0) {
+                this._domCache.holdingCycle.textContent = `共${cycleHistory.length}轮持仓`;
+                this._domCache.holdingCycle.style.cursor = 'pointer';
+                this._domCache.holdingCycle.onclick = () => this.showCycleHistoryModal();
+            } else {
+                this._domCache.holdingCycle.textContent = '--';
+                this._domCache.holdingCycle.style.cursor = 'default';
+                this._domCache.holdingCycle.onclick = null;
+            }
         }
     },
 
@@ -1757,26 +1788,136 @@ const Detail = {
         setTimeout(updateOutsideLatestLabel, 0);
 
         // 调整大小时，同时重算位置
-
-                const onResize = () => {
-
-                    myChart.resize();
-
-                    updateOutsideLatestLabel();
-
-                };
-
-        
-
-                // 保存特殊的 resize 处理函数
-
-                this._chartInstances.perShareCostTrendChartResizeHandler = onResize;
-
-            }
-
+        const onResize = () => {
+            myChart.resize();
+            updateOutsideLatestLabel();
         };
 
-        
+        // 保存特殊的 resize 处理函数
+        this._chartInstances.perShareCostTrendChartResizeHandler = onResize;
+    },
 
+    /**
+     * 显示持仓周期历史弹窗
+     */
+    showCycleHistoryModal() {
+        if (!this.snapshot) return;
+
+        const cycleHistory = this.snapshot.cycleHistory || [];
+        if (cycleHistory.length === 0) {
+            StockProfitCalculator.ErrorHandler.showWarning('该股票暂无持仓周期记录');
+            return;
+        }
+
+        const stock = this.snapshot.stock;
+        const isHolding = this.snapshot.summary.currentHolding > 0;
+
+        // 计算总收益
+        const totalProfit = this.snapshot.totalAllProfit || 0;
+        const totalProfitClass = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
+        const totalProfitText = totalProfit >= 0 ? `+${totalProfit.toFixed(2)}` : totalProfit.toFixed(2);
+
+        // 构建弹窗内容
+        let contentHtml = '<div class="cycle-history-modal-content">';
+        contentHtml += `<div class="cycle-history-header">
+            <span class="header-stock-name"><strong>${stock.name}</strong> (${stock.code})</span>
+            <span class="header-total-profit">总收益 <span class="${totalProfitClass}">¥${totalProfitText}</span></span>
+        </div>`;
+        contentHtml += '<div class="cycle-history-list">';
+
+        cycleHistory.forEach(cycle => {
+            const isActive = cycle.status === 'active';
+            const statusClass = isActive ? 'cycle-item-active' : 'cycle-item-closed';
+            const statusText = isActive ? '当前' : '已结束';
+            
+            // 格式化日期范围
+            const startDate = cycle.startDate ? cycle.startDate.substring(5) : '--'; // MM-DD
+            const endDate = cycle.endDate ? cycle.endDate.substring(5) : '至今';
+            
+            // 格式化收益
+            let profit = cycle.profit || 0;
+            // 如果是当前持仓周期，加上浮动盈亏
+            if (isActive && this.snapshot.holdingProfit !== null) {
+                profit += this.snapshot.holdingProfit;
+            }
+            const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+            const profitText = profit >= 0 ? `+${profit.toFixed(2)}` : profit.toFixed(2);
+            
+            contentHtml += `
+                <div class="cycle-history-item ${statusClass}">
+                    <div class="cycle-item-header">
+                        <span class="cycle-number">第${cycle.cycle}轮</span>
+                        <span class="cycle-status">${statusText}</span>
+                    </div>
+                    <div class="cycle-item-dates">
+                        <span class="cycle-date">${startDate} ~ ${endDate}</span>
+                        <span class="cycle-days">${cycle.days}天</span>
+                    </div>
+                    <div class="cycle-item-profit">
+                        <span class="profit-label">收益</span>
+                        <span class="profit-value ${profitClass}">¥${profitText}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        contentHtml += '</div>';
+        contentHtml += '</div>';
+
+        // 显示弹窗
+        this._showModal('持仓周期历史', contentHtml);
+    },
+
+    /**
+     * 显示通用弹窗
+     * @private
+     * @param {string} title - 弹窗标题
+     * @param {string} content - 弹窗内容HTML
+     */
+    _showModal(title, content) {
+        // 检查是否已存在弹窗，如果存在则移除
+        const existingModal = document.getElementById('cycleHistoryModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // 创建弹窗
+        const modal = document.createElement('div');
+        modal.id = 'cycleHistoryModal';
+        modal.className = 'cycle-history-modal';
+        modal.innerHTML = `
+            <div class="cycle-history-modal-backdrop"></div>
+            <div class="cycle-history-modal-container">
+                <div class="cycle-history-modal-header">
+                    <h3>${title}</h3>
+                    <button class="cycle-history-modal-close" title="关闭">&times;</button>
+                </div>
+                ${content}
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // 绑定关闭事件
+        const closeBtn = modal.querySelector('.cycle-history-modal-close');
+        const backdrop = modal.querySelector('.cycle-history-modal-backdrop');
+        
+        const closeModal = () => modal.remove();
+        closeBtn.onclick = closeModal;
+        backdrop.onclick = closeModal;
+
+        // ESC 键关闭
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+};
+
+
+        
         // 挂载到命名空间
 StockProfitCalculator.Detail = Detail;

@@ -287,9 +287,24 @@ window.App = {
             holdingSortAscBtn.onclick = () => Overview.setHoldingSortDirection('asc');
         }
 
-        const viewModeBtn = document.getElementById('viewModeBtn');
-        if (viewModeBtn) {
-            viewModeBtn.onclick = () => Overview.toggleViewMode();
+        const clearedSortDescBtn = document.getElementById('clearedSortDescBtn');
+        if (clearedSortDescBtn) {
+            clearedSortDescBtn.onclick = () => Overview.setClearedSortDirection('desc');
+        }
+
+        const clearedSortAscBtn = document.getElementById('clearedSortAscBtn');
+        if (clearedSortAscBtn) {
+            clearedSortAscBtn.onclick = () => Overview.setClearedSortDirection('asc');
+        }
+
+        const viewModeBtnHolding = document.getElementById('viewModeBtnHolding');
+        if (viewModeBtnHolding) {
+            viewModeBtnHolding.onclick = () => Overview.toggleViewMode('holding');
+        }
+
+        const viewModeBtnCleared = document.getElementById('viewModeBtnCleared');
+        if (viewModeBtnCleared) {
+            viewModeBtnCleared.onclick = () => Overview.toggleViewMode('cleared');
         }
 
         const perfToggle = document.getElementById('perfToggle');

@@ -1,0 +1,15 @@
+# 第三方库
+lib/
+
+# Cloudflare Functions
+functions/
+
+# 配置文件
+*.config.js
+wrangler.toml
+
+# 测试文件（如果有）
+test/
+tests/
+*.test.js
+*.spec.js

@@ -64,7 +64,11 @@ const StockSnapshot = {
             holdingInfo,
             yearlyStats,
             firstBuyDate: buyTrades[0] ? buyTrades[0].date : null,
-            holdingCost: summary.currentCost
+            holdingCost: summary.currentCost,
+            // 持仓周期历史
+            cycleHistory: calcResult.holdingCycleHistory || [],
+            // 当前轮次编号
+            currentCycleNumber: this._getCurrentCycleNumber(calcResult.holdingCycleHistory, summary.currentHolding > 0)
         };
 
         this._cache.set(stockCode, {
@@ -282,6 +286,27 @@ const StockSnapshot = {
             profit: yearlyData[year].profit,
             trades: yearlyData[year].trades
         }));
+    },
+
+    /**
+     * 获取当前轮次编号
+     * @private
+     * @param {Array} cycleHistory - 周期历史数组
+     * @param {boolean} isHolding - 是否当前有持仓
+     * @returns {number|null} 当前轮次编号
+     */
+    _getCurrentCycleNumber(cycleHistory, isHolding) {
+        if (!cycleHistory || cycleHistory.length === 0) {
+            return null;
+        }
+        
+        // 如果当前有持仓，返回最后一个周期编号
+        if (isHolding) {
+            return cycleHistory[cycleHistory.length - 1].cycle;
+        }
+        
+        // 已清仓，返回总周期数
+        return cycleHistory.length;
     }
 };
 

@@ -495,6 +495,108 @@ const Calculator = {
         return { weeklyProfit, monthlyProfit };
     },
 
+    /**
+     * 提取持仓周期历史
+     * @private
+     * @param {Array} trades - 交易记录数组
+     * @param {Object} cycleInfo - 周期信息对象
+     * @param {boolean} isHolding - 是否当前有持仓
+     * @param {Array} sellRecords - 卖出记录数组
+     * @returns {Array} 周期历史数组
+     */
+    _extractHoldingCycleHistory(trades, cycleInfo, isHolding, sellRecords = []) {
+        if (!cycleInfo || Object.keys(cycleInfo).length === 0) {
+            return [];
+        }
+
+        const cycles = {};
+        const cycleProfits = {}; // 每个周期的收益
+        
+        // 遍历所有交易的周期信息
+        for (const [tradeId, info] of Object.entries(cycleInfo)) {
+            const cycleNum = info.cycle;
+            
+            // 初始化周期数据
+            if (!cycles[cycleNum]) {
+                cycles[cycleNum] = {
+                    cycle: cycleNum,
+                    startDate: info.cycleStart,
+                    endDate: null,
+                    status: 'closed',
+                    profit: 0 // 周期收益
+                };
+            }
+            
+            // 记录建仓日期（取最早的）
+            if (info.buyType === '建仓') {
+                if (!cycles[cycleNum].startDate || info.cycleStart < cycles[cycleNum].startDate) {
+                    cycles[cycleNum].startDate = info.cycleStart;
+                }
+            }
+            
+            // 记录清仓日期
+            if (info.sellType === '清仓') {
+                const trade = trades.find(t => t.id === parseInt(tradeId));
+                if (trade && trade.date) {
+                    if (!cycles[cycleNum].endDate || trade.date > cycles[cycleNum].endDate) {
+                        cycles[cycleNum].endDate = trade.date;
+                    }
+                }
+            }
+        }
+        
+        // 转换为数组并计算天数
+        const cycleList = Object.values(cycles).sort((a, b) => a.cycle - b.cycle);
+        
+        // 标记最后一个周期是否为当前持仓
+        if (cycleList.length > 0 && isHolding) {
+            const lastCycle = cycleList[cycleList.length - 1];
+            if (!lastCycle.endDate) {
+                lastCycle.status = 'active';
+            }
+        }
+        
+        // 计算每个周期的持仓天数
+        cycleList.forEach(cycle => {
+            if (cycle.startDate) {
+                const start = new Date(cycle.startDate);
+                const end = cycle.endDate ? new Date(cycle.endDate) : new Date();
+                cycle.days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+            } else {
+                cycle.days = 0;
+            }
+        });
+        
+        // 1. 遍历卖出记录，按周期累加卖出收益
+        sellRecords.forEach(sell => {
+            const tradeInfo = cycleInfo[sell.tradeId];
+            if (tradeInfo) {
+                const cycle = tradeInfo.cycle;
+                cycleProfits[cycle] = (cycleProfits[cycle] || 0) + sell.profit;
+            }
+        });
+        
+        // 2. 遍历交易记录，按周期累加分红和红利税
+        trades.forEach(trade => {
+            const tradeInfo = cycleInfo[trade.id];
+            if (tradeInfo) {
+                const cycle = tradeInfo.cycle;
+                if (trade.type === 'dividend') {
+                    cycleProfits[cycle] = (cycleProfits[cycle] || 0) + (trade.totalAmount || 0);
+                } else if (trade.type === 'tax') {
+                    cycleProfits[cycle] = (cycleProfits[cycle] || 0) - (trade.totalAmount || 0);
+                }
+            }
+        });
+        
+        // 3. 将收益添加到周期对象
+        cycleList.forEach(cycle => {
+            cycle.profit = cycleProfits[cycle.cycle] || 0;
+        });
+        
+        return cycleList;
+    },
+
     // ==================== 公共方法 =====================
 
     /**
@@ -574,6 +676,8 @@ const Calculator = {
             timeSeries: state.timeSeriesData,
             // 持仓周期（交易表格用）
             cycleInfo: state.tradeCycleInfo,
+            // 持仓周期历史（用于显示第几轮持仓）
+            holdingCycleHistory: this._extractHoldingCycleHistory(trades, state.tradeCycleInfo, state.currentHolding > 0, state.sellRecords),
             // 加仓对比数据（图表用）
             additionComparisons: state.additionComparisons,
             // 周期收益

@@ -181,9 +181,16 @@ const Config = {
                 dilutedCostPerShare: { label: '每股摊薄成本', default: false },
                 cycleProfit: { label: '当前持仓周期收益', default: false },
                 cycleReturnRate: { label: '当前持仓周期收益率', default: false },
-                totalProfit: { label: '总收益', default: true }
+                totalProfit: { label: '总收益', default: true },
+                clearDate: { label: '上轮清仓日期', default: true }
             },
-            cleared: { label: '已清仓', default: true }
+            cleared: {
+                holdingStartDate: { label: '本轮持仓开始', default: true },
+                holdingDays: { label: '持仓天数', default: true },
+                totalProfit: { label: '总收益', default: true },
+                totalReturnRate: { label: '总收益率', default: true },
+                clearDate: { label: '本轮清仓日期', default: true }
+            }
         },
         
         // 卡片视图显示字段配置
@@ -202,11 +209,18 @@ const Config = {
                 cycleReturnRate: { label: '当前持仓周期收益率', default: true },
                 totalProfit: { label: '总收益', default: true },
                 totalReturnRate: { label: '总收益率', default: true },
-                holdingStartDate: { label: '持仓开始', default: true },
+                holdingStartDate: { label: '本轮持仓开始', default: true },
                 holdingDays: { label: '持仓天数', default: true },
-                yearlyStats: { label: '年度统计', default: true }
+                yearlyStats: { label: '年度统计', default: true },
+                clearDate: { label: '上轮清仓日期', default: true }
             },
-            cleared: { label: '已清仓', default: true }
+            cleared: {
+                totalProfit: { label: '总收益', default: true },
+                totalReturnRate: { label: '总收益率', default: true },
+                holdingStartDate: { label: '本轮持仓开始', default: true },
+                holdingDays: { label: '持仓天数', default: true },
+                clearDate: { label: '本轮清仓日期', default: true }
+            }
         }
     },
 
@@ -254,7 +268,7 @@ const Config = {
     /**
      * 导出配置
      */
-    export: {
+    exportConfig: {
         json: {
             indent: 2,
             includeMeta: true
@@ -577,7 +591,7 @@ const Config = {
      */
     _deepMerge(target, source) {
         for (const key in source) {
-            if (source.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
                 if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
                     // 如果源属性是对象且不是数组，则递归合并
                     if (!target[key] || typeof target[key] !== 'object') {
@@ -617,6 +631,10 @@ const Config = {
             if (configStr) {
                 const config = JSON.parse(configStr);
                 this.import(config);
+                
+                // 清理已移除的字段配置（使用代码中的默认配置验证）
+                this._cleanupRemovedFields();
+                
                 return true;
             }
             return false;
@@ -624,6 +642,57 @@ const Config = {
             console.error('加载配置失败:', error);
             return false;
         }
+    },
+
+    /**
+     * 清理已移除的字段配置
+     * 当配置结构变更时，清理 localStorage 中保存的旧字段
+     * @private
+     */
+    _cleanupRemovedFields() {
+        // 定义默认字段配置的有效键
+        const defaultFieldKeys = {
+            'listFields.holding': ['stockName', 'stockCode', 'holding', 'marketValue', 'cost', 'startDate', 'holdingDays', 'currentPrice', 'dailyChange', 'costPerShare', 'dilutedCostPerShare', 'cycleProfit', 'cycleReturnRate', 'totalProfit', 'clearDate'],
+            'listFields.cleared': ['holdingStartDate', 'holdingDays', 'totalProfit', 'totalReturnRate', 'clearDate'],
+            'cardFields.holding': ['stockName', 'stockCode', 'holding', 'marketValue', 'cost', 'costPerShare', 'dilutedCostPerShare', 'currentPrice', 'dailyChange', 'cycleProfit', 'cycleReturnRate', 'totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'yearlyStats', 'clearDate'],
+            'cardFields.cleared': ['totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'clearDate']
+        };
+
+        // 清理默认配置中的无效字段
+        for (const [path, validKeys] of Object.entries(defaultFieldKeys)) {
+            const fieldConfig = this.get(`ui.${path}`);
+            if (fieldConfig && typeof fieldConfig === 'object') {
+                for (const key of Object.keys(fieldConfig)) {
+                    if (!validKeys.includes(key)) {
+                        delete fieldConfig[key];
+                        console.log(`已清理无效字段配置: ui.${path}.${key}`);
+                    }
+                }
+            }
+        }
+
+        // 清理用户偏好设置中的无效字段
+        const preferencesPaths = [
+            { path: 'preferences.listViewFieldsHolding', validKeys: defaultFieldKeys['listFields.holding'] },
+            { path: 'preferences.listViewFieldsCleared', validKeys: defaultFieldKeys['listFields.cleared'] },
+            { path: 'preferences.cardViewFieldsHolding', validKeys: defaultFieldKeys['cardFields.holding'] },
+            { path: 'preferences.cardViewFieldsCleared', validKeys: defaultFieldKeys['cardFields.cleared'] }
+        ];
+
+        for (const { path, validKeys } of preferencesPaths) {
+            const preferences = this.get(`ui.${path}`);
+            if (preferences && typeof preferences === 'object') {
+                for (const key of Object.keys(preferences)) {
+                    if (!validKeys.includes(key)) {
+                        delete preferences[key];
+                        console.log(`已清理无效用户偏好: ui.${path}.${key}`);
+                    }
+                }
+            }
+        }
+
+        // 保存清理后的配置
+        this.save();
     },
 
     /**

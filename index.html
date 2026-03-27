@@ -187,11 +187,11 @@
                         <button type="button" id="holdingSortDescBtn" class="sort-direction-btn active" title="降序">↓</button>
                         <button type="button" id="holdingSortAscBtn" class="sort-direction-btn" title="升序">↑</button>
                         </div>
-                        <button type="button" id="viewModeBtn" class="btn btn-icon" title="切换视图">
+                        <button type="button" id="viewModeBtnHolding" class="btn btn-icon" title="切换视图">
                             <span class="view-icon-grid">▦</span>
                             <span class="view-icon-list" style="display:none;">☰</span>
                         </button>
-                        <button type="button" id="fieldSettingsBtn" class="btn btn-icon" title="显示设置">
+                        <button type="button" id="fieldSettingsBtnHolding" class="btn btn-icon" title="显示设置">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
@@ -210,13 +210,25 @@
                     <h2>已清仓</h2>
                     <div class="section-header-right">
                         <select id="clearedSortSelect" class="sort-select" onchange="Overview.onSortChange('cleared')">
-                            <option value="default">默认排序</option>
-                            <option value="profit-desc">收益降序</option>
-                            <option value="profit-asc">收益升序</option>
+                            <option value="clear-date">清仓日期</option>
+                            <option value="profit">收益</option>
+                            <option value="return">收益率</option>
                             <option value="first-buy">建仓时间</option>
-                            <option value="cost-desc">持仓成本降序</option>
-                            <option value="cost-asc">持仓成本升序</option>
                         </select>
+                        <div class="sort-direction-group" aria-label="排序方向">
+                            <button type="button" id="clearedSortDescBtn" class="sort-direction-btn active" title="降序">↓</button>
+                            <button type="button" id="clearedSortAscBtn" class="sort-direction-btn" title="升序">↑</button>
+                        </div>
+                        <button type="button" id="viewModeBtnCleared" class="btn btn-icon" title="切换视图">
+                            <span class="view-icon-grid">▦</span>
+                            <span class="view-icon-list" style="display:none;">☰</span>
+                        </button>
+                        <button type="button" id="fieldSettingsBtnCleared" class="btn btn-icon" title="显示设置">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div id="clearedStocksList" class="stock-cards-container">
@@ -325,6 +337,10 @@
                     <div class="detail-summary-item">
                         <span class="detail-summary-label">持有天数</span>
                         <span class="detail-summary-value" id="holdingDays"><span class="loading">--</span></span>
+                    </div>
+                    <div class="detail-summary-item">
+                        <span class="detail-summary-label">持仓轮次</span>
+                        <span class="detail-summary-value detail-cycle-link" id="holdingCycle">--</span>
                     </div>
                 </div>
                 <!-- 提示已移到顶部工具条（#priceRefreshStatus） -->

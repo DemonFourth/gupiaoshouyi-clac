@@ -1,0 +1,25 @@
+{
+  "name": "gupiaoshouyi-clac",
+  "version": "2.4.4",
+  "description": "股票投资收益计算工具 - 基于 FIFO 算法的股票收益计算器",
+  "main": "index.html",
+  "scripts": {
+    "lint": "eslint js/**/*.js",
+    "lint:fix": "eslint js/**/*.js --fix",
+    "lint:check": "eslint js/**/*.js --max-warnings 0"
+  },
+  "keywords": [
+    "stock",
+    "profit",
+    "calculator",
+    "FIFO"
+  ],
+  "author": "iFlow CLI",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

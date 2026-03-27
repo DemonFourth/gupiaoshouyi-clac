@@ -1956,6 +1956,20 @@
             color: inherit; /* 不改颜色 */
         }
 
+        /* 详情页持仓轮次链接样式 */
+        .detail-cycle-link {
+            cursor: pointer;
+            color: #667eea;
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            text-underline-offset: 3px;
+            transition: color 0.2s ease;
+        }
+
+        .detail-cycle-link:hover {
+            color: #764ba2;
+        }
+
         @media (max-width: 1200px) {
             .detail-summary-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3475,11 +3489,469 @@
 }
 
 #syncDiffModal .btn-outline {
+
     background: white;
+
     color: #666;
+
     border: 1px solid #ddd;
+
 }
 
+
+
 #syncDiffModal .btn-outline:hover {
+
     background: #f5f5f5;
+
 }
+
+
+
+/* ==================== 持仓轮次样式 ==================== */
+
+
+
+/* 轮次可点击样式 */
+
+.stock-card-cycle-item {
+
+    cursor: pointer;
+
+}
+
+
+
+.stock-card-cycle-link {
+
+    color: #667eea;
+
+    text-decoration: underline;
+
+    cursor: pointer;
+
+}
+
+
+
+.stock-card-cycle-link:hover {
+
+    color: #5a6fd6;
+
+}
+
+
+
+/* ==================== 持仓周期历史弹窗样式 ==================== */
+
+
+
+.cycle-history-modal {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    z-index: 10000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+
+.cycle-history-modal-backdrop {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    background: rgba(0, 0, 0, 0.5);
+
+}
+
+
+
+.cycle-history-modal-container {
+
+    position: relative;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    max-width: 400px;
+
+    width: 90%;
+
+    max-height: 80vh;
+
+    overflow: hidden;
+
+    animation: modalFadeIn 0.2s ease-out;
+
+}
+
+
+
+@keyframes modalFadeIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: scale(0.95);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+
+.cycle-history-modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 16px 20px;
+
+    border-bottom: 1px solid #e0e0e0;
+
+}
+
+
+
+.cycle-history-modal-header h3 {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    color: #333;
+
+}
+
+
+
+.cycle-history-modal-close {
+
+    width: 32px;
+
+    height: 32px;
+
+    border: none;
+
+    background: none;
+
+    font-size: 24px;
+
+    color: #999;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+
+.cycle-history-modal-close:hover {
+
+    background: #f0f0f0;
+
+    color: #666;
+
+}
+
+
+
+.cycle-history-modal-content {
+
+    padding: 16px 20px;
+
+    max-height: 60vh;
+
+    overflow-y: auto;
+
+}
+
+
+
+.cycle-history-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: 14px;
+
+    color: #666;
+
+    margin-bottom: 16px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #f0f0f0;
+
+}
+
+
+
+.header-stock-name {
+
+    color: #333;
+
+}
+
+
+
+.header-total-profit {
+
+    font-size: 13px;
+
+    color: #888;
+
+}
+
+
+
+.header-total-profit .profit-positive {
+
+    color: #f44336;
+
+    font-weight: 600;
+
+}
+
+
+
+.header-total-profit .profit-negative {
+
+    color: #4caf50;
+
+    font-weight: 600;
+
+}
+
+
+
+.cycle-history-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+
+.cycle-history-item {
+
+    padding: 12px 16px;
+
+    border-radius: 8px;
+
+    background: #f8f9fa;
+
+    border: 1px solid #e9ecef;
+
+}
+
+
+
+.cycle-item-active {
+
+    background: #e8f5e9;
+
+    border-color: #c8e6c9;
+
+}
+
+
+
+.cycle-item-closed {
+
+    background: #f8f9fa;
+
+}
+
+
+
+.cycle-item-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+
+}
+
+
+
+.cycle-number {
+
+    font-weight: 600;
+
+    color: #333;
+
+    font-size: 14px;
+
+}
+
+
+
+.cycle-status {
+
+    font-size: 12px;
+
+    padding: 2px 8px;
+
+    border-radius: 10px;
+
+    background: #667eea;
+
+    color: white;
+
+}
+
+
+
+.cycle-item-active .cycle-status {
+
+    background: #4caf50;
+
+}
+
+
+
+.cycle-item-dates {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: 13px;
+
+    color: #666;
+
+}
+
+
+
+.cycle-date {
+
+    color: #888;
+
+}
+
+
+
+.cycle-days {
+
+    color: #667eea;
+
+    font-weight: 500;
+
+}
+
+
+
+.cycle-item-profit {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-top: 8px;
+
+    padding-top: 8px;
+
+    border-top: 1px dashed #dee2e6;
+
+    font-size: 13px;
+
+}
+
+
+
+.profit-label {
+
+    color: #888;
+
+}
+
+
+
+.profit-value {
+
+    font-weight: 600;
+
+    font-size: 14px;
+
+}
+
+
+
+.profit-positive {
+
+    color: #f44336;
+
+}
+
+
+
+.profit-negative {
+
+    color: #4caf50;
+
+}
+
+
+
+
