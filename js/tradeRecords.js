@@ -428,7 +428,7 @@ const TradeRecords = {
             // 使用月份范围（本月）
             const monthStr = (month + 1).toString().padStart(2, '0');
             queryStartDate = new Date(`${year}-${monthStr}-01T00:00:00`);
-            queryEndDate = new Date(`${year}-${monthStr}-${new Date(year, month, 0).getDate()}T23:59:59.999`);
+            queryEndDate = new Date(`${year}-${monthStr}-${new Date(year, month + 1, 0).getDate()}T23:59:59.999`);
             console.log('使用月份范围：', queryStartDate, '-', queryEndDate);
         } else {
             // 全年

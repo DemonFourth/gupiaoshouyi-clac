@@ -1409,7 +1409,7 @@ const Calculator = {
         const startDate = new Date(`${year}-${monthStr}-01T00:00:00`);
         
         const endDate = month ?
-            new Date(`${year}-${monthStr}-${new Date(year, month, 0).getDate()}T23:59:59.999`) :
+            new Date(`${year}-${monthStr}-${new Date(year, month + 1, 0).getDate()}T23:59:59.999`) :
             new Date(`${year + 1}-01-01T23:59:59.999`);
 
         console.log('查询时间范围：');

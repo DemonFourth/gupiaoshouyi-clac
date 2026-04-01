@@ -4,10 +4,15 @@
             box-sizing: border-box;
         }
 
+        /* 确保 html 和 body 的滚动上下文正确，使 sticky 定位生效 */
+        html {
+            height: 100%;
+        }
+
         body {
             font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            min-height: 100%;
             padding: 10px 12px;
         }
 
@@ -111,6 +116,7 @@
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             padding: 24px;
+            overflow: visible;  /* 确保 sticky 定位正常工作 */
         }
 
         /* 顶部标题栏 */
@@ -123,6 +129,14 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 只在详情页和交易记录页固定顶部 */
+        body.page-detail .header-bar,
+        body.page-trade-records .header-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header-right-actions {

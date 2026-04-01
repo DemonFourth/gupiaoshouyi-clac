@@ -156,6 +156,20 @@ const Router = {
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-detail');
             document.body.classList.remove('page-trade-records');
+            
+            // 调试日志：检查 sticky 相关状态
+            const headerBar = document.querySelector('.header-bar');
+            if (headerBar) {
+                const computedStyle = window.getComputedStyle(headerBar);
+                console.log('[DetailPage Sticky Debug]', {
+                    bodyClasses: document.body.className,
+                    headerBarPosition: computedStyle.position,
+                    headerBarTop: computedStyle.top,
+                    headerBarZIndex: computedStyle.zIndex,
+                    containerOverflow: window.getComputedStyle(document.querySelector('.container')).overflow,
+                    bodyOverflow: window.getComputedStyle(document.body).overflow
+                });
+            }
         }
 
         // 显示悬浮刷新股价按钮（详情页面）
@@ -390,6 +404,20 @@ const Router = {
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-trade-records');
             document.body.classList.remove('page-detail');
+            
+            // 调试日志：检查 sticky 相关状态
+            const headerBar = document.querySelector('.header-bar');
+            if (headerBar) {
+                const computedStyle = window.getComputedStyle(headerBar);
+                console.log('[TradeRecords Sticky Debug]', {
+                    bodyClasses: document.body.className,
+                    headerBarPosition: computedStyle.position,
+                    headerBarTop: computedStyle.top,
+                    headerBarZIndex: computedStyle.zIndex,
+                    containerOverflow: window.getComputedStyle(document.querySelector('.container')).overflow,
+                    bodyOverflow: window.getComputedStyle(document.body).overflow
+                });
+            }
         }
 
         // 显示返回按钮

@@ -1774,11 +1774,40 @@ const Overview = {
         // 获取所有股票的股价（包括已清仓），让已清仓股票也能显示"现价"和"涨幅"
         const stocks = this.stocks;
 
-        // 分批获取，每次最多5个
-        const batchSize = 5;
+        if (stocks.length === 0) {
+            ErrorHandler.showSuccess('刷新完成');
+            return;
+        }
+
+        // 分批获取，每次最多10个（批量请求可以增加每批数量）
+        const batchSize = 10;
         for (let i = 0; i < stocks.length; i += batchSize) {
             const batch = stocks.slice(i, i + batchSize);
-            await Promise.all(batch.map(stock => this.fetchStockPrice(stock.code)));
+            const codes = batch.map(s => s.code);
+
+            try {
+                // 使用批量获取
+                const quotes = await StockProfitCalculator.StockPriceAPI.fetchPrices(codes);
+                
+                // 更新股价数据和快照
+                for (const stock of batch) {
+                    const quote = quotes.get(stock.code);
+                    if (quote && Number.isFinite(quote.price)) {
+                        this.stockPrices[stock.code] = {
+                            price: quote.price,
+                            change: quote.change,
+                            changePercent: quote.changePercent
+                        };
+                        
+                        const StockSnapshot = StockProfitCalculator.StockSnapshot;
+                        if (!this.stockSnapshots[stock.code]) {
+                            this.stockSnapshots[stock.code] = await StockSnapshot.getBaseSnapshot(stock);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('批量获取股价失败:', error);
+            }
 
             // 更新汇总统计
             this.renderSummary();
@@ -1790,7 +1819,7 @@ const Overview = {
     },
 
     /**
-     * 获取单个股票价格
+     * 获取单个股票价格（保留用于详情页等单股票场景）
      */
     async fetchStockPrice(code) {
         try {
