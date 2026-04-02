@@ -61,6 +61,14 @@ const Overview = {
             overviewWeeklyProfit: document.getElementById('overviewWeeklyProfit'),
             overviewMonthlyProfit: document.getElementById('overviewMonthlyProfit'),
 
+            // 历史累计统计元素
+            overviewTotalInvestment: document.getElementById('overviewTotalInvestment'),
+            overviewNetInvestment: document.getElementById('overviewNetInvestment'),
+            overviewOverallProfit: document.getElementById('overviewOverallProfit'),
+            overviewOverallReturnRate: document.getElementById('overviewOverallReturnRate'),
+            overviewTotalFee: document.getElementById('overviewTotalFee'),
+            overviewTurnoverRate: document.getElementById('overviewTurnoverRate'),
+
             // 持仓统计元素
             overviewHoldingCount: document.getElementById('overviewHoldingCount'),
             overviewProfitCount: document.getElementById('overviewProfitCount'),
@@ -445,6 +453,12 @@ const Overview = {
         let totalWeeklyProfit = 0;     // 本周收益
         let totalMonthlyProfit = 0;    // 本月收益
 
+        // 历史累计统计
+        let totalInvestment = 0;       // 全部投入资金
+        let totalSellAmount = 0;       // 总卖出金额
+        let totalFee = 0;              // 总手续费
+        let overallProfit = 0;         // 整体收益（已实现 + 浮动盈亏）
+
         // 持仓股票统计数据
         let holdingCount = 0;          // 持仓股票数量
         let profitCount = 0;           // 盈利股票数量
@@ -464,6 +478,18 @@ const Overview = {
 
             totalWeeklyProfit += snapshot.periodProfit.weeklyProfit;
             totalMonthlyProfit += snapshot.periodProfit.monthlyProfit;
+
+            // 计算历史累计统计
+            totalInvestment += summary.totalBuyCost || 0;
+            totalSellAmount += summary.totalSellAmount || 0;
+            totalFee += summary.totalFee || 0;
+            if (summary.currentHolding > 0) {
+                // 持仓中：使用浮动盈亏（holdingProfit 已包含分红）
+                overallProfit += snapshot.holdingProfit || 0;
+            } else {
+                // 已清仓：使用已实现收益
+                overallProfit += summary.totalProfit || 0;
+            }
 
             // 持仓股票统计
             if (summary.currentHolding > 0) {
@@ -559,6 +585,40 @@ const Overview = {
         const monthlyProfitElement = this._domCache.overviewMonthlyProfit;
         monthlyProfitElement.textContent = '¥' + totalMonthlyProfit.toFixed(2);
         monthlyProfitElement.className = 'overview-summary-value ' + (totalMonthlyProfit >= 0 ? 'profit' : 'loss');
+
+        // 更新UI - 历史累计统计（使用大数字格式化，自动添加tooltip）
+        const totalInvestmentFmt = Utils.formatLargeNumberWithTooltip(totalInvestment);
+        this._domCache.overviewTotalInvestment.textContent = totalInvestmentFmt.display;
+        this._domCache.overviewTotalInvestment.title = totalInvestmentFmt.converted ? totalInvestmentFmt.full : '';
+        
+        const overallProfitElement = this._domCache.overviewOverallProfit;
+        const overallProfitFmt = Utils.formatLargeNumberWithTooltip(overallProfit);
+        overallProfitElement.textContent = overallProfitFmt.display;
+        overallProfitElement.title = overallProfitFmt.converted ? overallProfitFmt.full : '';
+        overallProfitElement.className = 'overview-summary-value ' + (overallProfit >= 0 ? 'profit' : 'loss');
+
+        // 计算衍生指标
+        const netInvestment = totalInvestment - totalSellAmount;  // 净投入资金
+        const overallReturnRate = totalInvestment > 0 ? (overallProfit / totalInvestment * 100) : 0;  // 整体收益率
+        const turnoverRate = totalInvestment > 0 ? (totalSellAmount / totalInvestment * 100) : 0;  // 资金周转率
+
+        // 更新UI - 净投入资金
+        const netInvestmentFmt = Utils.formatLargeNumberWithTooltip(netInvestment);
+        this._domCache.overviewNetInvestment.textContent = netInvestmentFmt.display;
+        this._domCache.overviewNetInvestment.title = netInvestmentFmt.converted ? netInvestmentFmt.full : '';
+
+        // 更新UI - 整体收益率
+        const overallReturnRateElement = this._domCache.overviewOverallReturnRate;
+        overallReturnRateElement.textContent = overallReturnRate.toFixed(3) + '%';
+        overallReturnRateElement.className = 'overview-summary-value ' + (overallReturnRate >= 0 ? 'profit' : 'loss');
+
+        // 更新UI - 总手续费
+        const totalFeeFmt = Utils.formatLargeNumberWithTooltip(totalFee);
+        this._domCache.overviewTotalFee.textContent = totalFeeFmt.display;
+        this._domCache.overviewTotalFee.title = totalFeeFmt.converted ? totalFeeFmt.full : '';
+
+        // 更新UI - 资金周转率
+        this._domCache.overviewTurnoverRate.textContent = turnoverRate.toFixed(3) + '%';
 
         // 添加点击事件监听：本周收益
         this._setupProfitClickEvent(weeklyProfitElement, 'week');
@@ -1064,19 +1124,21 @@ const Overview = {
             }
             
             if (fields.marketValue?.visible) {
+                const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
                 metricsHtml += `
                     <div class="stock-card-metric-item">
                         <span class="stock-card-metric-label">持仓市值</span>
-                        <span class="stock-card-metric-value">${marketValue !== null ? '¥' + marketValue.toFixed(2) : '--'}</span>
+                        <span class="stock-card-metric-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvFmt ? mvFmt.display : '--'}</span>
                     </div>
                 `;
             }
             
             if (fields.cost?.visible) {
+                const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
                 metricsHtml += `
                     <div class="stock-card-metric-item">
                         <span class="stock-card-metric-label">持仓成本</span>
-                        <span class="stock-card-metric-value">¥${summary.currentCost.toFixed(2)}</span>
+                        <span class="stock-card-metric-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span>
                     </div>
                 `;
             }
@@ -1148,11 +1210,12 @@ const Overview = {
             let profitHtml = '';
             
             if (fields.cycleProfit?.visible) {
+                const cycleProfitFmt = cycleProfit !== null ? Utils.formatLargeNumberWithTooltip(cycleProfit) : null;
                 profitHtml += `
                     <div class="stock-card-metric-item stock-card-metric-item-emphasis">
                         <span class="stock-card-metric-label">当前持仓周期收益</span>
-                        <span class="stock-card-metric-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}">
-                            ${cycleProfit !== null ? '¥' + cycleProfit.toFixed(2) : '--'}
+                        <span class="stock-card-metric-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}" ${cycleProfitFmt && cycleProfitFmt.converted ? 'title="' + cycleProfitFmt.full + '"' : ''}>
+                            ${cycleProfitFmt ? cycleProfitFmt.display : '--'}
                         </span>
                     </div>
                 `;
@@ -1170,10 +1233,11 @@ const Overview = {
             }
             
             if (fields.totalProfit?.visible) {
+                const totalProfitFmt = Utils.formatLargeNumberWithTooltip(totalAllProfit);
                 profitHtml += `
                     <div class="stock-card-metric-item stock-card-metric-item-emphasis">
                         <span class="stock-card-metric-label">总收益</span>
-                        <span class="stock-card-metric-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}">¥${totalAllProfit.toFixed(2)}</span>
+                        <span class="stock-card-metric-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmt.converted ? 'title="' + totalProfitFmt.full + '"' : ''}>${totalProfitFmt.display}</span>
                     </div>
                 `;
             }
@@ -1380,19 +1444,21 @@ const Overview = {
         }
         
         if (fields.marketValue?.visible) {
+            const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
             fieldsHtml += `
                 <div class="stock-card-list-item">
                     <span class="stock-card-list-label">持仓市值</span>
-                    <span class="stock-card-list-value">${marketValue !== null ? '¥' + marketValue.toFixed(2) : '--'}</span>
+                    <span class="stock-card-list-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvFmt ? mvFmt.display : '--'}</span>
                 </div>
             `;
         }
         
         if (fields.cost?.visible) {
+            const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
             fieldsHtml += `
                 <div class="stock-card-list-item">
                     <span class="stock-card-list-label">持仓成本</span>
-                    <span class="stock-card-list-value">¥${summary.currentCost.toFixed(2)}</span>
+                    <span class="stock-card-list-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span>
                 </div>
             `;
         }
@@ -1478,11 +1544,12 @@ const Overview = {
         }
         
         if (fields.cycleProfit?.visible) {
+            const cycleProfitFmt = cycleProfit !== null ? Utils.formatLargeNumberWithTooltip(cycleProfit) : null;
             fieldsHtml += `
                 <div class="stock-card-list-item">
                     <span class="stock-card-list-label">当前持仓周期收益</span>
-                    <span class="stock-card-list-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}">
-                        ${cycleProfit !== null ? (cycleProfit >= 0 ? '+' : '') + '¥' + cycleProfit.toFixed(2) : '--'}
+                    <span class="stock-card-list-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}" ${cycleProfitFmt && cycleProfitFmt.converted ? 'title="' + cycleProfitFmt.full + '"' : ''}>
+                        ${cycleProfitFmt ? (cycleProfit >= 0 ? '+' : '') + cycleProfitFmt.display : '--'}
                     </span>
                 </div>
             `;
@@ -1500,11 +1567,12 @@ const Overview = {
         }
         
         if (fields.totalProfit?.visible) {
+            const totalProfitFmt = Utils.formatLargeNumberWithTooltip(totalAllProfit);
             fieldsHtml += `
                 <div class="stock-card-list-item">
                     <span class="stock-card-list-label">总收益</span>
-                    <span class="stock-card-list-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}">
-                        ${profitSign}¥${totalAllProfit.toFixed(2)}
+                    <span class="stock-card-list-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmt.converted ? 'title="' + totalProfitFmt.full + '"' : ''}>
+                        ${profitSign}${totalProfitFmt.display}
                     </span>
                 </div>
             `;
@@ -2298,10 +2366,13 @@ const Overview = {
         const day = now.getDay();
         const diff = now.getDate() - day + (day === 0 ? -6 : 1); // 调整到周一
 
-        const monday = new Date(now.setDate(diff));
+        // 创建副本，避免修改原对象
+        const monday = new Date(now);
+        monday.setDate(diff);
         monday.setHours(0, 0, 0, 0);
 
-        const sunday = new Date(now.setDate(diff + 6));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
         sunday.setHours(23, 59, 59, 999);
 
         return { start: monday, end: sunday };

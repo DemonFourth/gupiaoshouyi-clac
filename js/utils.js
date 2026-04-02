@@ -52,6 +52,82 @@ const Utils = {
     },
 
     /**
+     * 格式化大数字，自动转换单位（万、亿）
+     * @param {number} value - 数值
+     * @param {number} digits - 保留小数位
+     * @returns {string} 格式化后的字符串（如 ¥1.23万、¥1.23亿）
+     */
+    formatLargeNumber(value, digits = 2) {
+        const num = parseFloat(value);
+        if (isNaN(num)) return '¥0.00';
+
+        const absNum = Math.abs(num);
+        const sign = num < 0 ? '-' : '';
+
+        if (absNum >= 100000000) {
+            // 亿元
+            return sign + '¥' + (absNum / 100000000).toFixed(digits) + '亿';
+        } else if (absNum >= 10000) {
+            // 万元
+            return sign + '¥' + (absNum / 10000).toFixed(digits) + '万';
+        } else {
+            // 原样显示
+            return sign + '¥' + absNum.toLocaleString('zh-CN', {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
+            });
+        }
+    },
+
+    /**
+     * 格式化大数字并返回完整信息（用于tooltip）
+     * @param {number} value - 数值
+     * @param {number} digits - 保留小数位
+     * @returns {Object} {display: 显示值, full: 完整值, converted: 是否转换}
+     */
+    formatLargeNumberWithTooltip(value, digits = 2) {
+        const num = parseFloat(value);
+        if (isNaN(num)) {
+            return { display: '¥0.00', full: '¥0.00', converted: false };
+        }
+
+        const absNum = Math.abs(num);
+        const sign = num < 0 ? '-' : '';
+        const fullValue = sign + '¥' + absNum.toLocaleString('zh-CN', {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits
+        });
+
+        // 获取用户配置的阈值
+        const threshold = Config.get('ui.preferences.largeNumberThreshold', 10000);
+
+        // 阈值为0时禁用转换
+        if (threshold <= 0) {
+            return { display: fullValue, full: fullValue, converted: false };
+        }
+
+        // 根据阈值判断是否需要转换
+        if (absNum >= 100000000) {
+            // 亿元
+            return {
+                display: sign + '¥' + (absNum / 100000000).toFixed(digits) + '亿',
+                full: fullValue,
+                converted: true
+            };
+        } else if (absNum >= threshold) {
+            // 万元（根据阈值）
+            return {
+                display: sign + '¥' + (absNum / 10000).toFixed(digits) + '万',
+                full: fullValue,
+                converted: true
+            };
+        } else {
+            // 未超过阈值，原样显示
+            return { display: fullValue, full: fullValue, converted: false };
+        }
+    },
+
+    /**
      * 格式化可空百分比，空值时返回占位符
      * @param {number|null|undefined} value - 数值
      * @param {number} digits - 保留小数位

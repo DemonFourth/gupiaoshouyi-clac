@@ -328,6 +328,38 @@ window.App = {
             };
         }
 
+        // 大数字转换阈值设置
+        const largeNumberThreshold = document.getElementById('largeNumberThreshold');
+        const saveDisplaySettingsBtn = document.getElementById('saveDisplaySettingsBtn');
+        if (largeNumberThreshold) {
+            largeNumberThreshold.value = Config.get('ui.preferences.largeNumberThreshold', 10000);
+            largeNumberThreshold.onchange = () => {
+                let value = parseInt(largeNumberThreshold.value, 10);
+                if (isNaN(value) || value < 0) {
+                    largeNumberThreshold.value = 0;
+                    ErrorHandler.showWarning('阈值不能为负数，已自动调整为0');
+                }
+            };
+        }
+
+        // 显示设置保存按钮
+        if (saveDisplaySettingsBtn) {
+            saveDisplaySettingsBtn.onclick = async () => {
+                // 保存持仓明细开关
+                if (holdingDetailToggle) {
+                    Config.set('ui.preferences.showHoldingDetail', holdingDetailToggle.checked);
+                }
+                // 保存大数字转换阈值
+                if (largeNumberThreshold) {
+                    const thresholdValue = parseInt(largeNumberThreshold.value, 10);
+                    Config.set('ui.preferences.largeNumberThreshold', isNaN(thresholdValue) ? 10000 : thresholdValue);
+                }
+                Config.save();
+                ErrorHandler.showSuccess('显示设置已保存');
+                await this.updateAll(); // 刷新当前页面
+            };
+        }
+
         // 分页设置
         const paginationThreshold = document.getElementById('paginationThreshold');
         const paginationItemsPerPage = document.getElementById('paginationItemsPerPage');

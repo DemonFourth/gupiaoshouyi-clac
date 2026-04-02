@@ -539,12 +539,16 @@ const TradeRecords = {
         const countElement = this._domCache.tradeRecordsCount;
         const totalFeeElement = this._domCache.tradeRecordsTotalFee;
 
-        totalProfitElement.textContent = '¥' + result.totalProfit.toFixed(2);
+        const totalProfitFmt = Utils.formatLargeNumberWithTooltip(result.totalProfit);
+        totalProfitElement.textContent = totalProfitFmt.display;
+        totalProfitElement.title = totalProfitFmt.converted ? totalProfitFmt.full : '';
         totalProfitElement.className = 'trade-records-summary-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
 
         countElement.textContent = result.tradeCount;
 
-        totalFeeElement.textContent = '¥' + result.totalFee.toFixed(2);
+        const totalFeeFmt = Utils.formatLargeNumberWithTooltip(result.totalFee);
+        totalFeeElement.textContent = totalFeeFmt.display;
+        totalFeeElement.title = totalFeeFmt.converted ? totalFeeFmt.full : '';
     },
 
     /**

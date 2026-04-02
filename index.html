@@ -89,29 +89,56 @@
             <div class="overview-summary">
                 <div class="overview-summary-title">全部股票汇总</div>
                 <div class="overview-summary-grid">
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="持仓股票数量 × 最新股价">
                         <span class="overview-summary-label">当前持仓总市值</span>
                         <span class="overview-summary-value" id="overviewTotalMarketValue">¥0.00</span>
                     </div>
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="持仓股票的剩余成本（FIFO计算）">
                         <span class="overview-summary-label">当前持仓总成本</span>
                         <span class="overview-summary-value" id="overviewTotalHoldingCost">¥0.00</span>
                     </div>
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="持仓市值 - 持仓成本（浮动盈亏）">
                         <span class="overview-summary-label">当前持仓总收益</span>
                         <span class="overview-summary-value" id="overviewTotalProfit">¥0.00</span>
                     </div>
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="持仓收益 ÷ 持仓成本">
                         <span class="overview-summary-label">当前持仓总收益率</span>
                         <span class="overview-summary-value" id="overviewTotalReturnRate">0.00%</span>
                     </div>
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="本周内卖出收益 + 分红 - 红利税">
                         <span class="overview-summary-label">本周收益</span>
                         <span class="overview-summary-value" id="overviewWeeklyProfit">¥0.00</span>
                     </div>
-                    <div class="overview-summary-item">
+                    <div class="overview-summary-item" title="本月内卖出收益 + 分红 - 红利税">
                         <span class="overview-summary-label">本月收益</span>
                         <span class="overview-summary-value" id="overviewMonthlyProfit">¥0.00</span>
+                    </div>
+                </div>
+                <!-- 历史累计统计 -->
+                <div class="overview-summary-grid history-summary-grid">
+                    <div class="overview-summary-item" title="所有股票历史买入总金额（含手续费、红利税）">
+                        <span class="overview-summary-label">全部投入资金</span>
+                        <span class="overview-summary-value" id="overviewTotalInvestment">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item" title="实际占用资金 = 全部投入 - 已回收资金">
+                        <span class="overview-summary-label">净投入资金</span>
+                        <span class="overview-summary-value" id="overviewNetInvestment">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item" title="持仓浮动盈亏 + 已清仓已实现收益">
+                        <span class="overview-summary-label">整体收益</span>
+                        <span class="overview-summary-value" id="overviewOverallProfit">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item" title="整体收益 ÷ 全部投入资金">
+                        <span class="overview-summary-label">整体收益率</span>
+                        <span class="overview-summary-value" id="overviewOverallReturnRate">0.00%</span>
+                    </div>
+                    <div class="overview-summary-item" title="所有交易的佣金、印花税等费用总和">
+                        <span class="overview-summary-label">总手续费</span>
+                        <span class="overview-summary-value" id="overviewTotalFee">¥0.00</span>
+                    </div>
+                    <div class="overview-summary-item" title="总卖出金额 ÷ 全部投入资金，反映资金使用效率">
+                        <span class="overview-summary-label">资金周转率</span>
+                        <span class="overview-summary-value" id="overviewTurnoverRate">0.00%</span>
                     </div>
                 </div>
                 <div class="overview-stock-stats">
@@ -735,7 +762,10 @@
             </div>
             <div class="settings-body">
                 <div class="settings-section">
-                    <h3>显示设置</h3>
+                    <div class="settings-section-header">
+                        <h3>显示设置</h3>
+                        <button id="saveDisplaySettingsBtn" class="btn-save-settings">保存</button>
+                    </div>
                     <div class="storage-info">
                         <div class="storage-item">
                             <span class="storage-label">持仓明细：</span>
@@ -744,8 +774,13 @@
                                 <span class="perf-switch-slider"></span>
                             </label>
                         </div>
+                        <div class="storage-item">
+                            <span class="storage-label">大数字转换阈值：</span>
+                            <input type="number" id="largeNumberThreshold" class="pagination-input" min="0" value="10000" title="超过此值自动转换为万/亿单位">
+                            <span class="storage-unit">元</span>
+                        </div>
                     </div>
-                    <p class="settings-hint">开启后会在详情页显示持仓明细表格，包含FIFO先进先出成本计算详情。</p>
+                    <p class="settings-hint">持仓明细：开启后会在详情页显示持仓明细表格。<br>大数字转换阈值：超过此值自动转为"万"或"亿"单位，设为0禁用转换。鼠标悬浮显示完整数值。</p>
                 </div>
                 <div class="settings-section">
                     <div class="settings-section-header">

@@ -163,7 +163,8 @@ const Config = {
             minValue: 5         // 最小值限制
         },
         preferences: {
-            showHoldingDetail: true
+            showHoldingDetail: true,
+            largeNumberThreshold: 10000  // 大数字转换阈值，超过此值自动转为"万"或"亿"单位
         },
         
         // 列表视图显示字段配置
