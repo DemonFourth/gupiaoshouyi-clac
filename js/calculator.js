@@ -42,6 +42,8 @@ const Calculator = {
             currentCycleProfit: 0,
             currentCycleDividend: 0,  // 当前持仓周期内的分红总和
             currentCycleTax: 0,         // 当前持仓周期内的红利税总和
+            currentCycleBuyCost: 0,     // 当前持仓周期投入成本（买入金额+手续费+红利税）
+            currentCycleSellAmount: 0,  // 当前持仓周期卖出金额（卖出净额+分红）
             
             // 持仓周期
             tradeCycleInfo: {},
@@ -80,6 +82,9 @@ const Calculator = {
         state.totalBuyCost += tradeValue + trade.fee;
         state.totalFee += trade.fee;
         state.currentHolding += trade.amount;
+        
+        // 累加当前持仓周期投入成本
+        state.currentCycleBuyCost += tradeValue + trade.fee;
         
         // 持仓明细
         state.buyRecords.push({
@@ -194,6 +199,9 @@ const Calculator = {
         state.cumulativeProfit += tradeProfit;
         state.currentCycleProfit += tradeProfit;
         
+        // 累加当前持仓周期卖出金额
+        state.currentCycleSellAmount += sellNetAmount;
+        
         state.sellRecords.push({
             tradeId: trade.id,
             date: trade.date,
@@ -245,6 +253,9 @@ const Calculator = {
             state.currentCycleProfit = 0;
             state.currentCycleDividend = 0;
             state.currentCycleTax = 0;
+            // 清仓时重置周期投入成本和卖出金额
+            state.currentCycleBuyCost = 0;
+            state.currentCycleSellAmount = 0;
             // 清仓时重置加仓对比数据
             state.lastAdditionPrice = null;
             state.lastAdditionTradeId = null;
@@ -275,6 +286,9 @@ const Calculator = {
         state.currentCycleProfit += dividendAmount;
         state.currentCycleDividend += dividendAmount;
         
+        // 分红累加到当前持仓周期卖出金额
+        state.currentCycleSellAmount += dividendAmount;
+        
         state.tradeCycleInfo[trade.id] = {
             cycle: state.currentCycle,
             cycleStart: state.cycleStartDates[state.currentCycle],
@@ -298,6 +312,9 @@ const Calculator = {
         state.cumulativeProfit -= taxAmount;
         state.currentCycleProfit -= taxAmount;
         state.currentCycleTax += taxAmount;
+        
+        // 红利税累加到当前持仓周期投入成本
+        state.currentCycleBuyCost += taxAmount;
         
         state.tradeCycleInfo[trade.id] = {
             cycle: state.currentCycle,
@@ -659,7 +676,9 @@ const Calculator = {
                 currentCost: currentCost,
                 currentCycleProfit: state.currentCycleProfit,
                 currentCycleDividend: state.currentCycleDividend,
-                currentCycleTax: state.currentCycleTax
+                currentCycleTax: state.currentCycleTax,
+                currentCycleBuyCost: state.currentCycleBuyCost,
+                currentCycleSellAmount: state.currentCycleSellAmount
             },
             // 持仓队列（用于悬浮提示）
             holdingQueue: state.holdingQueue.map(h => ({

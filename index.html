@@ -270,13 +270,52 @@
             <div class="realtime-info">
                 <div class="realtime-title">当前持仓</div>
                 <div class="detail-summary-grid detail-realtime-grid">
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">持有股成本</span>
-                        <span class="detail-summary-value" id="realtimeCost"><span class="loading">--</span></span>
+                    <!-- 周期投入（新增） -->
+                    <div class="detail-summary-item detail-summary-item-dual">
+                        <span class="detail-summary-label">
+                            周期投入
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>投入成本：</strong>当前持仓周期内所有买入金额+手续费+红利税<br>
+                                    <strong>卖出金额：</strong>当前持仓周期内所有卖出净额+分红<br>
+                                    <strong>净投入：</strong><span id="currentCycleNetInvest">--</span>
+                                </span>
+                            </span>
+                        </span>
+                        <div class="detail-summary-dual">
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">投入成本</span>
+                                <span class="detail-summary-dual-value" id="currentCycleBuyCost"><span class="loading">--</span></span>
+                            </div>
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">卖出金额</span>
+                                <span class="detail-summary-dual-value" id="currentCycleSellAmount"><span class="loading">--</span></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">持有股市值</span>
-                        <span class="detail-summary-value" id="marketValue"><span class="loading">--</span></span>
+                    <!-- 持有股（成本/市值合并） -->
+                    <div class="detail-summary-item detail-summary-item-dual">
+                        <span class="detail-summary-label">
+                            持有股
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">
+                                    <strong>成本：</strong>当前持有股的持仓成本（FIFO计算）<br>
+                                    <strong>市值：</strong>当前股价×持仓股数
+                                </span>
+                            </span>
+                        </span>
+                        <div class="detail-summary-dual">
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">成本</span>
+                                <span class="detail-summary-dual-value" id="realtimeCost"><span class="loading">--</span></span>
+                            </div>
+                            <div class="detail-summary-dual-row">
+                                <span class="detail-summary-dual-label">市值</span>
+                                <span class="detail-summary-dual-value" id="marketValue"><span class="loading">--</span></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="detail-summary-item">
                         <span class="detail-summary-label">

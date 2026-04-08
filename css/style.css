@@ -38,6 +38,10 @@
             animation: slideIn 0.3s ease-out;
             font-size: 14px;
             line-height: 1.5;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         @keyframes slideIn {
@@ -92,6 +96,14 @@
             margin-right: 12px;
             font-size: 20px;
             flex-shrink: 0;
+        }
+
+        /* 错误提示消息文本 */
+        .alert > span:not(.alert-icon):not(.alert-close) {
+            flex: 1;
+            min-width: 0;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         /* 错误提示关闭按钮 */
@@ -4023,6 +4035,518 @@
 .profit-negative {
 
     color: #4caf50;
+
+}
+
+
+
+/* ==================== 移动端响应式优化 ==================== */
+
+
+
+/* 错误提示容器响应式 */
+
+@media (max-width: 480px) {
+
+    .alert-container {
+
+        left: 10px;
+
+        right: 10px;
+
+        max-width: none;
+
+    }
+
+
+
+    .alert {
+
+        max-width: 100%;
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        padding: 12px 16px;
+
+        font-size: 13px;
+
+        word-break: break-word;
+
+        overflow-wrap: break-word;
+
+    }
+
+
+
+    .alert-icon {
+
+        margin-right: 8px;
+
+        font-size: 16px;
+
+    }
+
+
+
+    .alert-close {
+
+        margin-left: 8px;
+
+        font-size: 16px;
+
+    }
+
+}
+
+
+
+/* 头部工具栏响应式 */
+
+@media (max-width: 768px) {
+
+    .header-bar {
+
+        flex-wrap: wrap;
+
+        gap: 10px;
+
+        padding: 10px 12px;
+
+    }
+
+
+
+    .header-title {
+
+        flex: 1 1 auto;
+
+        min-width: 0;
+
+    }
+
+
+
+    .header-right-actions {
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+
+        gap: 6px;
+
+    }
+
+
+
+    .search-container {
+
+        order: 3;
+
+        width: 100%;
+
+        margin-right: 0;
+
+        margin-top: 8px;
+
+    }
+
+
+
+    .search-input {
+
+        width: 100%;
+
+        max-width: 100%;
+
+    }
+
+
+
+    .header-quote {
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+
+    }
+
+
+
+    .header-quote-item {
+
+        min-width: 60px;
+
+        padding: 4px 8px;
+
+    }
+
+}
+
+
+
+/* 列表视图卡片响应式 */
+
+@media (max-width: 768px) {
+
+    .stock-card-list {
+
+        flex-wrap: wrap;
+
+        gap: 8px;
+
+        min-width: auto;
+
+        padding: 10px 12px;
+
+    }
+
+
+
+    .stock-card-list-name {
+
+        min-width: auto;
+
+        width: 100%;
+
+        flex-direction: row;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 8px;
+
+    }
+
+
+
+    .stock-card-list-item {
+
+        min-width: auto;
+
+        flex: 1 1 calc(33.33% - 8px);
+
+        max-width: calc(50% - 4px);
+
+    }
+
+}
+
+
+
+/* 弹窗响应式 */
+
+@media (max-width: 768px) {
+
+    .modal-content {
+
+        padding: 16px;
+
+        margin: 5% auto;
+
+        width: 95%;
+
+        max-width: none;
+
+    }
+
+
+
+    .settings-modal-content,
+
+    .backup-modal-content,
+
+    .alert-modal-content,
+
+    .field-settings-content {
+
+        max-width: none;
+
+        max-height: 85vh;
+
+    }
+
+
+
+    .modal-header h2,
+
+    .modal-header h3 {
+
+        font-size: 16px;
+
+    }
+
+
+
+    .modal-footer {
+
+        flex-wrap: wrap;
+
+    }
+
+
+
+    .modal-footer .btn {
+
+        flex: 1;
+
+        min-width: 80px;
+
+    }
+
+}
+
+
+
+/* 交易记录筛选器响应式 */
+
+@media (max-width: 768px) {
+
+    .trade-records-header {
+
+        padding: 10px 12px;
+
+    }
+
+
+
+    .trade-records-controls {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+
+    }
+
+
+
+    .trade-records-filters {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 8px;
+
+    }
+
+
+
+    .trade-records-date-filters {
+
+        flex-wrap: wrap;
+
+        gap: 6px;
+
+    }
+
+
+
+    .trade-records-filter-input {
+
+        flex: 1;
+
+        min-width: 0;
+
+        width: auto;
+
+    }
+
+
+
+    .trade-records-filter-separator {
+
+        display: none;
+
+    }
+
+
+
+    .trade-records-summary {
+
+        justify-content: center;
+
+        flex-wrap: wrap;
+
+        margin-left: 0;
+
+        gap: 8px;
+
+    }
+
+}
+
+
+
+/* 图表区域响应式 */
+
+@media (max-width: 768px) {
+
+    .trade-records-charts .chart-row {
+
+        flex-direction: column;
+
+        gap: 12px;
+
+    }
+
+
+
+    .trade-records-charts .chart-container {
+
+        width: 100% !important;
+
+    }
+
+
+
+    .chart-box {
+
+        min-width: 0;
+
+    }
+
+}
+
+
+
+/* 按钮组和操作区响应式 */
+
+@media (max-width: 768px) {
+
+    .section-header {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+
+    }
+
+
+
+    .section-header-right {
+
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+
+        gap: 6px;
+
+    }
+
+
+
+    .section-header-right select {
+
+        max-width: 100%;
+
+        flex: 1;
+
+        min-width: 100px;
+
+    }
+
+
+
+    .form-btn-group {
+
+        flex-wrap: wrap;
+
+    }
+
+
+
+    .form-btn-group .btn {
+
+        flex: 1;
+
+        min-width: 60px;
+
+    }
+
+}
+
+
+
+/* 持仓周期历史弹窗响应式 */
+
+@media (max-width: 480px) {
+
+    .cycle-history-modal-container {
+
+        width: 95%;
+
+        max-height: 90vh;
+
+    }
+
+
+
+    .cycle-history-modal-header {
+
+        padding: 12px 16px;
+
+    }
+
+
+
+    .cycle-history-modal-content {
+
+        padding: 12px 16px;
+
+    }
+
+}
+
+
+
+/* 数据同步弹窗响应式 */
+
+@media (max-width: 480px) {
+
+    .sync-diff-details {
+
+        max-height: 200px;
+
+        padding: 12px;
+
+    }
+
+
+
+    #syncDiffModal .modal-footer {
+
+        flex-direction: column;
+
+    }
+
+
+
+    #syncDiffModal .btn {
+
+        width: 100%;
+
+    }
+
+}
+
+
+
+/* 字段设置弹窗响应式 */
+
+@media (max-width: 480px) {
+
+    .field-settings-grid {
+
+        grid-template-columns: 1fr;
+
+    }
 
 }
 

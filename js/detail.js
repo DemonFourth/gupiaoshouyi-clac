@@ -74,6 +74,9 @@ const Detail = {
             holdingDays: document.getElementById('holdingDays'),
             holdingCycle: document.getElementById('holdingCycle'),
             holdingTooltip: document.getElementById('holdingTooltip'),
+            currentCycleBuyCost: document.getElementById('currentCycleBuyCost'),
+            currentCycleSellAmount: document.getElementById('currentCycleSellAmount'),
+            currentCycleNetInvest: document.getElementById('currentCycleNetInvest'),
 
             // 总收益信息元素
             totalAllProfit: document.getElementById('totalAllProfit'),
@@ -588,6 +591,14 @@ const Detail = {
         this._domCache.realtimeCost.textContent = '¥' + result.currentCost.toFixed(2);
         this._domCache.realtimeHolding.textContent = result.currentHolding + '股';
 
+        // 更新当前持仓周期投入成本和卖出金额
+        this._domCache.currentCycleBuyCost.textContent = '¥' + result.currentCycleBuyCost.toFixed(2);
+        this._domCache.currentCycleSellAmount.textContent = '¥' + result.currentCycleSellAmount.toFixed(2);
+
+        // 计算并更新净投入（投入成本 - 卖出金额）
+        const netInvest = result.currentCycleBuyCost - result.currentCycleSellAmount;
+        this._domCache.currentCycleNetInvest.textContent = '¥' + netInvest.toFixed(2);
+
         // 更新持仓明细提示
         this.updateHoldingTooltip();
 
@@ -675,6 +686,11 @@ const Detail = {
             
             // 重置持仓市值为 --（已清仓股票持仓股数为0）
             this._domCache.marketValue.textContent = '--';
+
+            // 重置当前持仓周期投入成本和卖出金额
+            this._domCache.currentCycleBuyCost.textContent = '--';
+            this._domCache.currentCycleSellAmount.textContent = '--';
+            this._domCache.currentCycleNetInvest.textContent = '--';
 
             // 更新当前持有股收益和收益率（显示为 --）
             this._domCache.latestProfit.textContent = '--';
