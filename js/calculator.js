@@ -532,7 +532,7 @@ const Calculator = {
         // 遍历所有交易的周期信息
         for (const [tradeId, info] of Object.entries(cycleInfo)) {
             const cycleNum = info.cycle;
-            
+
             // 初始化周期数据
             if (!cycles[cycleNum]) {
                 cycles[cycleNum] = {
@@ -540,7 +540,12 @@ const Calculator = {
                     startDate: info.cycleStart,
                     endDate: null,
                     status: 'closed',
-                    profit: 0 // 周期收益
+                    profit: 0, // 周期收益
+                    // 新增统计字段
+                    totalBuyCost: 0,      // 总投入金额（买入金额 + 手续费 + 红利税）
+                    totalSellAmount: 0,   // 总卖出金额（卖出净额）
+                    totalFee: 0,          // 手续费总和
+                    totalDividend: 0      // 分红金额
                 };
             }
             
@@ -592,25 +597,46 @@ const Calculator = {
                 cycleProfits[cycle] = (cycleProfits[cycle] || 0) + sell.profit;
             }
         });
-        
-        // 2. 遍历交易记录，按周期累加分红和红利税
+
+        // 2. 遍历交易记录，按周期累加分红、红利税和统计字段
         trades.forEach(trade => {
             const tradeInfo = cycleInfo[trade.id];
             if (tradeInfo) {
-                const cycle = tradeInfo.cycle;
-                if (trade.type === 'dividend') {
-                    cycleProfits[cycle] = (cycleProfits[cycle] || 0) + (trade.totalAmount || 0);
-                } else if (trade.type === 'tax') {
-                    cycleProfits[cycle] = (cycleProfits[cycle] || 0) - (trade.totalAmount || 0);
+                const cycleNum = tradeInfo.cycle;
+                const cycleData = cycles[cycleNum];
+                if (cycleData) {
+                    if (trade.type === 'dividend') {
+                        cycleProfits[cycleNum] = (cycleProfits[cycleNum] || 0) + (trade.totalAmount || 0);
+                        cycleData.totalDividend += (trade.totalAmount || 0);
+                    } else if (trade.type === 'tax') {
+                        cycleProfits[cycleNum] = (cycleProfits[cycleNum] || 0) - (trade.totalAmount || 0);
+                        cycleData.totalBuyCost += (trade.totalAmount || 0); // 红利税计入投入成本
+                    } else if (trade.type === 'buy') {
+                        // 累加买入成本和手续费
+                        const buyAmount = trade.price * trade.amount;
+                        cycleData.totalBuyCost += buyAmount + (trade.fee || 0);
+                        cycleData.totalFee += (trade.fee || 0);
+                    } else if (trade.type === 'sell') {
+                        // 累加卖出金额和手续费
+                        const sellAmount = trade.price * trade.amount;
+                        cycleData.totalSellAmount += sellAmount - (trade.fee || 0);
+                        cycleData.totalFee += (trade.fee || 0);
+                    }
                 }
             }
         });
-        
-        // 3. 将收益添加到周期对象
+
+        // 3. 将收益添加到周期对象，并计算收益率
         cycleList.forEach(cycle => {
             cycle.profit = cycleProfits[cycle.cycle] || 0;
+            // 计算收益率 = 收益 / 投入金额 * 100%
+            if (cycle.totalBuyCost > 0) {
+                cycle.returnRate = (cycle.profit / cycle.totalBuyCost) * 100;
+            } else {
+                cycle.returnRate = 0;
+            }
         });
-        
+
         return cycleList;
     },
 

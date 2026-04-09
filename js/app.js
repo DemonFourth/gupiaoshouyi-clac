@@ -328,6 +328,19 @@ window.App = {
             };
         }
 
+        // 持仓周期历史显示开关
+        const cycleHistoryToggle = document.getElementById('cycleHistoryToggle');
+        if (cycleHistoryToggle) {
+            // 初始化 UI 状态
+            cycleHistoryToggle.checked = Config.get('ui.preferences.showCycleHistory', true);
+            // 绑定事件
+            cycleHistoryToggle.onchange = async () => {
+                Config.set('ui.preferences.showCycleHistory', cycleHistoryToggle.checked);
+                Config.save();
+                await this.updateAll(); // 刷新当前页面
+            };
+        }
+
         // 大数字转换阈值设置
         const largeNumberThreshold = document.getElementById('largeNumberThreshold');
         const saveDisplaySettingsBtn = document.getElementById('saveDisplaySettingsBtn');
@@ -348,6 +361,10 @@ window.App = {
                 // 保存持仓明细开关
                 if (holdingDetailToggle) {
                     Config.set('ui.preferences.showHoldingDetail', holdingDetailToggle.checked);
+                }
+                // 保存持仓周期历史开关
+                if (cycleHistoryToggle) {
+                    Config.set('ui.preferences.showCycleHistory', cycleHistoryToggle.checked);
                 }
                 // 保存大数字转换阈值
                 if (largeNumberThreshold) {

@@ -72,8 +72,13 @@ const Detail = {
             dilutedCostPerShare: document.getElementById('dilutedCostPerShare'),
             holdingStartDate: document.getElementById('holdingStartDate'),
             holdingDays: document.getElementById('holdingDays'),
-            holdingCycle: document.getElementById('holdingCycle'),
             holdingTooltip: document.getElementById('holdingTooltip'),
+
+            // 持仓周期历史区块元素
+            cycleHistorySection: document.getElementById('cycleHistorySection'),
+            cycleHistoryTotal: document.getElementById('cycleHistoryTotal'),
+            cycleHistoryList: document.getElementById('cycleHistoryList'),
+            cycleHistoryCollapseBtn: document.getElementById('cycleHistoryCollapseBtn'),
             currentCycleBuyCost: document.getElementById('currentCycleBuyCost'),
             currentCycleSellAmount: document.getElementById('currentCycleSellAmount'),
             currentCycleNetInvest: document.getElementById('currentCycleNetInvest'),
@@ -658,23 +663,8 @@ const Detail = {
             this._domCache.holdingStartDate.textContent = holdingInfo.startDate;
             this._domCache.holdingDays.textContent = holdingInfo.holdingDays + '天';
 
-            // 更新持仓轮次
-            const cycleHistory = snapshot.cycleHistory || [];
-            const currentCycleNumber = snapshot.currentCycleNumber;
-            const isHolding = snapshot.summary.currentHolding > 0;
-            
-            if (currentCycleNumber !== null && cycleHistory.length > 0) {
-                const cycleLabel = isHolding 
-                    ? `第${currentCycleNumber}轮持仓` 
-                    : `共${cycleHistory.length}轮持仓`;
-                this._domCache.holdingCycle.textContent = cycleLabel;
-                this._domCache.holdingCycle.style.cursor = 'pointer';
-                this._domCache.holdingCycle.onclick = () => this.showCycleHistoryModal();
-            } else {
-                this._domCache.holdingCycle.textContent = '--';
-                this._domCache.holdingCycle.style.cursor = 'default';
-                this._domCache.holdingCycle.onclick = null;
-            }
+            // 渲染持仓周期历史区块
+            this._renderCycleHistorySection(snapshot);
 
             const totalAllReturnRate = snapshot.totalAllReturnRate;
             const totalAllReturnRateElement = this._domCache.totalAllReturnRate;
@@ -711,17 +701,8 @@ const Detail = {
             this._domCache.holdingStartDate.textContent = holdingInfo.startDate;
             this._domCache.holdingDays.textContent = holdingInfo.holdingDays + '天';
 
-            // 更新持仓轮次（已清仓）
-            const cycleHistory = snapshot.cycleHistory || [];
-            if (cycleHistory.length > 0) {
-                this._domCache.holdingCycle.textContent = `共${cycleHistory.length}轮持仓`;
-                this._domCache.holdingCycle.style.cursor = 'pointer';
-                this._domCache.holdingCycle.onclick = () => this.showCycleHistoryModal();
-            } else {
-                this._domCache.holdingCycle.textContent = '--';
-                this._domCache.holdingCycle.style.cursor = 'default';
-                this._domCache.holdingCycle.onclick = null;
-            }
+            // 渲染持仓周期历史区块
+            this._renderCycleHistorySection(snapshot);
         }
     },
 
@@ -1839,6 +1820,123 @@ const Detail = {
 
         // 保存特殊的 resize 处理函数
         this._chartInstances.perShareCostTrendChartResizeHandler = onResize;
+    },
+
+    /**
+     * 渲染持仓周期历史区块
+     * @private
+     * @param {Object} snapshot - 股票快照数据
+     */
+    _renderCycleHistorySection(snapshot) {
+        if (!snapshot) return;
+
+        // 获取配置
+        const Config = StockProfitCalculator.Config;
+        const showCycleHistory = Config.get('ui.preferences.showCycleHistory', true);
+
+        // 获取 DOM 元素
+        const section = this._domCache.cycleHistorySection;
+        const totalElement = this._domCache.cycleHistoryTotal;
+        const listElement = this._domCache.cycleHistoryList;
+
+        if (!section || !totalElement || !listElement) return;
+
+        // 根据配置控制显示/隐藏
+        section.style.display = showCycleHistory ? 'block' : 'none';
+
+        if (!showCycleHistory) return;
+
+        const cycleHistory = snapshot.cycleHistory || [];
+
+        // 如果没有周期历史，显示空状态
+        if (cycleHistory.length === 0) {
+            totalElement.textContent = '总收益：¥0.00';
+            listElement.innerHTML = '<div class="cycle-history-empty">暂无持仓周期历史</div>';
+            return;
+        }
+
+        // 计算总收益
+        const totalProfit = snapshot.totalAllProfit || 0;
+        const totalProfitClass = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
+        const totalProfitText = totalProfit >= 0 ? `+${totalProfit.toFixed(2)}` : totalProfit.toFixed(2);
+        totalElement.innerHTML = `总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span>`;
+
+        // 构建周期列表
+        let listHtml = '';
+        cycleHistory.forEach(cycle => {
+            const isActive = cycle.status === 'active';
+            const statusClass = isActive ? 'cycle-item-active' : 'cycle-item-closed';
+            const statusText = isActive ? '当前' : '已结束';
+
+            // 格式化日期范围（显示完整年份）
+            const startDate = cycle.startDate || '--';
+            const endDate = cycle.endDate || '至今';
+
+            // 格式化收益
+            let profit = cycle.profit || 0;
+            // 如果是当前持仓周期，加上浮动盈亏
+            if (isActive && snapshot.holdingProfit !== null) {
+                profit += snapshot.holdingProfit;
+            }
+            const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+            const profitText = profit >= 0 ? `+${profit.toFixed(2)}` : profit.toFixed(2);
+
+            // 格式化统计字段
+            const totalBuyCost = (cycle.totalBuyCost || 0).toFixed(2);
+            const totalSellAmount = (cycle.totalSellAmount || 0).toFixed(2);
+            const totalFee = (cycle.totalFee || 0).toFixed(2);
+            const totalDividend = (cycle.totalDividend || 0).toFixed(2);
+
+            // 计算收益率（当前持仓周期需要用实际收益计算）
+            let returnRate = cycle.returnRate || 0;
+            if (isActive && snapshot.holdingProfit !== null && cycle.totalBuyCost > 0) {
+                // 当前持仓周期：收益率 = (周期收益 + 浮动盈亏) / 投入金额
+                returnRate = (profit / cycle.totalBuyCost) * 100;
+            }
+            const returnRateText = returnRate >= 0 ? `+${returnRate.toFixed(2)}%` : `${returnRate.toFixed(2)}%`;
+
+            listHtml += `
+                <div class="cycle-history-item ${statusClass}">
+                    <div class="cycle-item-header">
+                        <span class="cycle-number">第${cycle.cycle}轮</span>
+                        <span class="cycle-status">${statusText}</span>
+                    </div>
+                    <div class="cycle-item-dates">
+                        <span class="cycle-date">${startDate} ~ ${endDate}</span>
+                        <span class="cycle-days">${cycle.days}天</span>
+                    </div>
+                    <div class="cycle-item-stats">
+                        <div class="cycle-stats-row cycle-stats-labels">
+                            <span>投入</span>
+                            <span>卖出</span>
+                            <span>手续费</span>
+                            <span>分红</span>
+                        </div>
+                        <div class="cycle-stats-row cycle-stats-values">
+                            <span>¥${totalBuyCost}</span>
+                            <span>¥${totalSellAmount}</span>
+                            <span>¥${totalFee}</span>
+                            <span>¥${totalDividend}</span>
+                        </div>
+                    </div>
+                    <div class="cycle-item-profit">
+                        <span class="profit-label">收益</span>
+                        <span class="profit-value ${profitClass}">¥${profitText} (${returnRateText})</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        listElement.innerHTML = listHtml;
+
+        // 绑定折叠按钮事件（只绑定一次）
+        const collapseBtn = this._domCache.cycleHistoryCollapseBtn;
+        if (collapseBtn && !collapseBtn._bound) {
+            collapseBtn.onclick = () => {
+                section.classList.toggle('collapsed');
+            };
+            collapseBtn._bound = true;
+        }
     },
 
     /**

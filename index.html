@@ -404,10 +404,6 @@
                         <span class="detail-summary-label">持有天数</span>
                         <span class="detail-summary-value" id="holdingDays"><span class="loading">--</span></span>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">持仓轮次</span>
-                        <span class="detail-summary-value detail-cycle-link" id="holdingCycle">--</span>
-                    </div>
                 </div>
                 <!-- 提示已移到顶部工具条（#priceRefreshStatus） -->
             </div>
@@ -488,6 +484,24 @@
                         <span class="detail-summary-label">本月收益</span>
                         <span class="detail-summary-value" id="monthlyProfit">¥0.00</span>
                     </div>
+                </div>
+            </div>
+
+            <!-- 持仓周期历史栏 -->
+            <div class="cycle-history-section" id="cycleHistorySection">
+                <div class="cycle-history-section-header">
+                    <div class="cycle-history-title-row">
+                        <h3>持仓周期历史</h3>
+                        <button type="button" class="cycle-history-collapse-btn" id="cycleHistoryCollapseBtn" title="折叠/展开">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="cycle-history-total" id="cycleHistoryTotal">总收益：¥0.00</span>
+                </div>
+                <div class="cycle-history-list" id="cycleHistoryList">
+                    <div class="cycle-history-empty">暂无持仓周期历史</div>
                 </div>
             </div>
 
@@ -814,12 +828,19 @@
                             </label>
                         </div>
                         <div class="storage-item">
+                            <span class="storage-label">持仓周期历史：</span>
+                            <label class="perf-switch">
+                                <input type="checkbox" id="cycleHistoryToggle" checked>
+                                <span class="perf-switch-slider"></span>
+                            </label>
+                        </div>
+                        <div class="storage-item">
                             <span class="storage-label">大数字转换阈值：</span>
                             <input type="number" id="largeNumberThreshold" class="pagination-input" min="0" value="10000" title="超过此值自动转换为万/亿单位">
                             <span class="storage-unit">元</span>
                         </div>
                     </div>
-                    <p class="settings-hint">持仓明细：开启后会在详情页显示持仓明细表格。<br>大数字转换阈值：超过此值自动转为"万"或"亿"单位，设为0禁用转换。鼠标悬浮显示完整数值。</p>
+                    <p class="settings-hint">持仓明细：开启后会在详情页显示持仓明细表格。<br>持仓周期历史：开启后会在详情页汇总信息下方显示持仓周期历史。<br>大数字转换阈值：超过此值自动转为"万"或"亿"单位，设为0禁用转换。鼠标悬浮显示完整数值。</p>
                 </div>
                 <div class="settings-section">
                     <div class="settings-section-header">

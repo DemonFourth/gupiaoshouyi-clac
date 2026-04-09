@@ -4,8 +4,8 @@
 
 这是一个股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，适合个人投资记录和分析使用。
 
-**当前版本**：v2.5.2
-**存档日期**：2026-04-08
+**当前版本**：v2.6.0
+**存档日期**：2026-04-09
 
 **项目类型**：前端 Web 应用（部署在 Cloudflare Pages）
 
@@ -187,7 +187,8 @@ const Config = {
         layout: { maxWidth: 1560, padding: 24, ... },
         pagination: { itemsPerPage: 20, maxPageButtons: 5 },
         preferences: {
-            showHoldingDetail: true  // 用户偏好设置：持仓明细显示开关
+            showHoldingDetail: true,  // 用户偏好设置：持仓明细显示开关
+            showCycleHistory: true    // 用户偏好设置：持仓周期历史显示开关
         }
     },
     
@@ -428,6 +429,17 @@ exportAllFormats(data)               // 导出所有格式（JSON + CSV + 汇总
 **持仓明细显示控制**：
 - 通过用户偏好设置 `ui.preferences.showHoldingDetail` 控制显示/隐藏
 - 默认显示，可在设置弹窗中切换
+
+**持仓周期历史区块**（v2.6.0 新增）：
+- **位置**：汇总信息栏下方
+- **显示内容**：
+  - 各轮次的日期范围（完整年份 YYYY-MM-DD）
+  - 持仓天数
+  - 统计信息：投入、卖出、手续费、分红
+  - 收益和收益率
+- **折叠功能**：支持手动折叠/展开，节省页面空间
+- **显示控制**：通过设置弹窗的"持仓周期历史"开关控制显示/隐藏
+- **数据来源**：`calculator.js` 的 `_extractHoldingCycleHistory()` 方法
 
 ### 10. 股票管理模块 (stockManager.js)
 **职责**：股票的增删改查
@@ -1199,9 +1211,30 @@ console.log(backups);
 
 ## 版本信息
 
-**当前版本**：v2.5.2（2026-04-08）
+**当前版本**：v2.6.0（2026-04-09）
 
-**最新更新**（v2.5.2）：
+**最新更新**（v2.6.0）：
+- **新功能（1项）**：
+  - **持仓周期历史区块**：
+    - 将详情页"持仓轮次"弹窗改为直接显示的独立区块
+    - 位置：汇总信息栏下方
+    - 显示完整日期年份（YYYY-MM-DD）
+    - 显示详细统计：投入、卖出、手续费、分红、收益率
+    - 支持折叠/展开功能
+    - 设置弹窗添加显示开关
+- **Bug 修复（1项）**：
+  - **Bug 1**：修复已清仓股票切换时持仓周期历史不刷新的问题
+    - 原因：`updateSummaryCards()` 的 else 块缺少 `_renderCycleHistorySection()` 调用
+    - 修复：在 else 块中添加渲染调用，移除残留的 `holdingCycle` 元素代码
+- **修改文件**：
+  - 修改 `index.html`：添加持仓周期历史区块HTML、设置开关、移除持仓轮次字段
+  - 修改 `css/style.css`：新增区块样式、折叠按钮样式、统计信息样式
+  - 修改 `js/config.js`：添加 `showCycleHistory` 配置项
+  - 修改 `js/app.js`：绑定持仓周期历史开关事件
+  - 修改 `js/calculator.js`：添加周期统计字段计算（投入、卖出、手续费、分红、收益率）
+  - 修改 `js/detail.js`：新增 `_renderCycleHistorySection()` 渲染方法、DOM缓存、折叠逻辑
+
+**历史版本**（v2.5.2）：
 - **新功能（1项）**：
   - **详情页当前持仓栏优化**：
     - 新增"周期投入"双行字段：投入成本、卖出金额

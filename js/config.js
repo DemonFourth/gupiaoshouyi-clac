@@ -164,6 +164,7 @@ const Config = {
         },
         preferences: {
             showHoldingDetail: true,
+            showCycleHistory: true,  // 持仓周期历史显示开关
             largeNumberThreshold: 10000  // 大数字转换阈值，超过此值自动转为"万"或"亿"单位
         },
         

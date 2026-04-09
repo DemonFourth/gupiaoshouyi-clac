@@ -3986,6 +3986,60 @@
 
 
 
+/* 周期统计信息 - 两行 4 列表格样式 */
+
+.cycle-item-stats {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    margin: 8px 0;
+
+    padding-top: 8px;
+
+    border-top: 1px dashed #e0e0e0;
+
+}
+
+
+
+.cycle-stats-row {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    text-align: center;
+
+}
+
+
+
+.cycle-stats-labels {
+
+    font-size: 11px;
+
+    color: #888;
+
+}
+
+
+
+.cycle-stats-values {
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #333;
+
+}
+
+
+
 .cycle-item-profit {
 
     display: flex;
@@ -4552,4 +4606,183 @@
 
 
 
+/* 持仓周期历史区块（详情页直接显示） */
+
+.cycle-history-section {
+
+    margin: 24px 0;
+
+    padding: 20px;
+
+    background: #fff;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+}
+
+
+
+.cycle-history-section-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 16px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #eee;
+
+}
+
+
+
+.cycle-history-section-header h3 {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    color: #333;
+
+    font-weight: 600;
+
+}
+
+
+
+.cycle-history-total {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #666;
+
+}
+
+
+
+.cycle-history-empty {
+
+    text-align: center;
+
+    color: #999;
+
+    padding: 20px 0;
+
+    font-size: 14px;
+
+}
+
+
+
+/* 折叠按钮样式 */
+
+.cycle-history-title-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+
+.cycle-history-collapse-btn {
+
+    background: none;
+
+    border: none;
+
+    cursor: pointer;
+
+    padding: 4px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #666;
+
+    transition: transform 0.2s ease;
+
+    border-radius: 4px;
+
+}
+
+
+
+.cycle-history-collapse-btn:hover {
+
+    color: #333;
+
+    background: #f0f0f0;
+
+}
+
+
+
+/* 折叠状态：箭头向上旋转 */
+
+.cycle-history-section.collapsed .cycle-history-collapse-btn {
+
+    transform: rotate(180deg);
+
+}
+
+
+
+/* 折叠状态：隐藏内容 */
+
+.cycle-history-section.collapsed .cycle-history-list {
+
+    display: none;
+
+}
+
+
+
+/* 持仓周期历史区块响应式 */
+
+@media (max-width: 768px) {
+
+    .cycle-history-section {
+
+        margin: 16px 0;
+
+        padding: 16px;
+
+    }
+
+
+
+    .cycle-history-section-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+    }
+
+
+
+    .cycle-history-section-header h3 {
+
+        font-size: 15px;
+
+    }
+
+}
 
