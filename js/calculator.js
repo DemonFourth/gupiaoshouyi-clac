@@ -545,7 +545,8 @@ const Calculator = {
                     totalBuyCost: 0,      // 总投入金额（买入金额 + 手续费 + 红利税）
                     totalSellAmount: 0,   // 总卖出金额（卖出净额）
                     totalFee: 0,          // 手续费总和
-                    totalDividend: 0      // 分红金额
+                    totalDividend: 0,     // 分红金额
+                    clearPrice: null      // 清仓股价
                 };
             }
             
@@ -556,12 +557,13 @@ const Calculator = {
                 }
             }
             
-            // 记录清仓日期
+            // 记录清仓日期和清仓股价
             if (info.sellType === '清仓') {
                 const trade = trades.find(t => t.id === parseInt(tradeId));
                 if (trade && trade.date) {
                     if (!cycles[cycleNum].endDate || trade.date > cycles[cycleNum].endDate) {
                         cycles[cycleNum].endDate = trade.date;
+                        cycles[cycleNum].clearPrice = trade.price;  // 清仓股价
                     }
                 }
             }

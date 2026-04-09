@@ -1887,6 +1887,21 @@ const Detail = {
             const totalFee = (cycle.totalFee || 0).toFixed(2);
             const totalDividend = (cycle.totalDividend || 0).toFixed(2);
 
+            // 清仓股价和涨跌幅（仅已结束周期）
+            let clearPriceText = '--';
+            let changePercentText = '--';
+            let changePercentClass = '';
+            if (!isActive && cycle.clearPrice) {
+                clearPriceText = cycle.clearPrice.toFixed(3);
+                // 计算涨跌幅（需要当前股价）
+                const currentPrice = this.currentStockPrice || snapshot.currentStockPrice;
+                if (currentPrice && currentPrice > 0) {
+                    const changePercent = ((currentPrice - cycle.clearPrice) / cycle.clearPrice) * 100;
+                    changePercentText = changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`;
+                    changePercentClass = changePercent >= 0 ? 'profit-positive' : 'profit-negative';
+                }
+            }
+
             // 计算收益率（当前持仓周期需要用实际收益计算）
             let returnRate = cycle.returnRate || 0;
             if (isActive && snapshot.holdingProfit !== null && cycle.totalBuyCost > 0) {
@@ -1911,12 +1926,16 @@ const Detail = {
                             <span>卖出</span>
                             <span>手续费</span>
                             <span>分红</span>
+                            <span>清仓价</span>
+                            <span>至今涨跌</span>
                         </div>
                         <div class="cycle-stats-row cycle-stats-values">
                             <span>¥${totalBuyCost}</span>
                             <span>¥${totalSellAmount}</span>
                             <span>¥${totalFee}</span>
                             <span>¥${totalDividend}</span>
+                            <span>${clearPriceText}</span>
+                            <span class="${changePercentClass}">${changePercentText}</span>
                         </div>
                     </div>
                     <div class="cycle-item-profit">
