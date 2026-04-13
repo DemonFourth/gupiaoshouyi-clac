@@ -718,6 +718,20 @@ window.App = {
         content.innerHTML = statsHtml + newRecordsSectionHtml + allDuplicateSectionHtml + warningHtml;
         modal.style.display = 'block';
         document.body.classList.add('modal-open');
+
+        // 拦截弹窗内 wheel 事件，阻止滚动穿透到主页面
+        this._importModalWheelHandler = (e) => {
+            const scrollEl = modal.querySelector('.import-preview-body');
+            if (!scrollEl) return;
+            const isScrollingUp = e.deltaY < 0;
+            const atTop = scrollEl.scrollTop <= 0;
+            const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
+            if ((isScrollingUp && atTop) || (!isScrollingUp && atBottom)) {
+                e.preventDefault();
+            }
+        };
+        modal.addEventListener('wheel', this._importModalWheelHandler, { passive: false });
+
         this.closeSettingsModal();
     },
 
@@ -741,6 +755,10 @@ window.App = {
         if (modal) {
             modal.style.display = 'none';
             document.body.classList.remove('modal-open');
+            if (this._importModalWheelHandler) {
+                modal.removeEventListener('wheel', this._importModalWheelHandler);
+                this._importModalWheelHandler = null;
+            }
         }
         this.pendingImportData = null;
     },
