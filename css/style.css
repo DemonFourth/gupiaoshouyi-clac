@@ -1,3 +1,44 @@
+        /* ==================== 设计令牌（Design Tokens） ==================== */
+:root {
+  /* 主色调 - 深色金融主题 */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --bg-card-hover: rgba(255, 255, 255, 0.12);
+  
+  /* 文字颜色 */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  /* 盈亏颜色 */
+  --color-profit: #ff6b6b;
+  --color-profit-bg: rgba(233, 69, 96, 0.15);
+  --color-profit-border: rgba(233, 69, 96, 0.3);
+  --color-loss: #2ed573;
+  --color-loss-bg: rgba(46, 213, 115, 0.15);
+  --color-loss-border: rgba(46, 213, 115, 0.3);
+  
+  /* 边框和分隔 */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color-hover: rgba(255, 255, 255, 0.2);
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  /* 过渡 */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
         * {
             margin: 0;
             padding: 0;
@@ -5083,6 +5124,361 @@
 
 }
 
+
+
+/* ==================== 汇总信息 V2（金融仪表盘风格） ==================== */
+
+.summary-info-v2 {
+    margin: 24px 0;
+    padding: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.summary-header-v2 {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-title-v2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-title-v2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(180deg, #e94560 0%, #ff6b6b 100%);
+    border-radius: 2px;
+}
+
+/* 主收益区（Hero Section） */
+.summary-hero-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.summary-hero-card {
+    position: relative;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(233, 69, 96, 0.15) 0%, rgba(255, 107, 107, 0.08) 100%);
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.summary-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #e94560 0%, #ff6b6b 100%);
+    opacity: 0.8;
+}
+
+.summary-hero-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(233, 69, 96, 0.2);
+    border-color: rgba(233, 69, 96, 0.5);
+}
+
+.summary-hero-card.loss {
+    background: linear-gradient(135deg, rgba(46, 213, 115, 0.15) 0%, rgba(39, 174, 96, 0.08) 100%);
+    border-color: rgba(46, 213, 115, 0.3);
+}
+
+.summary-hero-card.loss::before {
+    background: linear-gradient(90deg, #2ed573 0%, #27ae60 100%);
+}
+
+.summary-hero-card.loss:hover {
+    box-shadow: 0 8px 24px rgba(46, 213, 115, 0.2);
+    border-color: rgba(46, 213, 115, 0.5);
+}
+
+.hero-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.hero-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-card-header .tooltip-container {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.summary-hero-card:hover .hero-card-header .tooltip-container {
+    opacity: 1;
+}
+
+.hero-card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-card-value.profit,
+.hero-card-value.summary-value.profit {
+    color: #ff6b6b;
+}
+
+.hero-card-value.loss,
+.hero-card-value.summary-value.loss {
+    color: #2ed573;
+}
+
+/* Hero Card 根据子元素 profit/loss 类改变父元素样式（使用 :has() 选择器） */
+.summary-hero-card:has(.hero-card-value.profit) {
+    background: linear-gradient(135deg, rgba(233, 69, 96, 0.2) 0%, rgba(255, 107, 107, 0.1) 100%);
+    border-color: rgba(233, 69, 96, 0.4);
+}
+
+.summary-hero-card:has(.hero-card-value.loss) {
+    background: linear-gradient(135deg, rgba(46, 213, 115, 0.2) 0%, rgba(39, 174, 96, 0.1) 100%);
+    border-color: rgba(46, 213, 115, 0.4);
+}
+
+.summary-hero-card:has(.hero-card-value.loss)::before {
+    background: linear-gradient(90deg, #2ed573 0%, #27ae60 100%);
+}
+
+.summary-hero-card:has(.hero-card-value.profit):hover {
+    box-shadow: 0 8px 24px rgba(233, 69, 96, 0.25);
+}
+
+.summary-hero-card:has(.hero-card-value.loss):hover {
+    box-shadow: 0 8px 24px rgba(46, 213, 115, 0.25);
+}
+
+/* 资金流向区 */
+.summary-flow-section {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.summary-flow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.flow-item {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.25s ease;
+}
+
+.flow-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.flow-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.flow-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 收益明细区 */
+.summary-detail-section {
+    padding: 16px 24px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.summary-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.detail-item {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.detail-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.detail-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.detail-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+.detail-value.profit {
+    color: #ff6b6b;
+}
+
+.detail-value.loss {
+    color: #2ed573;
+}
+
+/* V2 版 tooltip 样式调整 */
+.summary-info-v2 .tooltip-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.summary-info-v2 .tooltip-text {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.summary-info-v2 .tooltip-text strong {
+    color: #ff6b6b;
+}
+
+/* 响应式适配 */
+@media (max-width: 1200px) {
+    .summary-detail-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .summary-hero-section {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .summary-flow-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .summary-info-v2 {
+        margin: 16px 0;
+        border-radius: 12px;
+    }
+    
+    .summary-header-v2 {
+        padding: 12px 16px 10px;
+    }
+    
+    .summary-title-v2 {
+        font-size: 16px;
+    }
+    
+    .summary-hero-section {
+        padding: 16px;
+        gap: 10px;
+    }
+    
+    .summary-hero-card {
+        padding: 16px;
+    }
+    
+    .hero-card-value {
+        font-size: 26px;
+    }
+    
+    .summary-flow-section,
+    .summary-detail-section {
+        padding: 12px 16px 16px;
+    }
+    
+    .summary-flow-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .summary-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .flow-item,
+    .detail-item {
+        padding: 12px 14px;
+    }
+}
 
 
 /* 持仓周期历史区块（详情页直接显示） */
