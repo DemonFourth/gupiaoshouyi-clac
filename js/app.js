@@ -1085,10 +1085,15 @@ document.addEventListener('wheel', (e) => {
     const scrollEl = modal.querySelector('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
     if (!scrollEl) return;
 
-    const isScrollingUp = e.deltaY < 0;
-    const atTop = scrollEl.scrollTop <= 0;
-    const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
-    if ((isScrollingUp && atTop) || (!isScrollingUp && atBottom)) {
-        e.preventDefault();
+    // 检查 wheel 事件是否发生在滚动区域内
+    const target = e.target.closest('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
+    if (target) {
+        // 在滚动区域内：始终阻止事件传播到页面，由滚动区域自己处理滚动
+        e.stopPropagation();
+        return;
     }
+
+    // 在滚动区域外但在 modal 内：完全阻止默认行为和传播
+    e.preventDefault();
+    e.stopPropagation();
 }, { passive: false });
