@@ -2490,6 +2490,15 @@
   color: var(--color-loss);
 }
 
+/* 直接应用于 osv2-stat-value 的盈亏样式 */
+.osv2-stat-value.profit {
+  color: var(--color-profit);
+}
+
+.osv2-stat-value.loss {
+  color: var(--color-loss);
+}
+
 /* TOP5榜单区 */
 .osv2-toplist-section {
   display: grid;

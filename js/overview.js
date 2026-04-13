@@ -573,19 +573,19 @@ const Overview = {
 
         const profitElement = this._domCache.overviewTotalProfit;
         profitElement.textContent = '¥' + totalHoldingProfit.toFixed(2);
-        profitElement.className = 'overview-summary-value ' + (totalHoldingProfit >= 0 ? 'profit' : 'loss');
+        profitElement.className = 'osv2-hero-value ' + (totalHoldingProfit >= 0 ? 'profit' : 'loss');
 
         const returnRateElement = this._domCache.overviewTotalReturnRate;
         returnRateElement.textContent = totalReturnRate.toFixed(3) + '%';
-        returnRateElement.className = 'overview-summary-value ' + (totalReturnRate >= 0 ? 'profit' : 'loss');
+        returnRateElement.className = 'osv2-hero-value ' + (totalReturnRate >= 0 ? 'profit' : 'loss');
 
         const weeklyProfitElement = this._domCache.overviewWeeklyProfit;
         weeklyProfitElement.textContent = '¥' + totalWeeklyProfit.toFixed(2);
-        weeklyProfitElement.className = 'overview-summary-value ' + (totalWeeklyProfit >= 0 ? 'profit' : 'loss');
+        weeklyProfitElement.className = 'osv2-hero-value ' + (totalWeeklyProfit >= 0 ? 'profit' : 'loss');
 
         const monthlyProfitElement = this._domCache.overviewMonthlyProfit;
         monthlyProfitElement.textContent = '¥' + totalMonthlyProfit.toFixed(2);
-        monthlyProfitElement.className = 'overview-summary-value ' + (totalMonthlyProfit >= 0 ? 'profit' : 'loss');
+        monthlyProfitElement.className = 'osv2-hero-value ' + (totalMonthlyProfit >= 0 ? 'profit' : 'loss');
 
         // 更新UI - 历史累计统计（使用大数字格式化，自动添加tooltip）
         const totalInvestmentFmt = Utils.formatLargeNumberWithTooltip(totalInvestment);
@@ -596,7 +596,7 @@ const Overview = {
         const overallProfitFmt = Utils.formatLargeNumberWithTooltip(overallProfit);
         overallProfitElement.textContent = overallProfitFmt.display;
         overallProfitElement.title = overallProfitFmt.converted ? overallProfitFmt.full : '';
-        overallProfitElement.className = 'overview-summary-value ' + (overallProfit >= 0 ? 'profit' : 'loss');
+        overallProfitElement.className = 'osv2-stat-value ' + (overallProfit >= 0 ? 'profit' : 'loss');
 
         // 计算衍生指标
         const netInvestment = totalInvestment - totalSellAmount;  // 净投入资金
@@ -611,7 +611,7 @@ const Overview = {
         // 更新UI - 整体收益率
         const overallReturnRateElement = this._domCache.overviewOverallReturnRate;
         overallReturnRateElement.textContent = overallReturnRate.toFixed(3) + '%';
-        overallReturnRateElement.className = 'overview-summary-value ' + (overallReturnRate >= 0 ? 'profit' : 'loss');
+        overallReturnRateElement.className = 'osv2-stat-value ' + (overallReturnRate >= 0 ? 'profit' : 'loss');
 
         // 更新UI - 总手续费
         const totalFeeFmt = Utils.formatLargeNumberWithTooltip(totalFee);
