@@ -615,64 +615,44 @@ window.App = {
                 </div>
             </div>`;
 
-        // ── 新增股票列表 ──
-        let newStocksSectionHtml = '';
-        if (analysis.newStocks.length > 0) {
-            const rows = analysis.newStocks.map((s, i) => {
-                const allRows = this._buildTradeRows(s.tradeItems, false);
-                const detailHtml = allRows ? `
-                    <div class="ip-stock-detail" id="ip-detail-new-${i}">
-                        <table class="ip-detail-table">
-                            <thead><tr><th>日期</th><th>类型</th><th>价格</th><th>数量</th><th>状态</th></tr></thead>
-                            <tbody>${allRows}</tbody>
-                        </table>
-                    </div>` : '';
-                const hasDetail = !!allRows;
-                return `
-                    <div class="ip-stock-row">
-                        <div class="ip-stock-row-header" onclick="App._toggleImportRow(this)" data-has-detail="${hasDetail}">
-                            <div class="ip-stock-bar ip-bar-new"></div>
-                            <div class="ip-stock-name">${s.name} <span>(${s.code})</span></div>
-                            <div class="ip-stock-meta">
-                                <span class="ip-meta-badge ip-meta-new">${s.trades}条记录</span>
-                            </div>
-                            ${hasDetail ? `<div class="ip-expand-icon">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                            </div>` : ''}
-                        </div>
-                        ${detailHtml}
-                    </div>`;
-            }).join('');
-            newStocksSectionHtml = `
-                <div class="ip-stock-section">
-                    <div class="ip-section-label">新增股票 (${analysis.newStocks.length})</div>
-                    ${rows}
-                </div>`;
-        }
+        // ── 按"有新增记录 / 全部重复"重新分组 ──
+        const stocksWithNew = [
+            // 新股票全部算"有新增"
+            ...analysis.newStocks.map(s => ({ ...s, stockType: 'new', newTrades: s.trades, duplicateTrades: 0 })),
+            // 已存在股票中只取有新增记录的
+            ...analysis.existingStocks.filter(s => s.newTrades > 0).map(s => ({ ...s, stockType: 'existing' }))
+        ];
+        const allDuplicateStocks = analysis.existingStocks.filter(s => s.newTrades === 0);
 
-        // ── 已存在股票列表 ──
-        let existingStocksSectionHtml = '';
-        if (analysis.existingStocks.length > 0) {
-            const rows = analysis.existingStocks.map((s, i) => {
-                const newRows = this._buildTradeRows(s.newItems, false);
-                const dupRows = this._buildTradeRows(s.duplicateItems, true);
-                const allRows = newRows + dupRows;
+        // ── 有新增记录列表 ──
+        let newRecordsSectionHtml = '';
+        if (stocksWithNew.length > 0) {
+            const rows = stocksWithNew.map((s, i) => {
+                const isNew = s.stockType === 'new';
+                const barClass = isNew ? 'ip-bar-new' : 'ip-bar-exists';
+                let allRows, metaBadges;
+                if (isNew) {
+                    allRows = this._buildTradeRows(s.tradeItems, false);
+                    metaBadges = `<span class="ip-meta-badge ip-meta-new">${s.trades}条记录</span>`;
+                } else {
+                    const newR = this._buildTradeRows(s.newItems, false);
+                    const dupR = this._buildTradeRows(s.duplicateItems, true);
+                    allRows = newR + dupR;
+                    metaBadges = `<span class="ip-meta-badge ip-meta-new">新增 ${s.newTrades} 条</span>
+                        <span class="ip-meta-badge ip-meta-dup">重复 ${s.duplicateTrades} 条</span>`;
+                }
                 const detailHtml = allRows ? `
-                    <div class="ip-stock-detail" id="ip-detail-exist-${i}">
+                    <div class="ip-stock-detail" id="ip-detail-newrec-${i}">
                         <table class="ip-detail-table">
                             <thead><tr><th>日期</th><th>类型</th><th>价格</th><th>数量</th><th>状态</th></tr></thead>
                             <tbody>${allRows}</tbody>
                         </table>
                     </div>` : '';
                 const hasDetail = !!allRows;
-                const metaBadges = s.newTrades === 0
-                    ? `<span class="ip-meta-badge ip-meta-dup">全部重复</span>`
-                    : `<span class="ip-meta-badge ip-meta-new">新增 ${s.newTrades} 条</span>
-                       <span class="ip-meta-badge ip-meta-dup">重复 ${s.duplicateTrades} 条</span>`;
                 return `
                     <div class="ip-stock-row">
                         <div class="ip-stock-row-header" onclick="App._toggleImportRow(this)" data-has-detail="${hasDetail}">
-                            <div class="ip-stock-bar ip-bar-exists"></div>
+                            <div class="ip-stock-bar ${barClass}"></div>
                             <div class="ip-stock-name">${s.name} <span>(${s.code})</span></div>
                             <div class="ip-stock-meta">${metaBadges}</div>
                             ${hasDetail ? `<div class="ip-expand-icon">
@@ -682,9 +662,44 @@ window.App = {
                         ${detailHtml}
                     </div>`;
             }).join('');
-            existingStocksSectionHtml = `
+            newRecordsSectionHtml = `
                 <div class="ip-stock-section">
-                    <div class="ip-section-label">已存在股票 (${analysis.existingStocks.length})</div>
+                    <div class="ip-section-label">有新增记录 (${stocksWithNew.length}只)</div>
+                    ${rows}
+                </div>`;
+        }
+
+        // ── 全部重复列表 ──
+        let allDuplicateSectionHtml = '';
+        if (allDuplicateStocks.length > 0) {
+            const rows = allDuplicateStocks.map((s, i) => {
+                const allRows = this._buildTradeRows(s.duplicateItems, true);
+                const detailHtml = allRows ? `
+                    <div class="ip-stock-detail" id="ip-detail-alldup-${i}">
+                        <table class="ip-detail-table">
+                            <thead><tr><th>日期</th><th>类型</th><th>价格</th><th>数量</th><th>状态</th></tr></thead>
+                            <tbody>${allRows}</tbody>
+                        </table>
+                    </div>` : '';
+                const hasDetail = !!allRows;
+                return `
+                    <div class="ip-stock-row">
+                        <div class="ip-stock-row-header" onclick="App._toggleImportRow(this)" data-has-detail="${hasDetail}">
+                            <div class="ip-stock-bar ip-bar-exists"></div>
+                            <div class="ip-stock-name">${s.name} <span>(${s.code})</span></div>
+                            <div class="ip-stock-meta">
+                                <span class="ip-meta-badge ip-meta-dup">全部重复 (${s.duplicateTrades}条)</span>
+                            </div>
+                            ${hasDetail ? `<div class="ip-expand-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>` : ''}
+                        </div>
+                        ${detailHtml}
+                    </div>`;
+            }).join('');
+            allDuplicateSectionHtml = `
+                <div class="ip-stock-section">
+                    <div class="ip-section-label">全部重复 (${allDuplicateStocks.length}只)</div>
                     ${rows}
                 </div>`;
         }
@@ -700,7 +715,7 @@ window.App = {
                 <span><strong>注意：</strong>覆盖数据将删除当前所有数据，请谨慎操作！</span>
             </div>`;
 
-        content.innerHTML = statsHtml + newStocksSectionHtml + existingStocksSectionHtml + warningHtml;
+        content.innerHTML = statsHtml + newRecordsSectionHtml + allDuplicateSectionHtml + warningHtml;
         modal.style.display = 'block';
         this.closeSettingsModal();
     },
