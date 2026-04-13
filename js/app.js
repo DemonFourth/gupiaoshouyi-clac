@@ -717,6 +717,7 @@ window.App = {
 
         content.innerHTML = statsHtml + newRecordsSectionHtml + allDuplicateSectionHtml + warningHtml;
         modal.style.display = 'block';
+        document.body.classList.add('modal-open');
         this.closeSettingsModal();
     },
 
@@ -739,6 +740,7 @@ window.App = {
         const modal = document.getElementById('importPreviewModal');
         if (modal) {
             modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
         }
         this.pendingImportData = null;
     },

@@ -1257,6 +1257,10 @@
             display: none;
         }
 
+        body.modal-open {
+            overflow: hidden;
+        }
+
         .modal {
             display: none;
             position: fixed;
