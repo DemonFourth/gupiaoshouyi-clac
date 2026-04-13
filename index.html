@@ -85,102 +85,158 @@
 
         <!-- ==================== 汇总页面 ==================== -->
         <div id="overviewPage" class="page-container">
-            <!-- 全部股票汇总统计 -->
-            <div class="overview-summary">
-                <div class="overview-summary-title">全部股票汇总</div>
-                <div class="overview-summary-grid">
-                    <div class="overview-summary-item" title="持仓股票数量 × 最新股价">
-                        <span class="overview-summary-label">当前持仓总市值</span>
-                        <span class="overview-summary-value" id="overviewTotalMarketValue">¥0.00</span>
+            <!-- 全部股票汇总统计（V2：金融仪表盘风格） -->
+            <div class="overview-summary-v2">
+                <!-- 主统计区：核心指标 -->
+                <div class="osv2-hero-section">
+                    <div class="osv2-hero-card" id="osv2HeroProfit">
+                        <div class="osv2-hero-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <div class="osv2-hero-content">
+                            <span class="osv2-hero-label">当前持仓总收益</span>
+                            <span class="osv2-hero-value" id="overviewTotalProfit">¥0.00</span>
+                        </div>
                     </div>
-                    <div class="overview-summary-item" title="持仓股票的剩余成本（FIFO计算）">
-                        <span class="overview-summary-label">当前持仓总成本</span>
-                        <span class="overview-summary-value" id="overviewTotalHoldingCost">¥0.00</span>
+                    <div class="osv2-hero-card" id="osv2HeroReturnRate">
+                        <div class="osv2-hero-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                        </div>
+                        <div class="osv2-hero-content">
+                            <span class="osv2-hero-label">当前持仓总收益率</span>
+                            <span class="osv2-hero-value" id="overviewTotalReturnRate">0.00%</span>
+                        </div>
                     </div>
-                    <div class="overview-summary-item" title="持仓市值 - 持仓成本（浮动盈亏）">
-                        <span class="overview-summary-label">当前持仓总收益</span>
-                        <span class="overview-summary-value" id="overviewTotalProfit">¥0.00</span>
+                    <div class="osv2-hero-card">
+                        <div class="osv2-hero-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="osv2-hero-content">
+                            <span class="osv2-hero-label">本周收益</span>
+                            <span class="osv2-hero-value" id="overviewWeeklyProfit">¥0.00</span>
+                        </div>
                     </div>
-                    <div class="overview-summary-item" title="持仓收益 ÷ 持仓成本">
-                        <span class="overview-summary-label">当前持仓总收益率</span>
-                        <span class="overview-summary-value" id="overviewTotalReturnRate">0.00%</span>
-                    </div>
-                    <div class="overview-summary-item" title="本周内卖出收益 + 分红 - 红利税">
-                        <span class="overview-summary-label">本周收益</span>
-                        <span class="overview-summary-value" id="overviewWeeklyProfit">¥0.00</span>
-                    </div>
-                    <div class="overview-summary-item" title="本月内卖出收益 + 分红 - 红利税">
-                        <span class="overview-summary-label">本月收益</span>
-                        <span class="overview-summary-value" id="overviewMonthlyProfit">¥0.00</span>
+                    <div class="osv2-hero-card">
+                        <div class="osv2-hero-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="osv2-hero-content">
+                            <span class="osv2-hero-label">本月收益</span>
+                            <span class="osv2-hero-value" id="overviewMonthlyProfit">¥0.00</span>
+                        </div>
                     </div>
                 </div>
-                <!-- 历史累计统计 -->
-                <div class="overview-summary-grid history-summary-grid">
-                    <div class="overview-summary-item" title="所有股票历史买入总金额（含手续费、红利税）">
-                        <span class="overview-summary-label">全部投入资金</span>
-                        <span class="overview-summary-value" id="overviewTotalInvestment">¥0.00</span>
+
+                <!-- 次级统计区：持仓数据 -->
+                <div class="osv2-secondary-section">
+                    <div class="osv2-section-title">
+                        <span class="osv2-section-icon">📊</span>
+                        持仓数据
                     </div>
-                    <div class="overview-summary-item" title="实际占用资金 = 全部投入 - 已回收资金">
-                        <span class="overview-summary-label">净投入资金</span>
-                        <span class="overview-summary-value" id="overviewNetInvestment">¥0.00</span>
-                    </div>
-                    <div class="overview-summary-item" title="持仓浮动盈亏 + 已清仓已实现收益">
-                        <span class="overview-summary-label">整体收益</span>
-                        <span class="overview-summary-value" id="overviewOverallProfit">¥0.00</span>
-                    </div>
-                    <div class="overview-summary-item" title="整体收益 ÷ 全部投入资金">
-                        <span class="overview-summary-label">整体收益率</span>
-                        <span class="overview-summary-value" id="overviewOverallReturnRate">0.00%</span>
-                    </div>
-                    <div class="overview-summary-item" title="所有交易的佣金、印花税等费用总和">
-                        <span class="overview-summary-label">总手续费</span>
-                        <span class="overview-summary-value" id="overviewTotalFee">¥0.00</span>
-                    </div>
-                    <div class="overview-summary-item" title="总卖出金额 ÷ 全部投入资金，反映资金使用效率">
-                        <span class="overview-summary-label">资金周转率</span>
-                        <span class="overview-summary-value" id="overviewTurnoverRate">0.00%</span>
-                    </div>
-                </div>
-                <div class="overview-stock-stats">
-                    <!-- 持仓股票区域 -->
-                    <div class="stock-stats-group">
-                        <div class="stock-stats-header">
-                            <span class="stock-stats-title">持仓股票</span>
-                            <span class="stock-stats-count" id="overviewHoldingCount">0只</span>
-                            <span class="stock-stats-detail">
+                    <div class="osv2-stats-grid">
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">当前持仓总市值</span>
+                            <span class="osv2-stat-value" id="overviewTotalMarketValue">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">当前持仓总成本</span>
+                            <span class="osv2-stat-value" id="overviewTotalHoldingCost">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">持仓股票数</span>
+                            <span class="osv2-stat-value" id="overviewHoldingCount">0只</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">盈利/亏损</span>
+                            <span class="osv2-stat-value">
                                 <span class="profit" id="overviewProfitCount">盈利0只</span>
                                 <span class="loss" id="overviewLossCount">亏损0只</span>
                             </span>
                         </div>
-                        <div class="stock-stats-columns">
-                            <div class="profit-loss-column">
-                                <div class="profit-loss-header profit">盈利 TOP5</div>
-                                <div id="profitStockList" class="profit-loss-items"></div>
+                    </div>
+                </div>
+
+                <!-- 历史统计区：累计数据 -->
+                <div class="osv2-history-section">
+                    <div class="osv2-section-title">
+                        <span class="osv2-section-icon">📈</span>
+                        历史累计
+                    </div>
+                    <div class="osv2-stats-grid">
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">全部投入资金</span>
+                            <span class="osv2-stat-value" id="overviewTotalInvestment">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">净投入资金</span>
+                            <span class="osv2-stat-value" id="overviewNetInvestment">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">整体收益</span>
+                            <span class="osv2-stat-value" id="overviewOverallProfit">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">整体收益率</span>
+                            <span class="osv2-stat-value" id="overviewOverallReturnRate">0.00%</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">总手续费</span>
+                            <span class="osv2-stat-value" id="overviewTotalFee">¥0.00</span>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <span class="osv2-stat-label">资金周转率</span>
+                            <span class="osv2-stat-value" id="overviewTurnoverRate">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP5榜单区 -->
+                <div class="osv2-toplist-section">
+                    <!-- 持仓股票 TOP5 -->
+                    <div class="osv2-toplist-group">
+                        <div class="osv2-toplist-header">
+                            <span class="osv2-toplist-title">持仓股票</span>
+                            <span class="osv2-toplist-count" id="overviewHoldingCount2">0只</span>
+                        </div>
+                        <div class="osv2-toplist-columns">
+                            <div class="osv2-toplist-column">
+                                <div class="osv2-toplist-column-header profit">盈利 TOP5</div>
+                                <div id="profitStockList" class="osv2-toplist-items"></div>
                             </div>
-                            <div class="profit-loss-column">
-                                <div class="profit-loss-header loss">亏损 TOP5</div>
-                                <div id="lossStockList" class="profit-loss-items"></div>
+                            <div class="osv2-toplist-column">
+                                <div class="osv2-toplist-column-header loss">亏损 TOP5</div>
+                                <div id="lossStockList" class="osv2-toplist-items"></div>
                             </div>
                         </div>
                     </div>
-                    <!-- 清仓股票区域 -->
-                    <div class="stock-stats-group">
-                        <div class="stock-stats-header">
-                            <span class="stock-stats-title">清仓股票</span>
-                            <span class="stock-stats-count" id="overviewClearedCount">0只</span>
-                            <span class="stock-stats-detail">
-                                <span class="profit" id="overviewClearedProfitCount">盈利0只</span>
-                                <span class="loss" id="overviewClearedLossCount">亏损0只</span>
-                            </span>
+                    <!-- 清仓股票 TOP5 -->
+                    <div class="osv2-toplist-group">
+                        <div class="osv2-toplist-header">
+                            <span class="osv2-toplist-title">清仓股票</span>
+                            <span class="osv2-toplist-count" id="overviewClearedCount">0只</span>
                         </div>
-                        <div class="stock-stats-columns">
-                            <div class="profit-loss-column">
-                                <div class="profit-loss-header profit">盈利 TOP5</div>
-                                <div id="clearedProfitStockList" class="profit-loss-items"></div>
+                        <div class="osv2-toplist-columns">
+                            <div class="osv2-toplist-column">
+                                <div class="osv2-toplist-column-header profit">盈利 TOP5</div>
+                                <div id="clearedProfitStockList" class="osv2-toplist-items"></div>
                             </div>
-                            <div class="profit-loss-column">
-                                <div class="profit-loss-header loss">亏损 TOP5</div>
-                                <div id="clearedLossStockList" class="profit-loss-items"></div>
+                            <div class="osv2-toplist-column">
+                                <div class="osv2-toplist-column-header loss">亏损 TOP5</div>
+                                <div id="clearedLossStockList" class="osv2-toplist-items"></div>
                             </div>
                         </div>
                     </div>
@@ -408,51 +464,17 @@
                 <!-- 提示已移到顶部工具条（#priceRefreshStatus） -->
             </div>
 
-            <!-- 汇总信息（Summary Bar + Grid Stats：只改布局层级，不改颜色） -->
-            <div class="summary-info">
-                <div class="summary-title">汇总信息</div>
-                <div class="detail-summary-grid">
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">总投入成本</span>
-                        <span class="detail-summary-value" id="totalCost">¥0.00</span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">总卖出金额</span>
-                        <span class="detail-summary-value" id="totalSell">¥0.00</span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">总手续费</span>
-                        <span class="detail-summary-value" id="totalFee">¥0.00</span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">
-                            已卖出收益
-                            <span class="tooltip-container">
-                                <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">
-                                    <strong>计算公式：</strong>已卖出收益=Σ(卖出净额-对应成本)<br>
-                                    <strong>说明：</strong>已卖出股票的实际盈亏，已落袋为安
-                                </span>
-                            </span>
-                        </span>
-                        <span class="detail-summary-value" id="totalProfit">¥0.00</span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">
-                            已卖出收益率
-                            <span class="tooltip-container">
-                                <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">
-                                    <strong>计算公式：</strong>已卖出收益率=已卖出收益÷总投入成本×100%<br>
-                                    <strong>说明：</strong>整体投资回报率，反映投资效率
-                                </span>
-                            </span>
-                        </span>
-                        <span class="detail-summary-value" id="totalReturnRate">0.00%</span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">
-                            总收益
+            <!-- 汇总信息（重新设计：金融仪表盘风格，分组展示） -->
+            <div class="summary-info-v2">
+                <div class="summary-header-v2">
+                    <h3 class="summary-title-v2">汇总信息</h3>
+                </div>
+                
+                <!-- 主收益区：总收益 + 总收益率（核心指标，大尺寸突出显示） -->
+                <div class="summary-hero-section">
+                    <div class="summary-hero-card" id="summaryHeroProfit">
+                        <div class="hero-card-header">
+                            <span class="hero-label">总收益</span>
                             <span class="tooltip-container">
                                 <span class="tooltip-icon">?</span>
                                 <span class="tooltip-text">
@@ -460,29 +482,81 @@
                                     <strong>说明：</strong>已实现收益与浮动收益的总和
                                 </span>
                             </span>
-                        </span>
-                        <span class="detail-summary-value" id="totalAllProfit">¥0.00</span>
+                        </div>
+                        <div class="hero-card-value summary-value" id="totalAllProfit">¥0.00</div>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">
-                            总收益率
+                    <div class="summary-hero-card" id="summaryHeroReturnRate">
+                        <div class="hero-card-header">
+                            <span class="hero-label">总收益率</span>
                             <span class="tooltip-container">
                                 <span class="tooltip-icon">?</span>
                                 <span class="tooltip-text">
                                     <strong>计算公式：</strong>总收益率=总收益÷总投入成本×100%<br>
-                                    <strong>说明：</strong>总收益=已实现收益+浮动盈亏。持仓中股票基于总投入成本计算综合投资回报率，已清仓股票显示已实现收益率
+                                    <strong>说明：</strong>持仓中股票基于总投入成本计算综合投资回报率，已清仓股票显示已实现收益率
                                 </span>
                             </span>
-                        </span>
-                        <span class="detail-summary-value" id="totalAllReturnRate">0.00%</span>
+                        </div>
+                        <div class="hero-card-value summary-value" id="totalAllReturnRate">0.00%</div>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">本周收益</span>
-                        <span class="detail-summary-value" id="weeklyProfit">¥0.00</span>
+                </div>
+                
+                <!-- 资金流向区：投入/卖出/手续费 -->
+                <div class="summary-flow-section">
+                    <div class="section-label">资金流向</div>
+                    <div class="summary-flow-grid">
+                        <div class="flow-item">
+                            <span class="flow-label">总投入成本</span>
+                            <span class="flow-value" id="totalCost">¥0.00</span>
+                        </div>
+                        <div class="flow-item">
+                            <span class="flow-label">总卖出金额</span>
+                            <span class="flow-value" id="totalSell">¥0.00</span>
+                        </div>
+                        <div class="flow-item">
+                            <span class="flow-label">总手续费</span>
+                            <span class="flow-value" id="totalFee">¥0.00</span>
+                        </div>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">本月收益</span>
-                        <span class="detail-summary-value" id="monthlyProfit">¥0.00</span>
+                </div>
+                
+                <!-- 收益明细区：已卖出收益/收益率 + 本周/本月 -->
+                <div class="summary-detail-section">
+                    <div class="section-label">收益明细</div>
+                    <div class="summary-detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                已卖出收益
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>已卖出收益=Σ(卖出净额-对应成本)<br>
+                                        <strong>说明：</strong>已卖出股票的实际盈亏，已落袋为安
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="detail-value" id="totalProfit">¥0.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                已卖出收益率
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>已卖出收益率=已卖出收益÷总投入成本×100%<br>
+                                        <strong>说明：</strong>整体投资回报率，反映投资效率
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="detail-value" id="totalReturnRate">0.00%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">本周收益</span>
+                            <span class="detail-value" id="weeklyProfit">¥0.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">本月收益</span>
+                            <span class="detail-value" id="monthlyProfit">¥0.00</span>
+                        </div>
                     </div>
                 </div>
             </div>

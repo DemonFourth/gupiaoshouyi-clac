@@ -71,6 +71,7 @@ const Overview = {
 
             // 持仓统计元素
             overviewHoldingCount: document.getElementById('overviewHoldingCount'),
+            overviewHoldingCount2: document.getElementById('overviewHoldingCount2'),
             overviewProfitCount: document.getElementById('overviewProfitCount'),
             overviewLossCount: document.getElementById('overviewLossCount'),
 
@@ -628,17 +629,24 @@ const Overview = {
 
         // 更新UI - 持仓股票统计数据
         this._domCache.overviewHoldingCount.textContent = holdingCount + '只';
+        if (this._domCache.overviewHoldingCount2) {
+            this._domCache.overviewHoldingCount2.textContent = holdingCount + '只';
+        }
         this._domCache.overviewProfitCount.textContent = '盈利' + profitCount + '只';
         this._domCache.overviewLossCount.textContent = '亏损' + lossCount + '只';
 
         // 更新UI - 清仓股票统计数据
         this._domCache.overviewClearedCount.textContent = clearedCount + '只';
-        this._domCache.overviewClearedProfitCount.textContent = '盈利' + clearedProfitCount + '只';
-        this._domCache.overviewClearedLossCount.textContent = '亏损' + clearedLossCount + '只';
+        if (this._domCache.overviewClearedProfitCount) {
+            this._domCache.overviewClearedProfitCount.textContent = '盈利' + clearedProfitCount + '只';
+        }
+        if (this._domCache.overviewClearedLossCount) {
+            this._domCache.overviewClearedLossCount.textContent = '亏损' + clearedLossCount + '只';
+        }
 
         // 渲染持仓盈利股票列表
         this.renderProfitLossList('profitStockList', profitStocks, true);
-        
+
         // 渲染持仓亏损股票列表
         this.renderProfitLossList('lossStockList', lossStocks, false);
 

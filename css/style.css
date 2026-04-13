@@ -2269,6 +2269,376 @@
             white-space: nowrap;
         }
 
+/* ==================== 汇总页面 V2（金融仪表盘风格） ==================== */
+
+/* 主容器 */
+.overview-summary-v2 {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  margin-bottom: 20px;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+/* Hero区：核心指标 */
+.osv2-hero-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.osv2-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  cursor: default;
+}
+
+.osv2-hero-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.osv2-hero-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.osv2-hero-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.osv2-hero-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.osv2-hero-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.osv2-hero-value.profit {
+  color: var(--color-profit);
+}
+
+.osv2-hero-value.loss {
+  color: var(--color-loss);
+}
+
+/* Hero Card 盈亏状态 */
+.osv2-hero-card:has(.osv2-hero-value.profit) {
+  background: var(--color-profit-bg);
+  border-color: var(--color-profit-border);
+}
+
+.osv2-hero-card:has(.osv2-hero-value.profit) .osv2-hero-icon {
+  background: rgba(233, 69, 96, 0.2);
+  color: var(--color-profit);
+}
+
+.osv2-hero-card:has(.osv2-hero-value.loss) {
+  background: var(--color-loss-bg);
+  border-color: var(--color-loss-border);
+}
+
+.osv2-hero-card:has(.osv2-hero-value.loss) .osv2-hero-icon {
+  background: rgba(46, 213, 115, 0.2);
+  color: var(--color-loss);
+}
+
+/* 次级统计区 */
+.osv2-secondary-section,
+.osv2-history-section {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.osv2-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.osv2-section-icon {
+  font-size: 16px;
+}
+
+.osv2-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.osv2-stat-item {
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.osv2-stat-item:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-hover);
+}
+
+.osv2-stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.osv2-stat-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.osv2-stat-value .profit {
+  color: var(--color-profit);
+  margin-right: 8px;
+}
+
+.osv2-stat-value .loss {
+  color: var(--color-loss);
+}
+
+/* TOP5榜单区 */
+.osv2-toplist-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-color);
+}
+
+.osv2-toplist-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.osv2-toplist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.osv2-toplist-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.osv2-toplist-count {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.osv2-toplist-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.osv2-toplist-column-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.osv2-toplist-column-header.profit {
+  background: var(--color-profit-bg);
+  color: var(--color-profit);
+}
+
+.osv2-toplist-column-header.loss {
+  background: var(--color-loss-bg);
+  color: var(--color-loss);
+}
+
+.osv2-toplist-items {
+  min-height: 120px;
+}
+
+/* 兼容原有 JS 的 profit-loss-item 类名 */
+.osv2-toplist-items .profit-loss-item,
+.osv2-toplist-items .top-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+
+.osv2-toplist-items .profit-loss-item:hover,
+.osv2-toplist-items .top-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-name,
+.osv2-toplist-items .top-item .stock-name {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-code {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 6px;
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-profit,
+.osv2-toplist-items .top-item .stock-profit {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-profit.profit,
+.osv2-toplist-items .top-item .stock-profit.profit {
+  color: var(--color-profit);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-profit.loss,
+.osv2-toplist-items .top-item .stock-profit.loss {
+  color: var(--color-loss);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-rate {
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-rate.profit {
+  color: var(--color-profit);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-rate.loss {
+  color: var(--color-loss);
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-rank {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  width: 20px;
+  text-align: center;
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-stock {
+  flex: 1;
+  min-width: 0;
+  margin-left: 10px;
+}
+
+.osv2-toplist-items .profit-loss-item .profit-loss-stats {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.osv2-toplist-items .profit-loss-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* 响应式适配 - 汇总页面 V2 */
+@media (max-width: 1200px) {
+  .osv2-hero-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .osv2-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .osv2-hero-section {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .osv2-hero-card {
+    padding: 16px;
+  }
+
+  .osv2-hero-value {
+    font-size: 20px;
+  }
+
+  .osv2-secondary-section,
+  .osv2-history-section {
+    padding: 16px;
+  }
+
+  .osv2-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .osv2-toplist-section {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+}
+
 /* ==================== 汇总页面样式 ==================== */
 
         /* 返回按钮 */
