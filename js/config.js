@@ -9,7 +9,7 @@ const Config = {
      */
     app: {
         name: '股票收益计算器',
-        version: '2.0.0',
+        version: '2.6.1',
         author: 'iFlow CLI',
         description: '基于FIFO算法的股票投资收益计算工具'
     },

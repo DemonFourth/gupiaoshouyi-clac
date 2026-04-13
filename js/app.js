@@ -145,6 +145,11 @@ window.App = {
             closeSettingsModalBtn.onclick = () => this.closeSettingsModal();
         }
 
+        const closeSettingsFooterBtn = document.getElementById('closeSettingsFooterBtn');
+        if (closeSettingsFooterBtn) {
+            closeSettingsFooterBtn.onclick = () => this.closeSettingsModal();
+        }
+
         const exportDataBtn = document.getElementById('exportDataBtn');
         if (exportDataBtn) {
             exportDataBtn.onclick = () => this.exportData();
@@ -517,6 +522,7 @@ window.App = {
     async updateSettingsInfo() {
         const DataManager = StockProfitCalculator.DataManager;
         const FileStorage = StockProfitCalculator.FileStorage;
+        const Config = StockProfitCalculator.Config;
         const data = await DataManager.load();
         const stats = FileStorage.getStorageStats(data);
         const storageMode = DataManager.getStorageMode();
@@ -525,6 +531,12 @@ window.App = {
         document.getElementById('settingsTradeCount').textContent = stats.tradeCount + '条';
         document.getElementById('settingsDataSize').textContent = stats.dataSize;
         document.getElementById('settingsStorageLocation').textContent = storageMode.label;
+
+        // 显示版本号
+        const versionEl = document.getElementById('settingsAppVersion');
+        if (versionEl) {
+            versionEl.textContent = 'v' + Config.get('app.version', '2.6.1');
+        }
     },
 
     // ==================== 数据导入导出 ====================

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings Modal Mockup</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+        --primary: #667eea;
+        --primary-light: #eef0fb;
+        --primary-dark: #4c5ec7;
+        --surface: #fafafc;
+        --surface-raised: #ffffff;
+        --surface-overlay: #ffffff;
+        --border: #e4e6f0;
+        --border-light: #eeeff6;
+        --text-primary: #1a1d2e;
+        --text-secondary: #5f6380;
+        --text-tertiary: #9397ad;
+        --success: #34c77b;
+        --success-bg: #eafbf2;
+        --warning: #f5a623;
+        --warning-bg: #fef6e8;
+        --danger: #ef4565;
+        --danger-outline: #fce8ed;
+        --info: #3b82f6;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+        --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'DM Sans', -apple-system, sans-serif;
+        background: #e8eaf0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    /* Mock modal backdrop */
+    .mock-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 18, 32, 0.45);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .mock-modal {
+        position: relative;
+        width: 680px;
+        max-width: 95vw;
+        max-height: 85vh;
+        background: var(--surface-overlay);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.08) inset;
+        display: flex;
+        flex-direction: column;
+        animation: modalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(24px) scale(0.97);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Header */
+    .mock-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 28px 18px;
+        border-bottom: 1px solid var(--border-light);
+        flex-shrink: 0;
+    }
+
+    .mock-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .mock-header-icon {
+        width: 38px;
+        height: 38px;
+        background: var(--primary-light);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mock-header-icon svg {
+        width: 20px;
+        height: 20px;
+        color: var(--primary);
+    }
+
+    .mock-header h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+    }
+
+    .mock-close-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-tertiary);
+        font-size: 20px;
+        transition: all 0.15s;
+    }
+
+    .mock-close-btn:hover {
+        background: var(--surface);
+        color: var(--text-primary);
+    }
+
+    /* Body */
+    .mock-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+    }
+
+    .mock-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .mock-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .mock-body::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+    }
+
+    .mock-body::-webkit-scrollbar-thumb:hover {
+        background: var(--text-tertiary);
+    }
+
+    /* Section */
+    .mock-section {
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .mock-section:last-child {
+        border-bottom: none;
+    }
+
+    .mock-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .mock-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mock-section-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mock-section-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .mock-section-icon.blue {
+        background: #e8f0fe;
+        color: var(--info);
+    }
+
+    .mock-section-icon.green {
+        background: var(--success-bg);
+        color: var(--success);
+    }
+
+    .mock-section-icon.orange {
+        background: var(--warning-bg);
+        color: var(--warning);
+    }
+
+    .mock-section-icon.purple {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .mock-section-icon.red {
+        background: var(--danger-outline);
+        color: var(--danger);
+    }
+
+    .mock-section h3 {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.005em;
+    }
+
+    .mock-save-btn {
+        padding: 5px 14px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+    }
+
+    .mock-save-btn:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Setting Rows */
+    .mock-setting-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .mock-setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        background: var(--surface);
+        border-radius: var(--radius-sm);
+        transition: background 0.15s;
+    }
+
+    .mock-setting-row:hover {
+        background: var(--primary-light);
+    }
+
+    .mock-row-label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        font-weight: 450;
+    }
+
+    .mock-row-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .mock-row-input {
+        width: 90px;
+        padding: 6px 10px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        text-align: center;
+        background: var(--surface-raised);
+        color: var(--text-primary);
+        transition: all 0.15s;
+    }
+
+    .mock-row-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+    }
+
+    .mock-row-unit {
+        font-size: 13px;
+        color: var(--text-tertiary);
+        font-weight: 400;
+    }
+
+    /* Toggle Switch */
+    .mock-toggle {
+        position: relative;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .mock-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .mock-toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .mock-toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .mock-toggle input:checked + .mock-toggle-slider {
+        background: var(--primary);
+    }
+
+    .mock-toggle input:checked + .mock-toggle-slider::before {
+        transform: translateX(18px);
+    }
+
+    /* Hint */
+    .mock-hint {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-top: 14px;
+        line-height: 1.6;
+        padding: 0 4px;
+    }
+
+    /* Storage Info Cards */
+    .mock-storage-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .mock-storage-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: all 0.15s;
+    }
+
+    .mock-storage-card:hover {
+        background: var(--primary-light);
+    }
+
+    .mock-storage-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .mock-card-label {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .mock-card-value {
+        font-size: 15px;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Data Management Buttons */
+    .mock-data-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mock-button-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .mock-btn {
+        flex: 1;
+        padding: 11px 16px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mock-btn svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    .mock-btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .mock-btn-primary:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .mock-btn-success {
+        background: var(--success);
+        color: #fff;
+    }
+
+    .mock-btn-success:hover {
+        background: #2db86a;
+        box-shadow: 0 4px 12px rgba(52, 199, 123, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .mock-btn-warning {
+        background: var(--warning-bg);
+        color: #8a6515;
+        border: 1px solid #f0dbb5;
+    }
+
+    .mock-btn-warning:hover {
+        background: #fdf0d7;
+        border-color: #e8cc9a;
+    }
+
+    .mock-btn-danger-outline {
+        background: transparent;
+        color: var(--danger);
+        border: 1.5px solid var(--danger);
+    }
+
+    .mock-btn-danger-outline:hover {
+        background: var(--danger-outline);
+    }
+
+    /* Footer */
+    .mock-footer {
+        padding: 14px 28px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .mock-footer-left {
+        font-size: 12px;
+        color: var(--text-tertiary);
+    }
+
+    .mock-footer-right {
+        display: flex;
+        gap: 8px;
+    }
+
+    .mock-footer-btn {
+        padding: 7px 18px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: inherit;
+    }
+
+    .mock-footer-btn.ghost {
+        background: transparent;
+        color: var(--text-secondary);
+    }
+
+    .mock-footer-btn.ghost:hover {
+        background: var(--surface);
+    }
+
+    .mock-footer-btn.primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .mock-footer-btn.primary:hover {
+        background: var(--primary-dark);
+    }
+
+    /* Section entrance animation */
+    .mock-section {
+        animation: sectionFadeIn 0.4s ease both;
+    }
+
+    .mock-section:nth-child(1) { animation-delay: 0.05s; }
+    .mock-section:nth-child(2) { animation-delay: 0.1s; }
+    .mock-section:nth-child(3) { animation-delay: 0.15s; }
+    .mock-section:nth-child(4) { animation-delay: 0.2s; }
+    .mock-section:nth-child(5) { animation-delay: 0.25s; }
+    .mock-section:nth-child(6) { animation-delay: 0.3s; }
+
+    @keyframes sectionFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .mock-modal {
+            max-height: 92vh;
+            border-radius: var(--radius-lg);
+        }
+
+        .mock-header, .mock-section, .mock-footer {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .mock-storage-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .mock-button-row {
+            flex-direction: column;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="mock-backdrop">
+    <div class="mock-modal">
+        <!-- Header -->
+        <div class="mock-header">
+            <div class="mock-header-left">
+                <div class="mock-header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                    </svg>
+                </div>
+                <h2>设置</h2>
+            </div>
+            <button class="mock-close-btn">&times;</button>
+        </div>
+
+        <!-- Body -->
+        <div class="mock-body">
+            <!-- Storage Info (置顶) -->
+            <div class="mock-section">
+                <div class="mock-section-header">
+                    <div class="mock-section-title">
+                        <div class="mock-section-icon purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <h3>存储信息</h3>
+                    </div>
+                </div>
+                <div class="mock-storage-cards">
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">存储位置</span>
+                        <span class="mock-card-value" style="font-family: 'DM Sans', sans-serif; font-size: 13px;">本地 + 云端</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">数据大小</span>
+                        <span class="mock-card-value">128 KB</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">股票数量</span>
+                        <span class="mock-card-value">12 只</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">交易记录</span>
+                        <span class="mock-card-value">256 条</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination Settings -->
+            <div class="mock-section">
+                <div class="mock-section-header">
+                    <div class="mock-section-title">
+                        <div class="mock-section-icon green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                        <h3>分页设置</h3>
+                    </div>
+                    <button class="mock-save-btn">保存</button>
+                </div>
+                <div class="mock-setting-rows">
+                    <div class="mock-setting-row">
+                        <span class="mock-row-label">分页阈值</span>
+                        <div class="mock-row-control">
+                            <input type="number" class="mock-row-input" value="50" min="5">
+                            <span class="mock-row-unit">条</span>
+                        </div>
+                    </div>
+                    <div class="mock-setting-row">
+                        <span class="mock-row-label">每页条数</span>
+                        <div class="mock-row-control">
+                            <input type="number" class="mock-row-input" value="30" min="5">
+                            <span class="mock-row-unit">条</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="mock-hint">交易记录和持仓明细超过阈值后自动分页</p>
+            </div>
+
+            <!-- Data Management -->
+            <div class="mock-section">
+                <div class="mock-section-header">
+                    <div class="mock-section-title">
+                        <div class="mock-section-icon orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <h3>数据管理</h3>
+                    </div>
+                </div>
+                <div class="mock-data-buttons">
+                    <div class="mock-button-row">
+                        <button class="mock-btn mock-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            导出 JSON
+                        </button>
+                        <button class="mock-btn mock-btn-success">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            导入 JSON
+                        </button>
+                    </div>
+                    <div class="mock-button-row">
+                        <button class="mock-btn mock-btn-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            导出 CSV
+                        </button>
+                        <button class="mock-btn mock-btn-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            导出汇总 CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Info -->
+            <div class="mock-section">
+                <div class="mock-section-header">
+                    <div class="mock-section-title">
+                        <div class="mock-section-icon purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                        </div>
+                        <h3>存储信息</h3>
+                    </div>
+                </div>
+                <div class="mock-storage-cards">
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">存储位置</span>
+                        <span class="mock-card-value" style="font-family: 'DM Sans', sans-serif; font-size: 13px;">本地 + 云端</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">数据大小</span>
+                        <span class="mock-card-value">128 KB</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">股票数量</span>
+                        <span class="mock-card-value">12 只</span>
+                    </div>
+                    <div class="mock-storage-card">
+                        <span class="mock-card-label">交易记录</span>
+                        <span class="mock-card-value">256 条</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Developer Options -->
+            <div class="mock-section">
+                <div class="mock-section-header">
+                    <div class="mock-section-title">
+                        <div class="mock-section-icon red">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </div>
+                        <h3>开发者选项</h3>
+                    </div>
+                </div>
+                <div class="mock-setting-rows">
+                    <div class="mock-setting-row">
+                        <span class="mock-row-label">性能日志</span>
+                        <div class="mock-row-control">
+                            <label class="mock-toggle">
+                                <input type="checkbox" checked>
+                                <span class="mock-toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <p class="mock-hint">开启后控制台输出关键模块耗时，用于性能分析</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mock-footer">
+            <div class="mock-footer-left">v2.6.1</div>
+            <div class="mock-footer-right">
+                <button class="mock-footer-btn ghost">取消</button>
+                <button class="mock-footer-btn primary">保存全部</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

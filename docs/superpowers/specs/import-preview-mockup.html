@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>导入数据预览 — Mockup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #667eea;
+    --primary-light: #f0f2ff;
+    --primary-dark: #4f63d2;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --success: #2e7d32;
+    --text: #1a1a2e;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border: #e8eaf0;
+    --bg-subtle: #f8f9ff;
+    --shadow-modal: 0 24px 80px rgba(17, 17, 50, 0.22), 0 4px 20px rgba(102, 126, 234, 0.12);
+  }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  /* ─── MODAL SHELL ─── */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(10, 10, 30, 0.55);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+
+  .modal {
+    width: 720px;
+    max-height: 88vh;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: var(--shadow-modal);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalIn 0.35s cubic-bezier(.22,.68,0,1.2) both;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ─── HEADER ─── */
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .modal-title-icon {
+    width: 32px; height: 32px;
+    background: var(--primary-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border: none; background: none;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+  }
+  .modal-close:hover { background: #f5f5f5; color: var(--text); }
+
+  /* ─── BODY (scrollable) ─── */
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* custom scrollbar */
+  .modal-body::-webkit-scrollbar { width: 6px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: #dde0ee; border-radius: 3px; }
+
+  /* ─── STAT CARDS ─── */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--bg-subtle);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 10px 0 0 10px;
+  }
+
+  .stat-card.highlight::before { background: var(--primary); }
+  .stat-card.muted::before     { background: #d0d4e8; }
+
+  .stat-card:hover {
+    border-color: var(--border);
+    box-shadow: 0 2px 10px rgba(102,126,234,0.08);
+  }
+
+  .stat-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-number {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .stat-card.highlight .stat-number { color: var(--primary); }
+  .stat-card.muted     .stat-number { color: var(--text-muted); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ─── SECTION GROUP ─── */
+  .stock-section { display: flex; flex-direction: column; gap: 6px; }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 0 2px;
+    margin-bottom: 2px;
+  }
+
+  /* ─── STOCK ROW ─── */
+  .stock-row {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow 0.15s;
+  }
+
+  .stock-row:hover { box-shadow: 0 2px 10px rgba(102,126,234,0.1); }
+
+  .stock-row-header {
+    display: flex;
+    align-items: center;
+    padding: 11px 14px;
+    cursor: pointer;
+    position: relative;
+    gap: 10px;
+    transition: background 0.15s;
+  }
+
+  .stock-row-header:hover { background: rgba(102,126,234,0.04); }
+
+  .stock-row-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0;
+  }
+
+  .bar-new     { background: var(--primary); }
+  .bar-exists  { background: var(--warning); }
+
+  .stock-row-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    padding-left: 4px;
+  }
+
+  .stock-row-name span {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-left: 4px;
+  }
+
+  .stock-row-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .meta-badge.new-trades {
+    background: rgba(102,126,234,0.1);
+    color: var(--primary);
+  }
+
+  .meta-badge.dup-trades {
+    background: #f5f5f5;
+    color: var(--text-muted);
+  }
+
+  .expand-icon {
+    color: var(--text-muted);
+    font-size: 13px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .expand-icon.open { transform: rotate(180deg); }
+
+  /* ─── DETAIL TABLE ─── */
+  .stock-row-detail {
+    border-top: 1px solid var(--border);
+    background: #fafbff;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+
+  .stock-row-detail.open {
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+
+  .detail-table thead tr {
+    background: #f0f2ff;
+  }
+
+  .detail-table th {
+    padding: 8px 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 11.5px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .detail-table td {
+    padding: 8px 14px;
+    color: var(--text);
+    border-top: 1px solid #eef0f8;
+    white-space: nowrap;
+  }
+
+  .detail-table tr.row-dup td {
+    color: var(--text-muted);
+    background: #fafafa;
+  }
+
+  .detail-table tr.row-dup .trade-badge {
+    opacity: 0.5;
+  }
+
+  .detail-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+
+  /* trade type badges */
+  .trade-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .badge-buy  { background: #e3f2fd; color: #1565c0; }
+  .badge-sell { background: #fce4ec; color: #c62828; }
+  .badge-div  { background: #e8f5e9; color: #2e7d32; }
+  .badge-tax  { background: #fff3e0; color: #e65100; }
+
+  /* status indicators */
+  .status-new {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--success);
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .status-dup {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 12px;
+  }
+
+  /* ─── WARNING BOX ─── */
+  .warning-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fff8f0;
+    border: 1px solid #ffd199;
+    border-left: 4px solid var(--warning);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #b84c00;
+    line-height: 1.5;
+  }
+
+  .warning-icon {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    margin-top: 1px;
+  }
+
+  /* ─── FOOTER ─── */
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px 18px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    background: #fff;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    padding: 9px 20px;
+    white-space: nowrap;
+    border: 2px solid transparent;
+    letter-spacing: -0.1px;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 14px rgba(102,126,234,0.35);
+  }
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+  }
+
+  .btn-danger-outline {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+  .btn-danger-outline:hover {
+    background: rgba(244,67,54,0.06);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: transparent;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .btn-ghost:hover { color: var(--text); background: #f5f5f5; }
+
+  /* ─── TOGGLE INTERACTION ─── */
+  .expand-trigger { cursor: pointer; user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="modal-backdrop">
+  <div class="modal">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div class="modal-title">
+        <div class="modal-title-icon">📥</div>
+        导入数据预览
+      </div>
+      <button class="modal-close" onclick="this.closest('.modal-backdrop').style.opacity='0'">×</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <!-- STAT CARDS -->
+      <div class="stat-cards">
+        <div class="stat-card highlight">
+          <span class="stat-icon">📦</span>
+          <div class="stat-number">2</div>
+          <div class="stat-label">新增股票</div>
+        </div>
+        <div class="stat-card muted">
+          <span class="stat-icon">📋</span>
+          <div class="stat-number" style="color:#333">3</div>
+          <div class="stat-label">已存在股票</div>
+        </div>
+        <div class="stat-card highlight">
+          <span class="stat-icon">📝</span>
+          <div class="stat-number">15</div>
+          <div class="stat-label">新增记录</div>
+        </div>
+        <div class="stat-card muted">
+          <span class="stat-icon">⏭</span>
+          <div class="stat-number">2</div>
+          <div class="stat-label">重复跳过</div>
+        </div>
+      </div>
+
+      <!-- NEW STOCKS SECTION -->
+      <div class="stock-section">
+        <div class="section-label">新增股票 (2)</div>
+
+        <!-- Row 1: expanded -->
+        <div class="stock-row">
+          <div class="stock-row-header expand-trigger" onclick="toggleRow(this)">
+            <div class="stock-row-bar bar-new"></div>
+            <div class="stock-row-name">赣锋锂业 <span>(002460)</span></div>
+            <div class="stock-row-meta">
+              <span class="meta-badge new-trades">15条记录</span>
+            </div>
+            <div class="expand-icon open">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="stock-row-detail open">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>类型</th>
+                  <th>价格</th>
+                  <th>数量</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2025-10-15</td>
+                  <td><span class="trade-badge badge-buy">买入</span></td>
+                  <td>¥66.090</td>
+                  <td>200 股</td>
+                  <td><span class="status-new">✅ 新增</span></td>
+                </tr>
+                <tr>
+                  <td>2025-09-01</td>
+                  <td><span class="trade-badge badge-sell">卖出</span></td>
+                  <td>¥72.000</td>
+                  <td>100 股</td>
+                  <td><span class="status-new">✅ 新增</span></td>
+                </tr>
+                <tr class="row-dup">
+                  <td>2025-08-10</td>
+                  <td><span class="trade-badge badge-buy">买入</span></td>
+                  <td>¥60.000</td>
+                  <td>300 股</td>
+                  <td><span class="status-dup">⊘ 重复</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Row 2: collapsed -->
+        <div class="stock-row">
+          <div class="stock-row-header expand-trigger" onclick="toggleRow(this)">
+            <div class="stock-row-bar bar-new"></div>
+            <div class="stock-row-name">比亚迪 <span>(002594)</span></div>
+            <div class="stock-row-meta">
+              <span class="meta-badge new-trades">8条记录</span>
+            </div>
+            <div class="expand-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="stock-row-detail"></div>
+        </div>
+      </div>
+
+      <!-- EXISTING STOCKS SECTION -->
+      <div class="stock-section">
+        <div class="section-label">已存在股票 (3)</div>
+
+        <div class="stock-row">
+          <div class="stock-row-header expand-trigger" onclick="toggleRow(this)">
+            <div class="stock-row-bar bar-exists"></div>
+            <div class="stock-row-name">宁德时代 <span>(300750)</span></div>
+            <div class="stock-row-meta">
+              <span class="meta-badge new-trades">新增 5 条</span>
+              <span class="meta-badge dup-trades">重复 2 条</span>
+            </div>
+            <div class="expand-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="stock-row-detail"></div>
+        </div>
+
+        <div class="stock-row">
+          <div class="stock-row-header expand-trigger" onclick="toggleRow(this)">
+            <div class="stock-row-bar bar-exists"></div>
+            <div class="stock-row-name">贵州茅台 <span>(600519)</span></div>
+            <div class="stock-row-meta">
+              <span class="meta-badge dup-trades">全部重复</span>
+            </div>
+            <div class="expand-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="stock-row-detail"></div>
+        </div>
+      </div>
+
+      <!-- WARNING -->
+      <div class="warning-box">
+        <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span><strong>注意：</strong>覆盖数据将删除当前所有数据，请谨慎操作！</span>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <button class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 16H4a2 2 0 01-2-2V6a2 2 0 012-2h8l4 4"/><rect x="8" y="8" width="14" height="14" rx="2"/></svg>
+        合并数据
+      </button>
+      <button class="btn btn-danger-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        覆盖数据
+      </button>
+      <button class="btn btn-ghost">取消</button>
+    </div>
+
+  </div><!-- /modal -->
+</div>
+
+<script>
+  function toggleRow(header) {
+    const icon = header.querySelector('.expand-icon');
+    const detail = header.nextElementSibling;
+    const isOpen = icon.classList.contains('open');
+
+    if (isOpen) {
+      icon.classList.remove('open');
+      detail.classList.remove('open');
+    } else {
+      icon.classList.add('open');
+      detail.classList.add('open');
+    }
+  }
+</script>
+</body>
+</html>

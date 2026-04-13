@@ -810,114 +810,217 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content settings-modal-content">
             <div class="modal-header">
-                <h2>设置</h2>
+                <div class="modal-header-left">
+                    <div class="modal-header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                        </svg>
+                    </div>
+                    <h2>设置</h2>
+                </div>
                 <button type="button" class="modal-close-btn" id="closeSettingsModalBtn" title="关闭">&times;</button>
             </div>
             <div class="settings-body">
+                <!-- 存储信息 -->
                 <div class="settings-section">
                     <div class="settings-section-header">
-                        <h3>显示设置</h3>
+                        <div class="settings-section-title">
+                            <div class="settings-section-icon icon-purple">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                </svg>
+                            </div>
+                            <h3>存储信息</h3>
+                        </div>
+                    </div>
+                    <div class="storage-cards">
+                        <div class="storage-card">
+                            <span class="storage-card-label">存储位置</span>
+                            <span class="storage-card-value" id="settingsStorageLocation">加载中...</span>
+                        </div>
+                        <div class="storage-card">
+                            <span class="storage-card-label">数据大小</span>
+                            <span class="storage-card-value" id="settingsDataSize">0 KB</span>
+                        </div>
+                        <div class="storage-card">
+                            <span class="storage-card-label">股票数量</span>
+                            <span class="storage-card-value" id="settingsStockCount">0只</span>
+                        </div>
+                        <div class="storage-card">
+                            <span class="storage-card-label">交易记录</span>
+                            <span class="storage-card-value" id="settingsTradeCount">0条</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 显示设置 -->
+                <div class="settings-section">
+                    <div class="settings-section-header">
+                        <div class="settings-section-title">
+                            <div class="settings-section-icon icon-blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                            </div>
+                            <h3>显示设置</h3>
+                        </div>
                         <button id="saveDisplaySettingsBtn" class="btn-save-settings">保存</button>
                     </div>
-                    <div class="storage-info">
-                        <div class="storage-item">
-                            <span class="storage-label">持仓明细：</span>
-                            <label class="perf-switch">
-                                <input type="checkbox" id="holdingDetailToggle" checked>
-                                <span class="perf-switch-slider"></span>
-                            </label>
+                    <div class="setting-rows">
+                        <div class="setting-row">
+                            <span class="setting-label">持仓明细</span>
+                            <div class="setting-control">
+                                <label class="perf-switch">
+                                    <input type="checkbox" id="holdingDetailToggle" checked>
+                                    <span class="perf-switch-slider"></span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="storage-item">
-                            <span class="storage-label">持仓周期历史：</span>
-                            <label class="perf-switch">
-                                <input type="checkbox" id="cycleHistoryToggle" checked>
-                                <span class="perf-switch-slider"></span>
-                            </label>
+                        <div class="setting-row">
+                            <span class="setting-label">持仓周期历史</span>
+                            <div class="setting-control">
+                                <label class="perf-switch">
+                                    <input type="checkbox" id="cycleHistoryToggle" checked>
+                                    <span class="perf-switch-slider"></span>
+                                </label>
+                            </div>
                         </div>
-                        <div class="storage-item">
-                            <span class="storage-label">大数字转换阈值：</span>
-                            <input type="number" id="largeNumberThreshold" class="pagination-input" min="0" value="10000" title="超过此值自动转换为万/亿单位">
-                            <span class="storage-unit">元</span>
+                        <div class="setting-row">
+                            <span class="setting-label">大数字转换阈值</span>
+                            <div class="setting-control">
+                                <input type="number" id="largeNumberThreshold" class="setting-input" min="0" value="10000" title="超过此值自动转换为万/亿单位">
+                                <span class="setting-unit">元</span>
+                            </div>
                         </div>
                     </div>
-                    <p class="settings-hint">持仓明细：开启后会在详情页显示持仓明细表格。<br>持仓周期历史：开启后会在详情页汇总信息下方显示持仓周期历史。<br>大数字转换阈值：超过此值自动转为"万"或"亿"单位，设为0禁用转换。鼠标悬浮显示完整数值。</p>
+                    <p class="settings-hint">超过阈值自动将数字转为"万"/"亿"单位，设为 0 禁用转换，鼠标悬浮显示完整数值</p>
                 </div>
+
+                <!-- 分页设置 -->
                 <div class="settings-section">
                     <div class="settings-section-header">
-                        <h3>分页设置</h3>
+                        <div class="settings-section-title">
+                            <div class="settings-section-icon icon-green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </div>
+                            <h3>分页设置</h3>
+                        </div>
                         <button id="savePaginationSettingsBtn" class="btn-save-settings">保存</button>
                     </div>
-                    <div class="storage-info">
-                        <div class="storage-item">
-                            <span class="storage-label">分页阈值：</span>
-                            <input type="number" id="paginationThreshold" class="pagination-input" min="5" value="50" title="超过多少条记录后启用分页">
-                            <span class="storage-unit">条</span>
+                    <div class="setting-rows">
+                        <div class="setting-row">
+                            <span class="setting-label">分页阈值</span>
+                            <div class="setting-control">
+                                <input type="number" id="paginationThreshold" class="setting-input" min="5" value="50" title="超过多少条记录后启用分页">
+                                <span class="setting-unit">条</span>
+                            </div>
                         </div>
-                        <div class="storage-item">
-                            <span class="storage-label">每页条数：</span>
-                            <input type="number" id="paginationItemsPerPage" class="pagination-input" min="5" value="30" title="每页显示的记录数">
-                            <span class="storage-unit">条</span>
+                        <div class="setting-row">
+                            <span class="setting-label">每页条数</span>
+                            <div class="setting-control">
+                                <input type="number" id="paginationItemsPerPage" class="setting-input" min="5" value="30" title="每页显示的记录数">
+                                <span class="setting-unit">条</span>
+                            </div>
                         </div>
                     </div>
-                    <p class="settings-hint">交易记录和持仓明细在超过阈值后自动分页显示，最小值为5。</p>
+                    <p class="settings-hint">交易记录和持仓明细超过阈值后自动分页显示</p>
                 </div>
+
+                <!-- 数据管理 -->
                 <div class="settings-section">
-                    <h3>数据管理</h3>
-                    <div class="settings-actions">
-                        <button type="button" class="btn btn-primary" id="exportDataBtn">导出JSON数据</button>
-                        <button type="button" class="btn btn-success" id="importDataBtn">导入JSON数据</button>
+                    <div class="settings-section-header">
+                        <div class="settings-section-title">
+                            <div class="settings-section-icon icon-orange">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <h3>数据管理</h3>
+                        </div>
                     </div>
-                    <div class="settings-actions" style="margin-top: 10px;">
-                        <button type="button" class="btn btn-warning" id="exportCSVBtn">导出CSV</button>
-                        <button type="button" class="btn btn-warning" id="exportSummaryCSVBtn">导出汇总CSV</button>
-                    </div>
-                    <p class="settings-hint">导出数据可备份或迁移到其他设备，导入数据可恢复或合并数据。CSV格式可用于Excel查看。</p>
-                </div>
-                <div class="settings-section">
-                    <h3>存储信息</h3>
-                    <div class="storage-info">
-                        <div class="storage-item">
-                            <span class="storage-label">存储位置：</span>
-                            <span class="storage-value" id="settingsStorageLocation">加载中...</span>
+                    <div class="data-buttons">
+                        <div class="data-button-row">
+                            <button type="button" class="btn-data btn-data-primary" id="exportDataBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                导出 JSON
+                            </button>
+                            <button type="button" class="btn-data btn-data-success" id="importDataBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                导入 JSON
+                            </button>
                         </div>
-                        <div class="storage-item">
-                            <span class="storage-label">股票数量：</span>
-                            <span class="storage-value" id="settingsStockCount">0只</span>
-                        </div>
-                        <div class="storage-item">
-                            <span class="storage-label">交易记录：</span>
-                            <span class="storage-value" id="settingsTradeCount">0条</span>
-                        </div>
-                        <div class="storage-item">
-                            <span class="storage-label">数据大小：</span>
-                            <span class="storage-value" id="settingsDataSize">0 KB</span>
+                        <div class="data-button-row">
+                            <button type="button" class="btn-data btn-data-warning" id="exportCSVBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                导出 CSV
+                            </button>
+                            <button type="button" class="btn-data btn-data-warning" id="exportSummaryCSVBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                                导出汇总 CSV
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 备份管理功能已注释 - 功能未实现且不适用于 Cloudflare D1 数据库
+                <!-- 开发者选项 -->
                 <div class="settings-section">
-                    <h3>备份管理</h3>
-                    <div class="settings-actions">
-                        <button type="button" class="btn btn-info" id="viewBackupsBtn">查看备份</button>
-                        <button type="button" class="btn btn-primary" id="createBackupBtn">创建备份</button>
-                    </div>
-                    <p class="settings-hint">系统会自动保存最近7天的备份，也可以手动创建备份。查看备份可以恢复或删除历史备份。</p>
-                </div>
-                -->
-
-                <div class="settings-section">
-                    <h3>开发者选项</h3>
-                    <div class="storage-info">
-                        <div class="storage-item">
-                            <span class="storage-label">性能日志：</span>
-                            <label class="perf-switch">
-                                <input type="checkbox" id="perfToggle" checked>
-                                <span class="perf-switch-slider"></span>
-                            </label>
+                    <div class="settings-section-header">
+                        <div class="settings-section-title">
+                            <div class="settings-section-icon icon-red">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                            </div>
+                            <h3>开发者选项</h3>
                         </div>
                     </div>
-                    <p class="settings-hint">开启后会在控制台输出关键模块耗时，用于对比优化前后性能。</p>
+                    <div class="setting-rows">
+                        <div class="setting-row">
+                            <span class="setting-label">性能日志</span>
+                            <div class="setting-control">
+                                <label class="perf-switch">
+                                    <input type="checkbox" id="perfToggle" checked>
+                                    <span class="perf-switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="settings-hint">开启后控制台输出关键模块耗时，用于性能分析</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-footer-left">
+                    <span class="app-version" id="settingsAppVersion"></span>
+                </div>
+                <div class="modal-footer-right">
+                    <button type="button" class="btn-footer-btn btn-footer-ghost" id="closeSettingsFooterBtn">关闭</button>
                 </div>
             </div>
         </div>
