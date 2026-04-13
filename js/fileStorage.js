@@ -136,7 +136,9 @@ const FileStorage = {
                     currentTrades: currentStock.trades.length,
                     importTrades: stock.trades.length,
                     newTrades: analysis.newCount,
-                    duplicateTrades: analysis.duplicateCount
+                    duplicateTrades: analysis.duplicateCount,
+                    newItems: analysis.newItems,
+                    duplicateItems: analysis.duplicateItems
                 });
                 result.newTrades += analysis.newCount;
                 result.duplicateTrades += analysis.duplicateCount;
@@ -151,7 +153,8 @@ const FileStorage = {
                 result.newStocks.push({
                     code: stock.code,
                     name: stock.name,
-                    trades: stock.trades.length
+                    trades: stock.trades.length,
+                    tradeItems: stock.trades
                 });
                 result.newTrades += stock.trades.length;
                 result.details.push(`${stock.name}(${stock.code}): 新股票，${stock.trades.length}条交易记录`);
@@ -172,19 +175,24 @@ const FileStorage = {
             currentTrades.map(t => `${t.date}-${t.type}-${t.price}-${t.amount}`)
         );
 
-        let newCount = 0;
-        let duplicateCount = 0;
+        const newItems = [];
+        const duplicateItems = [];
 
         importTrades.forEach(trade => {
             const key = `${trade.date}-${trade.type}-${trade.price}-${trade.amount}`;
             if (currentKeys.has(key)) {
-                duplicateCount++;
+                duplicateItems.push(trade);
             } else {
-                newCount++;
+                newItems.push(trade);
             }
         });
 
-        return { newCount, duplicateCount };
+        return {
+            newCount: newItems.length,
+            duplicateCount: duplicateItems.length,
+            newItems,
+            duplicateItems
+        };
     },
 
     /**

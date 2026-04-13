@@ -555,62 +555,169 @@ window.App = {
         this.showImportPreview(analysis);
     },
 
+    _buildTradeTypeLabel(type) {
+        const map = { buy: '买入', sell: '卖出', dividend: '分红', tax: '红利税' };
+        const cls = { buy: 'ip-badge-buy', sell: 'ip-badge-sell', dividend: 'ip-badge-div', tax: 'ip-badge-tax' };
+        const label = map[type] || type;
+        const klass = cls[type] || '';
+        return `<span class="ip-trade-badge ${klass}">${label}</span>`;
+    },
+
+    _buildTradeRows(items, isDuplicate) {
+        if (!items || items.length === 0) return '';
+        return items.map(t => {
+            const rowClass = isDuplicate ? 'ip-row-dup' : '';
+            const status = isDuplicate
+                ? `<span class="ip-status-dup">⊘ 重复</span>`
+                : `<span class="ip-status-new">✅ 新增</span>`;
+            return `
+                <tr class="${rowClass}">
+                    <td>${t.date}</td>
+                    <td>${this._buildTradeTypeLabel(t.type)}</td>
+                    <td>¥${Number(t.price).toFixed(3)}</td>
+                    <td>${t.amount} 股</td>
+                    <td>${status}</td>
+                </tr>`;
+        }).join('');
+    },
+
     showImportPreview(analysis) {
+        if (!analysis || !Array.isArray(analysis.newStocks) || !Array.isArray(analysis.existingStocks)) {
+            ErrorHandler.showError('导入数据分析结果格式异常', null, ErrorHandler.levels.WARN);
+            return;
+        }
+
         const modal = document.getElementById('importPreviewModal');
         const content = document.getElementById('importPreviewContent');
 
-        let html = `
-            <div class="import-summary">
-                <div class="import-summary-item">
-                    <span class="import-summary-label">新增股票</span>
-                    <span class="import-summary-value highlight">${analysis.newStocks.length}只</span>
+        // ── 统计卡片区 ──
+        const statsHtml = `
+            <div class="ip-stat-cards">
+                <div class="ip-stat-card ip-stat-highlight">
+                    <span class="ip-stat-icon">📦</span>
+                    <div class="ip-stat-number">${analysis.newStocks.length}</div>
+                    <div class="ip-stat-label">新增股票</div>
                 </div>
-                <div class="import-summary-item">
-                    <span class="import-summary-label">已存在股票</span>
-                    <span class="import-summary-value">${analysis.existingStocks.length}只</span>
+                <div class="ip-stat-card ip-stat-muted">
+                    <span class="ip-stat-icon">📋</span>
+                    <div class="ip-stat-number ip-stat-number-neutral">${analysis.existingStocks.length}</div>
+                    <div class="ip-stat-label">已存在股票</div>
                 </div>
-                <div class="import-summary-item">
-                    <span class="import-summary-label">新增交易记录</span>
-                    <span class="import-summary-value highlight">${analysis.newTrades}条</span>
+                <div class="ip-stat-card ip-stat-highlight">
+                    <span class="ip-stat-icon">📝</span>
+                    <div class="ip-stat-number">${analysis.newTrades}</div>
+                    <div class="ip-stat-label">新增记录</div>
                 </div>
-                <div class="import-summary-item">
-                    <span class="import-summary-label">重复跳过</span>
-                    <span class="import-summary-value">${analysis.duplicateTrades}条</span>
+                <div class="ip-stat-card ip-stat-muted">
+                    <span class="ip-stat-icon">⏭</span>
+                    <div class="ip-stat-number ip-stat-number-muted">${analysis.duplicateTrades}</div>
+                    <div class="ip-stat-label">重复跳过</div>
                 </div>
-            </div>
-        `;
+            </div>`;
 
+        // ── 新增股票列表 ──
+        let newStocksSectionHtml = '';
         if (analysis.newStocks.length > 0) {
-            html += `
-                <div class="import-details">
-                    <h4>新增股票</h4>
-                    ${analysis.newStocks.map(s =>
-                        `<div class="import-detail-item">${s.name}(${s.code}) - ${s.trades}条记录</div>`
-                    ).join('')}
-                </div>
-            `;
+            const rows = analysis.newStocks.map((s, i) => {
+                const allRows = this._buildTradeRows(s.tradeItems, false);
+                const detailHtml = allRows ? `
+                    <div class="ip-stock-detail" id="ip-detail-new-${i}">
+                        <table class="ip-detail-table">
+                            <thead><tr><th>日期</th><th>类型</th><th>价格</th><th>数量</th><th>状态</th></tr></thead>
+                            <tbody>${allRows}</tbody>
+                        </table>
+                    </div>` : '';
+                const hasDetail = !!allRows;
+                return `
+                    <div class="ip-stock-row">
+                        <div class="ip-stock-row-header" onclick="App._toggleImportRow(this)" data-has-detail="${hasDetail}">
+                            <div class="ip-stock-bar ip-bar-new"></div>
+                            <div class="ip-stock-name">${s.name} <span>(${s.code})</span></div>
+                            <div class="ip-stock-meta">
+                                <span class="ip-meta-badge ip-meta-new">${s.trades}条记录</span>
+                            </div>
+                            ${hasDetail ? `<div class="ip-expand-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>` : ''}
+                        </div>
+                        ${detailHtml}
+                    </div>`;
+            }).join('');
+            newStocksSectionHtml = `
+                <div class="ip-stock-section">
+                    <div class="ip-section-label">新增股票 (${analysis.newStocks.length})</div>
+                    ${rows}
+                </div>`;
         }
 
+        // ── 已存在股票列表 ──
+        let existingStocksSectionHtml = '';
         if (analysis.existingStocks.length > 0) {
-            html += `
-                <div class="import-details" style="margin-top: 15px;">
-                    <h4>已存在股票</h4>
-                    ${analysis.existingStocks.map(s =>
-                        `<div class="import-detail-item">${s.name}(${s.code}) - 新增${s.newTrades}条，重复${s.duplicateTrades}条</div>`
-                    ).join('')}
-                </div>
-            `;
+            const rows = analysis.existingStocks.map((s, i) => {
+                const newRows = this._buildTradeRows(s.newItems, false);
+                const dupRows = this._buildTradeRows(s.duplicateItems, true);
+                const allRows = newRows + dupRows;
+                const detailHtml = allRows ? `
+                    <div class="ip-stock-detail" id="ip-detail-exist-${i}">
+                        <table class="ip-detail-table">
+                            <thead><tr><th>日期</th><th>类型</th><th>价格</th><th>数量</th><th>状态</th></tr></thead>
+                            <tbody>${allRows}</tbody>
+                        </table>
+                    </div>` : '';
+                const hasDetail = !!allRows;
+                const metaBadges = s.newTrades === 0
+                    ? `<span class="ip-meta-badge ip-meta-dup">全部重复</span>`
+                    : `<span class="ip-meta-badge ip-meta-new">新增 ${s.newTrades} 条</span>
+                       <span class="ip-meta-badge ip-meta-dup">重复 ${s.duplicateTrades} 条</span>`;
+                return `
+                    <div class="ip-stock-row">
+                        <div class="ip-stock-row-header" onclick="App._toggleImportRow(this)" data-has-detail="${hasDetail}">
+                            <div class="ip-stock-bar ip-bar-exists"></div>
+                            <div class="ip-stock-name">${s.name} <span>(${s.code})</span></div>
+                            <div class="ip-stock-meta">${metaBadges}</div>
+                            ${hasDetail ? `<div class="ip-expand-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>` : ''}
+                        </div>
+                        ${detailHtml}
+                    </div>`;
+            }).join('');
+            existingStocksSectionHtml = `
+                <div class="ip-stock-section">
+                    <div class="ip-section-label">已存在股票 (${analysis.existingStocks.length})</div>
+                    ${rows}
+                </div>`;
         }
 
-        html += `
-            <div class="import-warning">
-                <strong>注意：</strong>覆盖数据将删除当前所有数据，请谨慎操作！
-            </div>
-        `;
+        // ── 警告区 ──
+        const warningHtml = `
+            <div class="ip-warning-box">
+                <svg class="ip-warning-icon" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span><strong>注意：</strong>覆盖数据将删除当前所有数据，请谨慎操作！</span>
+            </div>`;
 
-        content.innerHTML = html;
+        content.innerHTML = statsHtml + newStocksSectionHtml + existingStocksSectionHtml + warningHtml;
         modal.style.display = 'block';
         this.closeSettingsModal();
+    },
+
+    _toggleImportRow(header) {
+        if (header.dataset.hasDetail !== 'true') return;
+        const icon = header.querySelector('.ip-expand-icon');
+        const detail = header.nextElementSibling;
+        if (!detail) return;
+        const isOpen = detail.classList.contains('ip-open');
+        if (isOpen) {
+            detail.classList.remove('ip-open');
+            if (icon) icon.classList.remove('ip-open');
+        } else {
+            detail.classList.add('ip-open');
+            if (icon) icon.classList.add('ip-open');
+        }
     },
 
     closeImportPreviewModal() {
