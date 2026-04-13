@@ -1231,8 +1231,8 @@
         }
 
         /* 详情页：实时持仓/汇总信息内的 tooltip 默认向下 + 向左（避免顶部/右侧裁切） */
-        #detailPage .realtime-info .tooltip-text,
-        #detailPage .summary-info .tooltip-text {
+        #detailPage .realtime-info-v2 .tooltip-text,
+        #detailPage .summary-info-v2 .tooltip-text {
             top: calc(100% + 10px);
             bottom: auto;
             left: auto;
@@ -1266,20 +1266,20 @@
         /* holding tooltip 已还原为 <br> 分行，无需额外行样式 */
 
         /* 若右对齐仍会导致左侧裁切，则切换为左对齐 */
-        #detailPage .realtime-info .tooltip-text.tooltip-align-left,
-        #detailPage .summary-info .tooltip-text.tooltip-align-left {
+        #detailPage .realtime-info-v2 .tooltip-text.tooltip-align-left,
+        #detailPage .summary-info-v2 .tooltip-text.tooltip-align-left {
             right: auto;
             left: 0;
         }
 
-        #detailPage .realtime-info .tooltip-text.tooltip-align-left::after,
-        #detailPage .summary-info .tooltip-text.tooltip-align-left::after {
+        #detailPage .realtime-info-v2 .tooltip-text.tooltip-align-left::after,
+        #detailPage .summary-info-v2 .tooltip-text.tooltip-align-left::after {
             right: auto;
             left: 10px;
         }
 
-        #detailPage .realtime-info .tooltip-text::after,
-        #detailPage .summary-info .tooltip-text::after {
+        #detailPage .realtime-info-v2 .tooltip-text::after,
+        #detailPage .summary-info-v2 .tooltip-text::after {
             top: auto;
             bottom: 100%;
             left: auto;
@@ -6028,6 +6028,295 @@
         font-size: 15px;
 
     }
+
+
+/* ==================== 详情页当前持仓区 V2：金融仪表盘风格 ==================== */
+
+.realtime-info-v2 {
+    margin: 24px 0;
+    padding: 0;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.rtv2-header {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rtv2-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rtv2-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(180deg, #ff6b6b 0%, #ee5a5a 100%);
+    border-radius: 2px;
+}
+
+/* 核心指标区：4列布局 */
+.rtv2-hero-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    padding: 20px 24px;
+}
+
+.rtv2-hero-card {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.rtv2-hero-card:last-child {
+    border-right: none;
+}
+
+.rtv2-hero-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rtv2-hero-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.rtv2-hero-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+/* 盈亏状态变色 */
+.rtv2-hero-card:has(.rtv2-hero-value.profit) {
+    background: rgba(233, 69, 96, 0.1);
+}
+
+.rtv2-hero-card:has(.rtv2-hero-value.loss) {
+    background: rgba(46, 213, 115, 0.1);
+}
+
+.rtv2-hero-value.profit {
+    color: #ff6b6b;
+}
+
+.rtv2-hero-value.loss {
+    color: #2ed573;
+}
+
+/* 详细数据区：3列布局 */
+.rtv2-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rtv2-detail-item {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.25s ease;
+}
+
+/* 每第3个元素去掉右边框 */
+.rtv2-detail-item:nth-child(3n) {
+    border-right: none;
+}
+
+/* 最后3个元素去掉下边框 */
+.rtv2-detail-item:nth-last-child(-n+3) {
+    border-bottom: none;
+}
+
+.rtv2-detail-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rtv2-detail-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rtv2-detail-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+.rtv2-detail-value.profit {
+    color: #ff6b6b;
+}
+
+.rtv2-detail-value.loss {
+    color: #2ed573;
+}
+
+/* 双行数据显示 */
+.rtv2-detail-dual {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rtv2-detail-dual-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rtv2-detail-dual-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    min-width: 32px;
+    text-transform: uppercase;
+}
+
+.rtv2-detail-dual-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-variant-numeric: tabular-nums;
+}
+
+.rtv2-detail-dual-value.profit {
+    color: #ff6b6b;
+}
+
+.rtv2-detail-dual-value.loss {
+    color: #2ed573;
+}
+
+/* 盈亏项高亮 */
+.rtv2-detail-item:has(.rtv2-detail-value.profit) {
+    background: rgba(233, 69, 96, 0.05);
+}
+
+.rtv2-detail-item:has(.rtv2-detail-value.loss) {
+    background: rgba(46, 213, 115, 0.05);
+}
+
+/* V2 版 tooltip 样式调整 */
+.realtime-info-v2 .tooltip-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.realtime-info-v2 .tooltip-text {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.realtime-info-v2 .tooltip-text strong {
+    color: #ff6b6b;
+}
+
+/* 响应式适配 */
+@media (max-width: 1024px) {
+    .rtv2-hero-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rtv2-hero-card:nth-child(2) {
+        border-right: none;
+    }
+    
+    .rtv2-hero-card:nth-child(3),
+    .rtv2-hero-card:nth-child(4) {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .rtv2-detail-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rtv2-detail-item:nth-child(2n) {
+        border-right: none;
+    }
+    
+    .rtv2-detail-item:nth-child(3) {
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+@media (max-width: 600px) {
+    .realtime-info-v2 {
+        margin: 16px 0;
+        border-radius: 12px;
+    }
+    
+    .rtv2-header {
+        padding: 12px 16px 10px;
+    }
+    
+    .rtv2-title {
+        font-size: 16px;
+    }
+    
+    .rtv2-hero-grid {
+        grid-template-columns: 1fr 1fr;
+        padding: 12px 16px;
+        gap: 0;
+    }
+    
+    .rtv2-hero-card {
+        padding: 14px 12px;
+    }
+    
+    .rtv2-hero-value {
+        font-size: 22px;
+    }
+    
+    .rtv2-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rtv2-detail-item {
+        border-right: none;
+        padding: 12px 16px;
+    }
+    
+    .rtv2-detail-item:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
 
 }
 

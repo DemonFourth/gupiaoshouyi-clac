@@ -323,145 +323,108 @@
         <!-- ==================== 详情页面 ==================== -->
         <div id="detailPage" class="page-container" style="display: none;">
             <!-- 当前持仓信息（Grid + label/value 层级，保持原有颜色） -->
-            <div class="realtime-info">
-                <div class="realtime-title">当前持仓</div>
-                <div class="detail-summary-grid detail-realtime-grid">
-                    <!-- 周期投入（新增） -->
-                    <div class="detail-summary-item detail-summary-item-dual">
-                        <span class="detail-summary-label">
-                            周期投入
-                            <span class="tooltip-container">
-                                <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">
-                                    <strong>投入成本：</strong>当前持仓周期内所有买入金额+手续费+红利税<br>
-                                    <strong>卖出金额：</strong>当前持仓周期内所有卖出净额+分红<br>
-                                    <strong>净投入：</strong><span id="currentCycleNetInvest">--</span>
-                                </span>
-                            </span>
-                        </span>
-                        <div class="detail-summary-dual">
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">投入成本</span>
-                                <span class="detail-summary-dual-value" id="currentCycleBuyCost"><span class="loading">--</span></span>
-                            </div>
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">卖出金额</span>
-                                <span class="detail-summary-dual-value" id="currentCycleSellAmount"><span class="loading">--</span></span>
-                            </div>
-                        </div>
+            <!-- 当前持仓信息（V2：金融仪表盘风格） -->
+            <div class="realtime-info-v2">
+                <div class="rtv2-header">
+                    <h3 class="rtv2-title">当前持仓</h3>
+                </div>
+                
+                <!-- 核心指标区 -->
+                <div class="rtv2-hero-grid">
+                    <div class="rtv2-hero-card">
+                        <div class="rtv2-hero-label">持有股数</div>
+                        <div class="rtv2-hero-value" id="realtimeHolding"><span class="loading">--</span></div>
                     </div>
-                    <!-- 持有股（成本/市值合并） -->
-                    <div class="detail-summary-item detail-summary-item-dual">
-                        <span class="detail-summary-label">
-                            持有股
-                            <span class="tooltip-container">
-                                <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">
-                                    <strong>成本：</strong>当前持有股的持仓成本（FIFO计算）<br>
-                                    <strong>市值：</strong>当前股价×持仓股数
-                                </span>
-                            </span>
-                        </span>
-                        <div class="detail-summary-dual">
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">成本</span>
-                                <span class="detail-summary-dual-value" id="realtimeCost"><span class="loading">--</span></span>
-                            </div>
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">市值</span>
-                                <span class="detail-summary-dual-value" id="marketValue"><span class="loading">--</span></span>
-                            </div>
-                        </div>
+                    <div class="rtv2-hero-card">
+                        <div class="rtv2-hero-label">持有成本</div>
+                        <div class="rtv2-hero-value" id="realtimeCost"><span class="loading">--</span></div>
                     </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">
-                            <span class="detail-summary-label-text">持有股数</span>
-                            <span class="tooltip-container">
-                                <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text" id="holdingTooltip">
-                                    <strong>持仓明细：</strong><br>
-                                    暂无持仓
-                                </span>
-                            </span>
-                        </span>
-                        <span class="detail-summary-value" id="realtimeHolding"><span class="loading">--</span></span>
+                    <div class="rtv2-hero-card">
+                        <div class="rtv2-hero-label">持有市值</div>
+                        <div class="rtv2-hero-value" id="marketValue"><span class="loading">--</span></div>
                     </div>
-                    <div class="detail-summary-item detail-summary-item-dual">
-                        <span class="detail-summary-label">
+                    <div class="rtv2-hero-card" id="rtv2HeroProfit">
+                        <div class="rtv2-hero-label">持有股收益</div>
+                        <div class="rtv2-hero-value" id="latestProfit"><span class="loading">--</span></div>
+                    </div>
+                </div>
+                
+                <!-- 详细数据区 -->
+                <div class="rtv2-detail-grid">
+                    <div class="rtv2-detail-item">
+                        <span class="rtv2-detail-label">
                             每股成本
                             <span class="tooltip-container">
                                 <span class="tooltip-icon">?</span>
                                 <span class="tooltip-text">
-                                    <strong>计算公式：</strong>持仓成本=持仓成本÷持仓股数；摊薄成本=(持仓市值-总收益)÷持仓股数<br>
-                                    <strong>说明：</strong>摊薄成本会考虑已卖出收益对成本的抵扣。
+                                    <strong>持仓成本：</strong>持仓成本÷持仓股数<br>
+                                    <strong>摊薄成本：</strong>(持仓市值-总收益)÷持仓股数
                                 </span>
                             </span>
                         </span>
-                        <div class="detail-summary-dual">
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">持仓</span>
-                                <span class="detail-summary-dual-value" id="costPerShare"><span class="loading">--</span></span>
-                            </div>
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">摊薄</span>
-                                <span class="detail-summary-dual-value" id="dilutedCostPerShare"><span class="loading">--</span></span>
-                            </div>
+                        <div class="rtv2-detail-dual">
+                            <span class="rtv2-detail-dual-row">
+                                <span class="rtv2-detail-dual-label">持仓</span>
+                                <span class="rtv2-detail-dual-value" id="costPerShare"><span class="loading">--</span></span>
+                            </span>
+                            <span class="rtv2-detail-dual-row">
+                                <span class="rtv2-detail-dual-label">摊薄</span>
+                                <span class="rtv2-detail-dual-value" id="dilutedCostPerShare"><span class="loading">--</span></span>
+                            </span>
                         </div>
                     </div>
-                    <div class="detail-summary-item detail-summary-item-dual">
-                        <span class="detail-summary-label">
-                            当前收益
+                    <div class="rtv2-detail-item" id="rtv2CycleReturnRate">
+                        <span class="rtv2-detail-label">
+                            持仓周期收益率
+                            <span class="tooltip-container">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-text">(现价-摊薄成本)÷摊薄成本×100%</span>
+                            </span>
+                        </span>
+                        <span class="rtv2-detail-value" id="cycleReturnRate"><span class="loading">--</span></span>
+                    </div>
+                    <div class="rtv2-detail-item">
+                        <span class="rtv2-detail-label">持仓开始日期</span>
+                        <span class="rtv2-detail-value" id="holdingStartDate"><span class="loading">--</span></span>
+                    </div>
+                    <div class="rtv2-detail-item">
+                        <span class="rtv2-detail-label">持有天数</span>
+                        <span class="rtv2-detail-value" id="holdingDays"><span class="loading">--</span></span>
+                    </div>
+                    <div class="rtv2-detail-item">
+                        <span class="rtv2-detail-label">
+                            周期投入
                             <span class="tooltip-container">
                                 <span class="tooltip-icon">?</span>
                                 <span class="tooltip-text">
-                                    <strong>持有股收益：</strong>浮动盈亏（当前持有股数的盈亏总和）<br>
-                                    <strong>持仓周期收益：</strong>当前持仓周期的已实现收益+浮动盈亏+分红-红利税（整个持仓周期的总收益）
+                                    <strong>投入成本：</strong>当前周期买入+手续费+红利税<br>
+                                    <strong>卖出金额：</strong>卖出净额+分红<br>
+                                    <strong>净投入：</strong><span id="currentCycleNetInvest">--</span>
                                 </span>
                             </span>
                         </span>
-                        <div class="detail-summary-dual">
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">持有股</span>
-                                <span class="detail-summary-dual-value" id="latestProfit"><span class="loading">--</span></span>
-                            </div>
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">持仓周期</span>
-                                <span class="detail-summary-dual-value" id="cycleProfit"><span class="loading">--</span></span>
-                            </div>
+                        <div class="rtv2-detail-dual">
+                            <span class="rtv2-detail-dual-row">
+                                <span class="rtv2-detail-dual-label">投入</span>
+                                <span class="rtv2-detail-dual-value" id="currentCycleBuyCost"><span class="loading">--</span></span>
+                            </span>
+                            <span class="rtv2-detail-dual-row">
+                                <span class="rtv2-detail-dual-label">卖出</span>
+                                <span class="rtv2-detail-dual-value" id="currentCycleSellAmount"><span class="loading">--</span></span>
+                            </span>
                         </div>
                     </div>
-                    <div class="detail-summary-item detail-summary-item-dual">
-                        <span class="detail-summary-label">
-                            当前收益率
+                    <div class="rtv2-detail-item" id="rtv2CycleProfit">
+                        <span class="rtv2-detail-label">
+                            持仓周期收益
                             <span class="tooltip-container">
                                 <span class="tooltip-icon">?</span>
-                                <span class="tooltip-text">
-                                    <strong>持有股收益率：</strong>持有股收益÷持仓成本×100%<br>
-                                    <strong>持仓周期收益率：</strong>(现价-摊薄成本)÷摊薄成本×100%
-                                </span>
+                                <span class="tooltip-text">已实现收益+浮动盈亏+分红-红利税</span>
                             </span>
                         </span>
-                        <div class="detail-summary-dual">
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">持有股</span>
-                                <span class="detail-summary-dual-value" id="latestReturnRate"><span class="loading">--</span></span>
-                            </div>
-                            <div class="detail-summary-dual-row">
-                                <span class="detail-summary-dual-label">持仓周期</span>
-                                <span class="detail-summary-dual-value" id="cycleReturnRate"><span class="loading">--</span></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">持仓开始日期</span>
-                        <span class="detail-summary-value" id="holdingStartDate"><span class="loading">--</span></span>
-                    </div>
-                    <div class="detail-summary-item">
-                        <span class="detail-summary-label">持有天数</span>
-                        <span class="detail-summary-value" id="holdingDays"><span class="loading">--</span></span>
+                        <span class="rtv2-detail-value" id="cycleProfit"><span class="loading">--</span></span>
                     </div>
                 </div>
-                <!-- 提示已移到顶部工具条（#priceRefreshStatus） -->
             </div>
 
             <!-- 汇总信息（重新设计：金融仪表盘风格，分组展示） -->

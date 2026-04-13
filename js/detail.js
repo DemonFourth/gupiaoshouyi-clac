@@ -424,7 +424,7 @@ const Detail = {
         if (typeof document === 'undefined' || !document || typeof document.addEventListener !== 'function') return;
         this._tooltipAutoFlipBound = true;
 
-        const selector = '#detailPage .realtime-info .tooltip-container, #detailPage .summary-info .tooltip-container';
+        const selector = '#detailPage .realtime-info-v2 .tooltip-container, #detailPage .summary-info-v2 .tooltip-container';
         const margin = 8;
 
         const update = (container) => {
@@ -580,15 +580,15 @@ const Detail = {
 
         const profitElement = this._domCache.totalProfit;
         profitElement.textContent = '¥' + result.totalProfit.toFixed(2);
-        profitElement.className = 'summary-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
+        profitElement.className = 'detail-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
 
         const weeklyProfitElement = this._domCache.weeklyProfit;
         weeklyProfitElement.textContent = '¥' + periodProfit.weeklyProfit.toFixed(2);
-        weeklyProfitElement.className = 'summary-value ' + (periodProfit.weeklyProfit >= 0 ? 'profit' : 'loss');
+        weeklyProfitElement.className = 'detail-value ' + (periodProfit.weeklyProfit >= 0 ? 'profit' : 'loss');
 
         const monthlyProfitElement = this._domCache.monthlyProfit;
         monthlyProfitElement.textContent = '¥' + periodProfit.monthlyProfit.toFixed(2);
-        monthlyProfitElement.className = 'summary-value ' + (periodProfit.monthlyProfit >= 0 ? 'profit' : 'loss');
+        monthlyProfitElement.className = 'detail-value ' + (periodProfit.monthlyProfit >= 0 ? 'profit' : 'loss');
 
         this._domCache.totalReturnRate.textContent = result.totalReturnRate.toFixed(3) + '%';
 
@@ -623,30 +623,34 @@ const Detail = {
 
             const latestReturnRateElement = this._domCache.latestReturnRate;
             latestReturnRateElement.textContent = currentHoldingReturnRate.toFixed(3) + '%';
-            latestReturnRateElement.className = 'detail-summary-dual-value ' + (currentHoldingReturnRate >= 0 ? 'profit' : 'loss');
+            latestReturnRateElement.classList.remove('profit', 'loss');
+            latestReturnRateElement.classList.add(currentHoldingReturnRate >= 0 ? 'profit' : 'loss');
 
             const latestProfitElement = this._domCache.latestProfit;
             latestProfitElement.textContent = '¥' + currentHoldingProfit.toFixed(2);
-            latestProfitElement.className = 'detail-summary-dual-value ' + (currentHoldingProfit >= 0 ? 'profit' : 'loss');
+            latestProfitElement.classList.remove('profit', 'loss');
+            latestProfitElement.classList.add(currentHoldingProfit >= 0 ? 'profit' : 'loss');
 
             // 更新当前持仓周期收益
             const cycleProfitElement = this._domCache.cycleProfit;
             if (cycleProfit !== null) {
                 cycleProfitElement.textContent = '¥' + cycleProfit.toFixed(2);
-                cycleProfitElement.className = 'detail-summary-dual-value ' + (cycleProfit >= 0 ? 'profit' : 'loss');
+                cycleProfitElement.classList.remove('profit', 'loss');
+                cycleProfitElement.classList.add(cycleProfit >= 0 ? 'profit' : 'loss');
             } else {
                 cycleProfitElement.textContent = '--';
-                cycleProfitElement.className = 'detail-summary-dual-value';
+                cycleProfitElement.classList.remove('profit', 'loss');
             }
 
             // 更新当前持仓周期收益率
             const cycleReturnRateElement = this._domCache.cycleReturnRate;
             if (cycleReturnRate !== null) {
                 cycleReturnRateElement.textContent = cycleReturnRate.toFixed(3) + '%';
-                cycleReturnRateElement.className = 'detail-summary-dual-value ' + (cycleReturnRate >= 0 ? 'profit' : 'loss');
+                cycleReturnRateElement.classList.remove('profit', 'loss');
+                cycleReturnRateElement.classList.add(cycleReturnRate >= 0 ? 'profit' : 'loss');
             } else {
                 cycleReturnRateElement.textContent = '--';
-                cycleReturnRateElement.className = 'detail-summary-dual-value';
+                cycleReturnRateElement.classList.remove('profit', 'loss');
             }
 
             this._domCache.costPerShare.textContent = '¥' + (result.currentHolding > 0 ? (result.currentCost / result.currentHolding).toFixed(3) : '--');
@@ -654,7 +658,9 @@ const Detail = {
             const totalAllProfit = snapshot.totalAllProfit;
             const totalAllProfitElement = this._domCache.totalAllProfit;
             totalAllProfitElement.textContent = Utils.formatNullableCurrency(totalAllProfit, 2);
-            totalAllProfitElement.className = 'summary-value ' + (totalAllProfit !== null && totalAllProfit >= 0 ? 'profit' : 'loss');
+            // 保留 hero-card-value 类，只更新 profit/loss 状态
+            totalAllProfitElement.classList.remove('profit', 'loss');
+            totalAllProfitElement.classList.add(totalAllProfit !== null && totalAllProfit >= 0 ? 'profit' : 'loss');
 
             this._domCache.dilutedCostPerShare.textContent = Utils.formatNullableCurrency(snapshot.dilutedCostPerShare, 3);
 
@@ -669,7 +675,9 @@ const Detail = {
             const totalAllReturnRate = snapshot.totalAllReturnRate;
             const totalAllReturnRateElement = this._domCache.totalAllReturnRate;
             totalAllReturnRateElement.textContent = Utils.formatNullablePercent(totalAllReturnRate, 3);
-            totalAllReturnRateElement.className = 'summary-value ' + (totalAllReturnRate !== null && totalAllReturnRate >= 0 ? 'profit' : 'loss');
+            // 保留 hero-card-value 类，只更新 profit/loss 状态
+            totalAllReturnRateElement.classList.remove('profit', 'loss');
+            totalAllReturnRateElement.classList.add(totalAllReturnRate !== null && totalAllReturnRate >= 0 ? 'profit' : 'loss');
         } else {
             this._domCache.costPerShare.textContent = '¥' + (snapshot ? snapshot.costPerShare : 0).toFixed(3);
             this._domCache.dilutedCostPerShare.textContent = '--';
@@ -687,14 +695,23 @@ const Detail = {
             this._domCache.latestReturnRate.textContent = '--';
             this._domCache.cycleProfit.textContent = '--';
             this._domCache.cycleReturnRate.textContent = '--';
+            
+            // 清除 profit/loss 类
+            this._domCache.latestProfit.classList.remove('profit', 'loss');
+            this._domCache.cycleProfit.classList.remove('profit', 'loss');
+            this._domCache.cycleReturnRate.classList.remove('profit', 'loss');
 
             const totalAllProfitElement = this._domCache.totalAllProfit;
             totalAllProfitElement.textContent = '¥' + result.totalProfit.toFixed(2);
-            totalAllProfitElement.className = 'summary-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
+            // 保留 hero-card-value 类，只更新 profit/loss 状态
+            totalAllProfitElement.classList.remove('profit', 'loss');
+            totalAllProfitElement.classList.add(result.totalProfit >= 0 ? 'profit' : 'loss');
 
             const totalAllReturnRateElement = this._domCache.totalAllReturnRate;
             totalAllReturnRateElement.textContent = result.totalReturnRate.toFixed(3) + '%';
-            totalAllReturnRateElement.className = 'summary-value ' + (result.totalReturnRate >= 0 ? 'profit' : 'loss');
+            // 保留 hero-card-value 类，只更新 profit/loss 状态
+            totalAllReturnRateElement.classList.remove('profit', 'loss');
+            totalAllReturnRateElement.classList.add(result.totalReturnRate >= 0 ? 'profit' : 'loss');
 
             // 更新持仓开始日期和持有天数
             const holdingInfo = snapshot.holdingInfo;
