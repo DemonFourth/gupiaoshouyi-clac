@@ -1078,22 +1078,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 全局拦截所有弹窗的 wheel 事件，阻止滚动穿透到主页面
-document.addEventListener('wheel', (e) => {
-    const modal = e.target.closest('.modal');
-    if (!modal || modal.style.display === 'none') return;
+(function() {
+    // 监听 modal 内的 wheel 事件开始
+    document.addEventListener('wheel', (e) => {
+        const modal = e.target.closest('.modal');
+        if (!modal || modal.style.display === 'none') return;
 
-    const scrollEl = modal.querySelector('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
-    if (!scrollEl) return;
+        const scrollEl = modal.querySelector('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
+        if (!scrollEl) return;
 
-    // 检查 wheel 事件是否发生在滚动区域内
-    const target = e.target.closest('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
-    if (target) {
-        // 在滚动区域内：始终阻止事件传播到页面，由滚动区域自己处理滚动
+        // 始终阻止事件传播到主页面
+        e.preventDefault();
         e.stopPropagation();
-        return;
-    }
 
-    // 在滚动区域外但在 modal 内：完全阻止默认行为和传播
-    e.preventDefault();
-    e.stopPropagation();
-}, { passive: false });
+        // 只在滚动区域内才允许滚动
+        const target = e.target.closest('[class*="modal-body"], [class*="preview-body"], [class*="-body"]');
+        if (target && scrollEl.scrollHeight > scrollEl.clientHeight) {
+            scrollEl.scrollTop += e.deltaY;
+        }
+    }, { passive: false });
+})();
