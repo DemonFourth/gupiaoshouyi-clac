@@ -535,7 +535,7 @@ window.App = {
         // 显示版本号
         const versionEl = document.getElementById('settingsAppVersion');
         if (versionEl) {
-            versionEl.textContent = 'v' + Config.get('app.version', '2.6.1');
+            versionEl.textContent = 'v' + Config.app.version;
         }
     },
 

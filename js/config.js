@@ -634,10 +634,13 @@ const Config = {
             if (configStr) {
                 const config = JSON.parse(configStr);
                 this.import(config);
-                
+
+                // 版本号始终以代码中的默认值为准，不从 localStorage 恢复旧版本
+                this.app.version = '2.6.1';
+
                 // 清理已移除的字段配置（使用代码中的默认配置验证）
                 this._cleanupRemovedFields();
-                
+
                 return true;
             }
             return false;
