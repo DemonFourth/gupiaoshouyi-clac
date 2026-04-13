@@ -1014,6 +1014,27 @@
             background: #d32f2f;
         }
 
+        .btn-danger-outline {
+            background: transparent;
+            color: #f44336;
+            border: 2px solid #f44336;
+        }
+
+        .btn-danger-outline:hover {
+            background: rgba(244, 67, 54, 0.06);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #666;
+            border: none;
+        }
+
+        .btn-ghost:hover {
+            color: #333;
+            background: #f5f5f5;
+        }
+
         .btn-warning {
             background: #ff9800;
             color: white;
@@ -1479,7 +1500,7 @@
         /* 导入预览弹窗 */
         .import-modal-content {
             position: relative;
-            max-width: 600px;
+            max-width: 720px;
             max-height: 80vh;
             display: flex;
             flex-direction: column;
@@ -1488,70 +1509,256 @@
         .import-preview-body {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 10px;
-        }
-
-        .import-summary {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .import-summary-item {
+            padding: 20px 24px;
             display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .import-summary-item:last-child {
-            border-bottom: none;
+        .import-preview-body::-webkit-scrollbar { width: 6px; }
+        .import-preview-body::-webkit-scrollbar-track { background: transparent; }
+        .import-preview-body::-webkit-scrollbar-thumb { background: #dde0ee; border-radius: 3px; }
+
+        /* ── 统计卡片 ── */
+        .ip-stat-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
-        .import-summary-label {
-            color: #666;
+        .ip-stat-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 14px 14px 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .import-summary-value {
-            font-weight: 500;
+        .ip-stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            border-radius: 10px 0 0 10px;
         }
 
-        .import-summary-value.highlight {
+        .ip-stat-highlight::before { background: #667eea; }
+        .ip-stat-muted::before     { background: #d0d4e8; }
+
+        .ip-stat-card:hover {
+            border-color: #e8eaf0;
+            box-shadow: 0 2px 10px rgba(102,126,234,0.08);
+        }
+
+        .ip-stat-icon {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: block;
+            line-height: 1;
+        }
+
+        .ip-stat-number {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
             color: #667eea;
         }
 
-        .import-details {
-            background: #fafafa;
-            padding: 15px;
-            border-radius: 8px;
-        }
+        .ip-stat-number-neutral { color: #333; }
+        .ip-stat-number-muted   { color: #999; }
 
-        .import-details h4 {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .import-detail-item {
-            padding: 5px 0;
-            font-size: 13px;
+        .ip-stat-label {
+            font-size: 12px;
             color: #666;
-            border-bottom: 1px dashed #e0e0e0;
+            font-weight: 500;
         }
 
-        .import-detail-item:last-child {
-            border-bottom: none;
+        /* ── 股票分区 ── */
+        .ip-stock-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        .import-warning {
-            background: #fff3e0;
-            border: 1px solid #ff9800;
+        .ip-section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 0 2px;
+            margin-bottom: 2px;
+        }
+
+        /* ── 股票行 ── */
+        .ip-stock-row {
             border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
+            border: 1px solid #e8eaf0;
+            overflow: hidden;
+            background: #fff;
+            transition: box-shadow 0.15s;
+        }
+
+        .ip-stock-row:hover { box-shadow: 0 2px 10px rgba(102,126,234,0.1); }
+
+        .ip-stock-row-header {
+            display: flex;
+            align-items: center;
+            padding: 11px 14px;
+            cursor: pointer;
+            position: relative;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .ip-stock-row-header:hover { background: rgba(102,126,234,0.04); }
+
+        .ip-stock-bar {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+        }
+
+        .ip-bar-new    { background: #667eea; }
+        .ip-bar-exists { background: #ff9800; }
+
+        .ip-stock-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+            padding-left: 4px;
+        }
+
+        .ip-stock-name span {
+            font-weight: 400;
+            color: #999;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .ip-stock-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .ip-meta-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .ip-meta-new { background: rgba(102,126,234,0.1); color: #667eea; }
+        .ip-meta-dup { background: #f5f5f5; color: #999; }
+
+        .ip-expand-icon {
+            color: #999;
+            transition: transform 0.25s;
+            flex-shrink: 0;
+            width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .ip-expand-icon.ip-open { transform: rotate(180deg); }
+
+        /* ── 展开明细 ── */
+        .ip-stock-detail {
+            border-top: 1px solid #e8eaf0;
+            background: #fafbff;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+        }
+
+        .ip-stock-detail.ip-open {
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .ip-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+
+        .ip-detail-table thead tr { background: #f0f2ff; }
+
+        .ip-detail-table th {
+            padding: 8px 14px;
+            font-weight: 600;
+            color: #666;
+            text-align: left;
+            font-size: 11.5px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .ip-detail-table td {
+            padding: 8px 14px;
+            color: #1a1a2e;
+            border-top: 1px solid #eef0f8;
+            white-space: nowrap;
+        }
+
+        .ip-row-dup td { color: #999; background: #fafafa; }
+        .ip-row-dup .ip-trade-badge { opacity: 0.5; }
+
+        .ip-detail-table tbody tr:hover { background: rgba(102,126,234,0.03); }
+
+        /* ── 交易类型徽章（仅用于导入预览详情表格）── */
+        .ip-trade-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .ip-badge-buy  { background: #e3f2fd; color: #1565c0; }
+        .ip-badge-sell { background: #fce4ec; color: #c62828; }
+        .ip-badge-div  { background: #e8f5e9; color: #2e7d32; }
+        .ip-badge-tax  { background: #fff3e0; color: #e65100; }
+
+        /* ── 状态指示器 ── */
+        .ip-status-new {
+            display: inline-flex; align-items: center; gap: 3px;
+            color: #2e7d32; font-weight: 600; font-size: 12px;
+        }
+
+        .ip-status-dup {
+            display: inline-flex; align-items: center; gap: 3px;
+            color: #999; font-weight: 500; font-size: 12px;
+        }
+
+        /* ── 警告区 ── */
+        .ip-warning-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fff8f0;
+            border: 1px solid #ffd199;
+            border-left: 4px solid #ff9800;
+            border-radius: 8px;
+            padding: 12px 14px;
             font-size: 13px;
-            color: #e65100;
+            color: #b84c00;
+            line-height: 1.5;
+        }
+
+        .ip-warning-icon {
+            flex-shrink: 0;
+            width: 18px; height: 18px;
+            margin-top: 1px;
         }
 
         .badge {
