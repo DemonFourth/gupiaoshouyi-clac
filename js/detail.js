@@ -685,11 +685,6 @@ const Detail = {
             // 重置持仓市值为 --（已清仓股票持仓股数为0）
             this._domCache.marketValue.textContent = '--';
 
-            // 重置当前持仓周期投入成本和卖出金额
-            this._domCache.currentCycleBuyCost.textContent = '--';
-            this._domCache.currentCycleSellAmount.textContent = '--';
-            this._domCache.currentCycleNetInvest.textContent = '--';
-
             // 更新当前持有股收益和收益率（显示为 --）
             this._domCache.latestProfit.textContent = '--';
             this._domCache.latestReturnRate.textContent = '--';
