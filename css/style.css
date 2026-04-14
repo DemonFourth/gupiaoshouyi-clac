@@ -6022,52 +6022,10 @@
     overflow-y: auto;
 }
 
-.cycle-history-item {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    padding: 14px 16px;
-    background: #fafafa;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.cycle-history-item:hover {
-    background: #f5f5f5;
-}
-
-.cycle-history-item > div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cycle-history-item .label {
-    font-size: 11px;
-    color: #999;
-    text-transform: uppercase;
-}
-
-.cycle-history-item .value {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    font-variant-numeric: tabular-nums;
-}
-
-.cycle-history-item .value.profit {
-    color: #f44336;
-}
-
-.cycle-history-item .value.loss {
-    color: #4caf50;
-}
-
 .cycle-history-empty {
     text-align: center;
     padding: 40px;
-    color: var(--text-muted);
+    color: #999;
 }
 
 /* 折叠状态：箭头向上旋转 */
@@ -6081,12 +6039,6 @@
 }
 
 /* 持仓周期历史区块响应式 */
-@media (max-width: 1024px) {
-    .cycle-history-item {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 @media (max-width: 768px) {
     .cycle-history-section {
         margin: 16px 0;
@@ -6101,10 +6053,6 @@
 
     .cycle-history-section-header h3 {
         font-size: 15px;
-    }
-
-    .cycle-history-item {
-        grid-template-columns: repeat(2, 1fr);
     }
 
     .cycle-history-list {
