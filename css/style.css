@@ -5961,74 +5961,63 @@
 }
 
 
-/* ==================== 持仓周期历史区块（V2：与仪表盘风格统一） ==================== */
+/* ==================== 持仓周期历史区块 ==================== */
 
 .cycle-history-section {
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
     margin: 24px 0;
-    overflow: hidden;
-    color: var(--text-primary);
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .cycle-history-section-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
 }
 
 .cycle-history-section-header h3 {
     margin: 0;
     font-size: 16px;
+    color: #333;
     font-weight: 600;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.cycle-history-section-header h3::before {
-    content: '';
-    width: 4px;
-    height: 16px;
-    background: var(--color-profit);
-    border-radius: 2px;
 }
 
 .cycle-history-title-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .cycle-history-collapse-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 6px;
+    background: none;
+    border: none;
     cursor: pointer;
-    color: var(--text-secondary);
-    transition: all var(--transition-fast);
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #666;
+    transition: transform 0.2s ease;
+    border-radius: 4px;
 }
 
 .cycle-history-collapse-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+    color: #333;
+    background: #f0f0f0;
 }
 
 .cycle-history-total {
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-profit);
+    color: #666;
 }
 
 .cycle-history-list {
-    padding: 16px 24px;
     max-height: 400px;
     overflow-y: auto;
 }
@@ -6038,16 +6027,14 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 12px;
     padding: 14px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-sm);
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
     margin-bottom: 10px;
-    transition: all var(--transition-fast);
 }
 
 .cycle-history-item:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-color-hover);
+    background: #f5f5f5;
 }
 
 .cycle-history-item > div {
@@ -6058,23 +6045,23 @@
 
 .cycle-history-item .label {
     font-size: 11px;
-    color: var(--text-muted);
+    color: #999;
     text-transform: uppercase;
 }
 
 .cycle-history-item .value {
     font-size: 14px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #333;
     font-variant-numeric: tabular-nums;
 }
 
 .cycle-history-item .value.profit {
-    color: var(--color-profit);
+    color: #f44336;
 }
 
 .cycle-history-item .value.loss {
-    color: var(--color-loss);
+    color: #4caf50;
 }
 
 .cycle-history-empty {
