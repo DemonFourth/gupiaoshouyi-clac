@@ -47,6 +47,13 @@ const TradeRecords = {
             });
         }
 
+        // 绑定快捷筛选按钮事件
+        document.querySelectorAll('.header-tr-quick-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._handleQuickFilter(e.target);
+            });
+        });
+
         // 绑定图表选择复选框事件
         this._domCache.chartSelectorCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
@@ -56,6 +63,61 @@ const TradeRecords = {
 
         // 初始化图表显示状态
         this._handleChartSelectionChange();
+    },
+
+    /**
+     * 处理快捷筛选按钮点击
+     * @param {HTMLElement} btn - 被点击的按钮
+     */
+    _handleQuickFilter(btn) {
+        const range = btn.getAttribute('data-range');
+        const today = new Date();
+        let startDate, endDate;
+
+        // 移除所有快捷按钮的 active 状态
+        document.querySelectorAll('.header-tr-quick-btn').forEach(b => b.classList.remove('active'));
+
+        switch (range) {
+            case 'today':
+                startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+                break;
+            case 'week':
+                const dayOfWeek = today.getDay();
+                const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() + diffToMonday);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(today);
+                endDate.setHours(23, 59, 59, 999);
+                break;
+            case 'month':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+                break;
+            case 'year':
+                startDate = new Date(today.getFullYear(), 0, 1);
+                endDate = new Date(today.getFullYear(), 11, 31, 23, 59, 59, 999);
+                break;
+        }
+
+        // 设置日期输入框的值
+        if (startDate && endDate) {
+            const formatDateForInput = (date) => {
+                const y = date.getFullYear();
+                const m = (date.getMonth() + 1).toString().padStart(2, '0');
+                const d = date.getDate().toString().padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+            this._domCache.tradeRecordsStartDate.value = formatDateForInput(startDate);
+            this._domCache.tradeRecordsEndDate.value = formatDateForInput(endDate);
+        }
+
+        // 设置按钮为 active 状态
+        btn.classList.add('active');
+
+        // 触发筛选
+        this._handleFilterChange();
     },
 
     /**
@@ -539,13 +601,16 @@ const TradeRecords = {
         const countElement = this._domCache.tradeRecordsCount;
         const totalFeeElement = this._domCache.tradeRecordsTotalFee;
 
+        // 总收益
         const totalProfitFmt = Utils.formatLargeNumberWithTooltip(result.totalProfit);
         totalProfitElement.textContent = totalProfitFmt.display;
         totalProfitElement.title = totalProfitFmt.converted ? totalProfitFmt.full : '';
-        totalProfitElement.className = 'trade-records-summary-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
+        totalProfitElement.className = 'tr-stat-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
 
+        // 交易次数
         countElement.textContent = result.tradeCount;
 
+        // 总手续费
         const totalFeeFmt = Utils.formatLargeNumberWithTooltip(result.totalFee);
         totalFeeElement.textContent = totalFeeFmt.display;
         totalFeeElement.title = totalFeeFmt.converted ? totalFeeFmt.full : '';

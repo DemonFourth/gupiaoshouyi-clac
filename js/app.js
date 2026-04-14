@@ -218,9 +218,10 @@ window.App = {
             cancelImportPreviewBtn.onclick = () => this.closeImportPreviewModal();
         }
 
-        const addStockBtn = document.getElementById('addStockBtn');
-        if (addStockBtn) {
-            addStockBtn.onclick = () => StockManager.openAddStockModal();
+        // 悬浮添加股票按钮
+        const addStockFloatBtn = document.getElementById('addStockFloatBtn');
+        if (addStockFloatBtn) {
+            addStockFloatBtn.onclick = () => StockManager.openAddStockModal();
         }
 
         const closeAddStockModalBtn = document.getElementById('closeAddStockModalBtn');
@@ -302,14 +303,25 @@ window.App = {
             clearedSortAscBtn.onclick = () => Overview.setClearedSortDirection('asc');
         }
 
-        const viewModeBtnHolding = document.getElementById('viewModeBtnHolding');
-        if (viewModeBtnHolding) {
-            viewModeBtnHolding.onclick = () => Overview.toggleViewMode('holding');
+        // 悬浮视图切换按钮
+        const viewModeFloatBtn = document.getElementById('viewModeFloatBtn');
+        if (viewModeFloatBtn) {
+            viewModeFloatBtn.onclick = () => Overview.toggleViewMode();
         }
 
-        const viewModeBtnCleared = document.getElementById('viewModeBtnCleared');
-        if (viewModeBtnCleared) {
-            viewModeBtnCleared.onclick = () => Overview.toggleViewMode('cleared');
+        // 布局选择按钮事件绑定
+        const holdingColsGroup = document.getElementById('holdingColsGroup');
+        if (holdingColsGroup) {
+            holdingColsGroup.querySelectorAll('.card-cols-btn').forEach(btn => {
+                btn.onclick = () => Overview.toggleCardCols('holding', parseInt(btn.dataset.cols));
+            });
+        }
+
+        const clearedColsGroup = document.getElementById('clearedColsGroup');
+        if (clearedColsGroup) {
+            clearedColsGroup.querySelectorAll('.card-cols-btn').forEach(btn => {
+                btn.onclick = () => Overview.toggleCardCols('cleared', parseInt(btn.dataset.cols));
+            });
         }
 
         const perfToggle = document.getElementById('perfToggle');

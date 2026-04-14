@@ -903,6 +903,39 @@ npx live-server .
 
 ## 更新日志
 
+### v2.6.4 (2026-04-14)
+- **交易记录页面UI优化（仪表盘风格）**：
+  - **统计卡片区重设计**：
+    - 新增仪表盘风格统计卡片（总收益、交易次数、总手续费）
+    - 卡片带渐变色顶边、图标、悬浮效果
+  - **筛选器位置调整**：
+    - 筛选器从页面内移至头部标题栏
+    - 与返回按钮、页面标题同行显示
+    - 新增快捷筛选按钮（今日、本周、本月、本年）
+  - **悬浮按钮显示优化**：
+    - 添加股票、切换视图按钮仅在汇总页显示
+- **修改文件**：
+  - 修改 `index.html`、`css/style.css`、`js/tradeRecords.js`、`js/router.js`
+
+### v2.6.3 (2026-04-14)
+- **字段设置优化（4项）**：
+  - **卡片视图字段映射修正**：
+    - 将 cycleProfit/cycleReturnRate 开关改为控制 totalProfit/totalReturnRate
+    - 修复字段开关与实际显示不一致的问题
+  - **移除无效字段配置**：
+    - 从卡片视图字段配置中移除 cycleProfit/cycleReturnRate
+    - 从列表视图字段配置中移除 cycleProfit/cycleReturnRate、stockName/stockCode
+    - 更新 _cleanupRemovedFields() 清理数组保持同步
+  - **字段设置弹窗垂直居中**：
+    - CSS 添加 flexbox 居中样式
+    - JS 将 display 从 'block' 改为 'flex'
+  - **标题字体大小修复**：
+    - .section-header h2 添加 font-size: 16px 和 font-weight: 600
+- **修改文件**：
+  - 修改 `js/overview.js`：字段映射修正、弹窗显示方式改为 flex
+  - 修改 `js/config.js`：字段配置移除、defaultFieldKeys 清理数组更新
+  - 修改 `css/style.css`：弹窗居中样式、标题字体大小
+
 ### v2.6.2 (2026-04-13)
 - **UI 优化（3项）**：
   - **设置弹窗 UI 重新设计**：

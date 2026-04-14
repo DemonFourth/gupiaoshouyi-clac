@@ -35,8 +35,12 @@ const Overview = {
         }
     },
     viewMode: {
-        holding: 'list',  // 持仓中视图模式：card | list
-        cleared: 'list'   // 已清仓视图模式：card | list
+        holding: 'card',  // 持仓中视图模式：card | list
+        cleared: 'card'   // 已清仓视图模式：card | list
+    },
+    cardCols: {
+        holding: 4,  // 持仓中卡片列数
+        cleared: 4   // 已清仓卡片列数
     },
 
     /**
@@ -213,6 +217,9 @@ const Overview = {
 
         // 初始化视图模式 UI 状态
         this._initViewModeUI();
+
+        // 初始化卡片列数设置
+        this._initCardCols();
 
         // 渲染股票列表
         this.renderStockLists();
@@ -644,6 +651,16 @@ const Overview = {
             this._domCache.overviewClearedLossCount.textContent = '亏损' + clearedLossCount + '只';
         }
 
+        // 更新持仓中/已清仓标题中的盈利/亏损统计
+        const holdingStatsEl = document.getElementById('holdingProfitLossStats');
+        if (holdingStatsEl) {
+            holdingStatsEl.innerHTML = `<span class="profit-count">盈利${profitCount}只</span><span class="loss-count">亏损${lossCount}只</span>`;
+        }
+        const clearedStatsEl = document.getElementById('clearedProfitLossStats');
+        if (clearedStatsEl) {
+            clearedStatsEl.innerHTML = `<span class="profit-count">盈利${clearedProfitCount}只</span><span class="loss-count">亏损${clearedLossCount}只</span>`;
+        }
+
         // 渲染持仓盈利股票列表
         this.renderProfitLossList('profitStockList', profitStocks, true);
 
@@ -926,16 +943,13 @@ const Overview = {
     _initViewModeUI() {
         this._ensureDOMCache();
 
-        // 分别更新持仓中和已清仓的视图按钮状态
-        ['holding', 'cleared'].forEach(group => {
-            const viewModeBtn = document.getElementById(`viewModeBtn${group.charAt(0).toUpperCase() + group.slice(1)}`);
-            if (!viewModeBtn) return;
-
-            const gridIcon = viewModeBtn.querySelector('.view-icon-grid');
-            const listIcon = viewModeBtn.querySelector('.view-icon-list');
-
+        // 更新悬浮视图切换按钮图标（使用持仓中的状态）
+        const floatBtn = document.getElementById('viewModeFloatBtn');
+        if (floatBtn) {
+            const gridIcon = floatBtn.querySelector('.view-icon-grid');
+            const listIcon = floatBtn.querySelector('.view-icon-list');
             if (gridIcon && listIcon) {
-                if (this.viewMode[group] === 'list') {
+                if (this.viewMode.holding === 'list') {
                     gridIcon.style.display = 'none';
                     listIcon.style.display = 'inline';
                 } else {
@@ -943,7 +957,7 @@ const Overview = {
                     listIcon.style.display = 'none';
                 }
             }
-        });
+        }
 
         // 分别更新持仓中和已清仓的容器样式
         const holdingContainer = this._domCache.holdingStocksList;
@@ -952,62 +966,152 @@ const Overview = {
         if (holdingContainer) {
             if (this.viewMode.holding === 'list') {
                 holdingContainer.classList.add('list-mode');
+                holdingContainer.classList.remove('cols-2', 'cols-3', 'cols-4');
             } else {
                 holdingContainer.classList.remove('list-mode');
+                holdingContainer.classList.add(`cols-${this.cardCols.holding}`);
             }
         }
 
         if (clearedContainer) {
             if (this.viewMode.cleared === 'list') {
                 clearedContainer.classList.add('list-mode');
+                clearedContainer.classList.remove('cols-2', 'cols-3', 'cols-4');
             } else {
                 clearedContainer.classList.remove('list-mode');
+                clearedContainer.classList.add(`cols-${this.cardCols.cleared}`);
             }
+        }
+
+        // 更新列数按钮显示状态和 active 状态
+        ['holding', 'cleared'].forEach(group => {
+            const colsGroupId = group === 'holding' ? 'holdingColsGroup' : 'clearedColsGroup';
+            const colsGroup = document.getElementById(colsGroupId);
+            if (colsGroup) {
+                colsGroup.style.display = this.viewMode[group] === 'card' ? 'inline-flex' : 'none';
+                // 更新列数按钮的 active 状态
+                colsGroup.querySelectorAll('.card-cols-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.cols) === this.cardCols[group]);
+                });
+            }
+        });
+    },
+
+    /**
+     * 切换视图模式（同时切换持仓中和已清仓）
+     */
+    toggleViewMode() {
+        // 计算新的视图模式（统一切换两个分组）
+        const newMode = this.viewMode.holding === 'card' ? 'list' : 'card';
+        this.viewMode.holding = newMode;
+        this.viewMode.cleared = newMode;
+
+        // 更新悬浮按钮图标
+        const floatBtn = document.getElementById('viewModeFloatBtn');
+        if (floatBtn) {
+            const gridIcon = floatBtn.querySelector('.view-icon-grid');
+            const listIcon = floatBtn.querySelector('.view-icon-list');
+            if (gridIcon && listIcon) {
+                if (newMode === 'list') {
+                    gridIcon.style.display = 'none';
+                    listIcon.style.display = 'inline';
+                } else {
+                    gridIcon.style.display = 'inline';
+                    listIcon.style.display = 'none';
+                }
+            }
+        }
+
+        // 更新两个分组的容器样式和列数按钮
+        ['holding', 'cleared'].forEach(group => {
+            const containerId = group === 'holding' ? 'holdingStocksList' : 'clearedStocksList';
+            const container = document.getElementById(containerId);
+            if (container) {
+                if (newMode === 'list') {
+                    container.classList.add('list-mode');
+                } else {
+                    container.classList.remove('list-mode');
+                }
+            }
+
+            // 更新布局选择按钮显示状态（仅在卡片视图时显示）
+            const colsGroupId = group === 'holding' ? 'holdingColsGroup' : 'clearedColsGroup';
+            const colsGroup = document.getElementById(colsGroupId);
+            if (colsGroup) {
+                colsGroup.style.display = newMode === 'card' ? 'inline-flex' : 'none';
+            }
+        });
+
+        // 重新渲染两个分组
+        const holdingStocks = this.stocks.filter(s => s.group === 'holding');
+        const clearedStocks = this.stocks.filter(s => s.group === 'cleared');
+        this.renderStockCards('holdingStocksList', holdingStocks, 'holding');
+        this.renderStockCards('clearedStocksList', clearedStocks, 'cleared');
+    },
+
+    /**
+     * 切换卡片列数
+     */
+    toggleCardCols(group, cols) {
+        const containerId = group === 'holding' ? 'holdingStocksList' : 'clearedStocksList';
+        const container = document.getElementById(containerId);
+        
+        if (container) {
+            // 移除所有列数类
+            container.classList.remove('cols-2', 'cols-3', 'cols-4');
+            // 添加新的列数类
+            container.classList.add(`cols-${cols}`);
+        }
+
+        // 更新按钮状态
+        const colsGroupId = group === 'holding' ? 'holdingColsGroup' : 'clearedColsGroup';
+        const colsGroup = document.getElementById(colsGroupId);
+        if (colsGroup) {
+            colsGroup.querySelectorAll('.card-cols-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.cols === String(cols));
+            });
+        }
+
+        // 保存到配置
+        if (StockProfitCalculator.Config) {
+            const configPath = `ui.preferences.cardCols.${group}`;
+            StockProfitCalculator.Config.set(configPath, cols);
+            StockProfitCalculator.Config.save();
         }
     },
 
     /**
-     * 切换视图模式
-     * @param {string} group - 分组类型 ('holding' 或 'cleared')
+     * 初始化卡片列数设置
      */
-    toggleViewMode(group = 'holding') {
-        // 切换指定分组的视图模式
-        this.viewMode[group] = this.viewMode[group] === 'card' ? 'list' : 'card';
-
-        // 更新按钮图标
-        const gridIcon = document.querySelector(`#viewModeBtn${group.charAt(0).toUpperCase() + group.slice(1)} .view-icon-grid`);
-        const listIcon = document.querySelector(`#viewModeBtn${group.charAt(0).toUpperCase() + group.slice(1)} .view-icon-list`);
+    _initCardCols() {
+        // 初始化列数配置
+        this.cardCols = { holding: 2, cleared: 2 };
         
-        if (gridIcon && listIcon) {
-            if (this.viewMode[group] === 'list') {
-                gridIcon.style.display = 'none';
-                listIcon.style.display = 'inline';
-            } else {
-                gridIcon.style.display = 'inline';
-                listIcon.style.display = 'none';
+        // 从配置加载
+        if (StockProfitCalculator.Config) {
+            const holdingCols = StockProfitCalculator.Config.get('ui.preferences.cardCols.holding', 2);
+            const clearedCols = StockProfitCalculator.Config.get('ui.preferences.cardCols.cleared', 2);
+            this.cardCols.holding = holdingCols;
+            this.cardCols.cleared = clearedCols;
+        }
+
+        // 应用列数到容器
+        ['holding', 'cleared'].forEach(group => {
+            const containerId = group === 'holding' ? 'holdingStocksList' : 'clearedStocksList';
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.classList.add(`cols-${this.cardCols[group]}`);
             }
-        }
 
-        // 更新容器样式
-        const containerId = group === 'holding' ? 'holdingStocksList' : 'clearedStocksList';
-        const container = document.getElementById(containerId);
-
-        if (container) {
-            if (this.viewMode[group] === 'list') {
-                container.classList.add('list-mode');
-            } else {
-                container.classList.remove('list-mode');
+            // 更新按钮状态
+            const colsGroupId = group === 'holding' ? 'holdingColsGroup' : 'clearedColsGroup';
+            const colsGroup = document.getElementById(colsGroupId);
+            if (colsGroup) {
+                colsGroup.querySelectorAll('.card-cols-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.cols === String(this.cardCols[group]));
+                });
             }
-        }
-
-        // 重新渲染指定分组
-        if (group === 'holding') {
-            const holdingStocks = this.stocks.filter(s => s.group === 'holding');
-            this.renderStockCards('holdingStocksList', holdingStocks, 'holding');
-        } else {
-            const clearedStocks = this.stocks.filter(s => s.group === 'cleared');
-            this.renderStockCards('clearedStocksList', clearedStocks, 'cleared');
-        }
+        });
     },
 
     /**
@@ -1031,6 +1135,12 @@ const Overview = {
         const sortBy = this.getSortKey(group);
         this.sortStocks(stockDataList, sortBy);
 
+        // 设置容器列数类
+        container.classList.remove('cols-2', 'cols-3', 'cols-4');
+        if (this.viewMode[group] === 'card') {
+            container.classList.add(`cols-${this.cardCols[group]}`);
+        }
+
         // 使用 DocumentFragment 批量插入，减少 DOM 重排
         const fragment = document.createDocumentFragment();
 
@@ -1041,6 +1151,12 @@ const Overview = {
 
         // 一次性将所有卡片添加到容器
         container.appendChild(fragment);
+        
+        // 如果是列表视图，调整缩放以防止溢出
+        const currentViewMode = this.viewMode[group] || 'list';
+        if (currentViewMode === 'list') {
+            this._adjustListCardScale(container);
+        }
 
         // 动态绑定卡片视图中的按钮事件
         container.querySelectorAll('.stock-card-action-edit').forEach(btn => {
@@ -1086,14 +1202,7 @@ const Overview = {
      */
     createGridCard(stock, result, snapshot = null, group = 'holding') {
         const card = document.createElement('div');
-        card.className = 'stock-card';
-        card.onclick = () => {
-            StockProfitCalculator.EventBus.emit(StockProfitCalculator.EventBus.EventTypes.ROUTE_CHANGE, {
-                page: 'detail',
-                stockCode: stock.code
-            });
-        };
-
+        
         snapshot = snapshot || this.getStockSnapshot(stock);
         const summary = snapshot.summary;
         const quote = snapshot.quote;
@@ -1107,286 +1216,525 @@ const Overview = {
         const dilutedCostPerShare = snapshot.dilutedCostPerShare;
         const totalAllProfit = snapshot.totalAllProfit;
         const totalAllReturnRate = snapshot.totalAllReturnRate;
-        const yearlyStats = snapshot.yearlyStats;
         const cycleHistory = snapshot.cycleHistory || [];
         const currentCycleNumber = snapshot.currentCycleNumber;
+        const yearlyStats = snapshot.yearlyStats || [];
 
         // 获取字段显示配置
         const fields = this._getFieldPreferences('card', group);
 
-        // 动态构建 HTML
-        let bodyHtml = '';
+        // 判断盈亏状态（持仓中基于周期收益，已清仓基于总收益）
+        const isCleared = group === 'cleared';
+        const isProfit = isCleared 
+            ? totalAllProfit >= 0 
+            : (cycleProfit !== null ? cycleProfit : 0) >= 0;
+        card.className = `stock-card-v2 ${isProfit ? 'is-profit' : 'is-loss'}`;
+
+        // 当日涨跌
+        const dailyChangeValue = quote ? quote.change : null;
+        const dailyBadgeClass = dailyChangeValue !== null && dailyChangeValue >= 0 ? 'up' : 'down';
+        const dailyBadgeText = this.formatDailyChange(quote);
+
+        // 格式化核心收益显示（持仓中：当前持仓周期收益；已清仓：总收益）
+        let profitDisplay, returnRateDisplay, cycleProfitFmtMain;
+        if (isCleared) {
+            // 已清仓：显示总收益
+            cycleProfitFmtMain = Utils.formatLargeNumberWithTooltip(totalAllProfit);
+            profitDisplay = (totalAllProfit >= 0 ? '+' : '') + cycleProfitFmtMain.display;
+            returnRateDisplay = (totalAllReturnRate >= 0 ? '+' : '') + totalAllReturnRate.toFixed(2) + '%';
+        } else {
+            // 持仓中：显示当前持仓周期收益
+            const displayCycleProfit = cycleProfit !== null ? cycleProfit : 0;
+            const displayCycleReturnRate = cycleReturnRate !== null ? cycleReturnRate : 0;
+            cycleProfitFmtMain = Utils.formatLargeNumberWithTooltip(displayCycleProfit);
+            profitDisplay = (displayCycleProfit >= 0 ? '+' : '') + cycleProfitFmtMain.display;
+            returnRateDisplay = (displayCycleReturnRate >= 0 ? '+' : '') + displayCycleReturnRate.toFixed(2) + '%';
+        }
+
+        // 格式化周期收益（用于数据列显示）
+        const cycleProfitFmt = cycleProfit !== null ? Utils.formatLargeNumberWithTooltip(cycleProfit) : null;
+        const cycleProfitDisplay = cycleProfitFmt ? (cycleProfit >= 0 ? '+' : '') + cycleProfitFmt.display : '--';
+        const cycleReturnRateDisplay = cycleReturnRate !== null ? (cycleReturnRate >= 0 ? '+' : '') + cycleReturnRate.toFixed(2) + '%' : '--';
+
+        // 格式化市值和成本
+        const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
+        const mvDisplay = mvFmt ? mvFmt.display : '--';
+        const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
+
+        // 动态生成数据列
+        const generateColItems = (items) => {
+            return items.filter(item => item.visible !== false).map(item => item.html).join('');
+        };
+
+        // 持仓列
+        const positionItems = [
+            { visible: fields.holding?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓股数</span><span class="sc-col-value">${summary.currentHolding}股</span></div>` },
+            { visible: fields.marketValue?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓市值</span><span class="sc-col-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvDisplay}</span></div>` },
+            { visible: fields.cost?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓成本</span><span class="sc-col-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span></div>` }
+        ];
+
+        // 价格列
+        const priceItems = [
+            { visible: fields.currentPrice?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">当日股价</span><span class="sc-col-value">${quote ? '¥' + quote.price.toFixed(2) : '--'}</span></div>` },
+            { visible: fields.costPerShare?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">每股持仓成本</span><span class="sc-col-value">¥${costPerShare.toFixed(2)}</span></div>` },
+            { visible: fields.dilutedCostPerShare?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">每股摊薄成本</span><span class="sc-col-value">${dilutedCostPerShare !== null ? '¥' + dilutedCostPerShare.toFixed(2) : '--'}</span></div>` }
+        ];
+
+        // 收益列（显示总收益和总收益率）
+        const totalProfitFmtCol = Utils.formatLargeNumberWithTooltip(totalAllProfit);
+        const totalProfitDisplay = (totalAllProfit >= 0 ? '+' : '') + totalProfitFmtCol.display;
+        const totalReturnRateDisplay = (totalAllReturnRate >= 0 ? '+' : '') + totalAllReturnRate.toFixed(2) + '%';
+        const profitItems = [
+            { visible: fields.totalProfit?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">总收益</span><span class="sc-col-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmtCol.converted ? 'title="' + totalProfitFmtCol.full + '"' : ''}>${totalProfitDisplay}</span></div>` },
+            { visible: fields.totalReturnRate?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">总收益率</span><span class="sc-col-value ${totalAllReturnRate >= 0 ? 'profit' : 'loss'}">${totalReturnRateDisplay}</span></div>` }
+        ];
+
+        // 周期列（带点击历史功能）
+        const clearDate = this.getClearDate(stock);
         
-        // 仓位信息 section
-        const positionFields = [fields.holding, fields.marketValue, fields.cost];
-        if (positionFields.some(f => f?.visible)) {
-            let metricsHtml = '';
-            
-            if (fields.holding?.visible) {
-                metricsHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">持仓股数</span>
-                        <span class="stock-card-metric-value">${summary.currentHolding}股</span>
-                    </div>
-                `;
+        // 已清仓股票从最后一轮周期获取持仓开始和天数
+        let displayStartDate = holdingInfo.startDate;
+        let displayHoldingDays = holdingInfo.holdingDays;
+        if (isCleared && cycleHistory.length > 0) {
+            const lastCycle = cycleHistory[cycleHistory.length - 1];
+            if (lastCycle) {
+                displayStartDate = lastCycle.startDate || displayStartDate;
+                displayHoldingDays = lastCycle.days !== undefined ? lastCycle.days : displayHoldingDays;
             }
-            
-            if (fields.marketValue?.visible) {
-                const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
-                metricsHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">持仓市值</span>
-                        <span class="stock-card-metric-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvFmt ? mvFmt.display : '--'}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.cost?.visible) {
-                const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
-                metricsHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">持仓成本</span>
-                        <span class="stock-card-metric-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span>
-                    </div>
-                `;
-            }
-            
-            bodyHtml += `
-                <div class="stock-card-section">
-                    <div class="stock-card-section-title">仓位信息</div>
-                    <div class="stock-card-metric-grid stock-card-metric-grid-3">
-                        ${metricsHtml}
-                    </div>
-                </div>
-            `;
         }
         
-        // 当日行情 section
-        const quoteFields = [fields.costPerShare, fields.dilutedCostPerShare, fields.currentPrice, fields.dailyChange];
-        if (quoteFields.some(f => f?.visible)) {
-            let quoteHtml = '';
-            
-            if (fields.costPerShare?.visible) {
-                quoteHtml += `
-                    <div class="stock-card-quote-item">
-                        <span class="stock-card-quote-label">每股持仓成本</span>
-                        <span class="stock-card-quote-value">¥${costPerShare.toFixed(3)}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.dilutedCostPerShare?.visible) {
-                quoteHtml += `
-                    <div class="stock-card-quote-item">
-                        <span class="stock-card-quote-label">每股摊薄成本</span>
-                        <span class="stock-card-quote-value">${dilutedCostPerShare !== null ? '¥' + dilutedCostPerShare.toFixed(3) : '--'}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.currentPrice?.visible) {
-                quoteHtml += `
-                    <div class="stock-card-quote-item">
-                        <span class="stock-card-quote-label">当日股价</span>
-                        <span class="stock-card-quote-value">${quote ? '¥' + quote.price.toFixed(3) : '--'}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.dailyChange?.visible) {
-                quoteHtml += `
-                    <div class="stock-card-quote-item">
-                        <span class="stock-card-quote-label">当日涨幅</span>
-                        <span class="stock-card-quote-value ${quote && quote.change >= 0 ? 'profit' : 'loss'}">${this.formatDailyChange(quote)}</span>
-                    </div>
-                `;
-            }
-            
-            bodyHtml += `
-                <div class="stock-card-section">
-                    <div class="stock-card-section-title">当日行情</div>
-                    <div class="stock-card-quote-grid">
-                        ${quoteHtml}
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 收益表现 section
-        const profitFields = [fields.cycleProfit, fields.cycleReturnRate, fields.totalProfit, fields.totalReturnRate];
-        if (profitFields.some(f => f?.visible)) {
-            let profitHtml = '';
-            
-            if (fields.cycleProfit?.visible) {
-                const cycleProfitFmt = cycleProfit !== null ? Utils.formatLargeNumberWithTooltip(cycleProfit) : null;
-                profitHtml += `
-                    <div class="stock-card-metric-item stock-card-metric-item-emphasis">
-                        <span class="stock-card-metric-label">当前持仓周期收益</span>
-                        <span class="stock-card-metric-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}" ${cycleProfitFmt && cycleProfitFmt.converted ? 'title="' + cycleProfitFmt.full + '"' : ''}>
-                            ${cycleProfitFmt ? cycleProfitFmt.display : '--'}
-                        </span>
-                    </div>
-                `;
-            }
-            
-            if (fields.cycleReturnRate?.visible) {
-                profitHtml += `
-                    <div class="stock-card-metric-item stock-card-metric-item-emphasis">
-                        <span class="stock-card-metric-label">当前持仓周期收益率</span>
-                        <span class="stock-card-metric-value ${cycleReturnRate !== null && cycleReturnRate >= 0 ? 'profit' : 'loss'}">
-                            ${cycleReturnRate !== null ? cycleReturnRate.toFixed(3) + '%' : '--'}
-                        </span>
-                    </div>
-                `;
-            }
-            
-            if (fields.totalProfit?.visible) {
-                const totalProfitFmt = Utils.formatLargeNumberWithTooltip(totalAllProfit);
-                profitHtml += `
-                    <div class="stock-card-metric-item stock-card-metric-item-emphasis">
-                        <span class="stock-card-metric-label">总收益</span>
-                        <span class="stock-card-metric-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmt.converted ? 'title="' + totalProfitFmt.full + '"' : ''}>${totalProfitFmt.display}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.totalReturnRate?.visible) {
-                profitHtml += `
-                    <div class="stock-card-metric-item stock-card-metric-item-emphasis">
-                        <span class="stock-card-metric-label">总收益率</span>
-                        <span class="stock-card-metric-value ${totalAllReturnRate >= 0 ? 'profit' : 'loss'}">${totalAllReturnRate.toFixed(3)}%</span>
-                    </div>
-                `;
-            }
-            
-            bodyHtml += `
-                <div class="stock-card-section stock-card-section-emphasis">
-                    <div class="stock-card-section-title">收益表现</div>
-                    <div class="stock-card-metric-grid">
-                        ${profitHtml}
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 持仓周期 section
-        const holdingFields = [fields.holdingStartDate, fields.holdingDays, fields.clearDate];
-        if (holdingFields.some(f => f?.visible) || cycleHistory.length > 0) {
-            let holdingHtml = '';
-            
-            // 显示轮次信息（可点击查看历史）
-            if (currentCycleNumber !== null && cycleHistory.length > 0) {
-                const cycleLabel = summary.currentHolding > 0 
-                    ? `第${currentCycleNumber}轮持仓` 
-                    : `共${cycleHistory.length}轮持仓`;
-                holdingHtml += `
-                    <div class="stock-card-metric-item stock-card-cycle-item" data-stock-code="${stock.code}">
-                        <span class="stock-card-metric-label">持仓轮次</span>
-                        <span class="stock-card-metric-value stock-card-cycle-link">${cycleLabel}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.holdingStartDate?.visible) {
-                // 已清仓股票显示最后一轮持仓的开始日期
-                let displayStartDate = holdingInfo.startDate;
-                if (summary.currentHolding === 0 && cycleHistory.length > 0) {
-                    // 获取最后一轮（最近一轮）持仓的开始日期
-                    const lastCycle = cycleHistory[cycleHistory.length - 1];
-                    if (lastCycle && lastCycle.startDate) {
-                        displayStartDate = lastCycle.startDate;
-                    }
-                }
-                holdingHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">本轮持仓开始</span>
-                        <span class="stock-card-metric-value">${displayStartDate}</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.holdingDays?.visible) {
-                // 已清仓股票显示最后一轮持仓天数
-                let displayDays = holdingInfo.holdingDays;
-                if (summary.currentHolding === 0 && cycleHistory.length > 0) {
-                    const lastCycle = cycleHistory[cycleHistory.length - 1];
-                    if (lastCycle && lastCycle.days !== undefined) {
-                        displayDays = lastCycle.days;
-                    }
-                }
-                holdingHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">持仓天数</span>
-                        <span class="stock-card-metric-value">${displayDays}天</span>
-                    </div>
-                `;
-            }
-            
-            if (fields.clearDate?.visible) {
-                const clearDate = this.getClearDate(stock);
-                const clearDateLabel = summary.currentHolding > 0 ? '上轮清仓日期' : '本轮清仓日期';
-                holdingHtml += `
-                    <div class="stock-card-metric-item">
-                        <span class="stock-card-metric-label">${clearDateLabel}</span>
-                        <span class="stock-card-metric-value">${clearDate || '--'}</span>
-                    </div>
-                `;
-            }
-            
-            bodyHtml += `
-                <div class="stock-card-section">
-                    <div class="stock-card-section-title">持仓周期</div>
-                    <div class="stock-card-metric-grid">
-                        ${holdingHtml}
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 年度统计 footer
-        let footerHtml = '';
-        if (fields.yearlyStats?.visible) {
-            footerHtml += `
-                <div class="stock-card-footer">
-                    <div class="stock-card-yearly">
-                        ${yearlyStats.map(ys => `
-                            <div class="yearly-stat">
-                                <span class="yearly-label">${ys.year}年</span>
-                                <span class="yearly-value ${ys.profit >= 0 ? 'profit' : 'loss'}">
-                                    ${ys.profit >= 0 ? '+' : ''}¥${ys.profit.toFixed(0)}
-                                </span>
-                                <span class="yearly-trades">${ys.trades}次</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
+        const cycleItems = [
+            { visible: true, html: `<div class="sc-col-item sc-col-cycle-link" data-stock-code="${stock.code}"><span class="sc-col-label">持仓轮次</span><span class="sc-col-value">${currentCycleNumber !== null ? '第' + currentCycleNumber + '轮' : (isCleared && cycleHistory.length > 0 ? '共' + cycleHistory.length + '轮' : '--')}</span></div>` },
+            { visible: fields.holdingStartDate?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓开始</span><span class="sc-col-value">${displayStartDate || '--'}</span></div>` },
+            { visible: fields.holdingDays?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓天数</span><span class="sc-col-value">${displayHoldingDays !== undefined && displayHoldingDays !== null ? displayHoldingDays + '天' : '--'}</span></div>` },
+            { visible: fields.clearDate?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">清仓日期</span><span class="sc-col-value">${clearDate || '--'}</span></div>` }
+        ];
+
+        // 判断是否有可见内容
+        const hasPosition = positionItems.some(i => i.visible);
+        const hasPrice = priceItems.some(i => i.visible);
+        const hasProfit = profitItems.some(i => i.visible);
+        const hasCycle = cycleItems.some(i => i.visible);
 
         card.innerHTML = `
-            <div class="stock-card-header">
-                <div class="stock-card-name">${stock.name}</div>
-                <div class="stock-card-code">${stock.code}</div>
-                <div class="stock-card-actions">
-                    <button class="stock-card-action stock-card-action-edit" title="编辑股票" aria-label="编辑股票" data-stock-code="${stock.code}">✎</button>
-                    <button class="stock-card-action stock-card-action-delete" title="删除股票" aria-label="删除股票" data-stock-code="${stock.code}">🗑</button>
-                </div>
+            <div class="sc-header">
+                <span class="sc-name sc-name-clickable" data-stock-code="${stock.code}">${stock.name}</span>
+                <span class="sc-code">${stock.code}</span>
+                ${dailyChangeValue !== null ? `<span class="sc-daily-badge ${dailyBadgeClass}">${dailyBadgeText}</span>` : ''}
             </div>
-            <div class="stock-card-body">
-                ${bodyHtml}
+            <div class="sc-main">
+                <div class="sc-profit-value ${isProfit ? 'profit' : 'loss'}" ${cycleProfitFmtMain.converted ? 'title="' + cycleProfitFmtMain.full + '"' : ''}>${profitDisplay}</div>
+                <div class="sc-profit-rate ${isProfit ? 'profit' : 'loss'}">${returnRateDisplay}</div>
             </div>
-            ${footerHtml}
+            <div class="sc-data">
+                ${hasPosition ? `<div class="sc-col">${generateColItems(positionItems)}</div>` : ''}
+                ${hasPrice ? `<div class="sc-col">${generateColItems(priceItems)}</div>` : ''}
+                ${hasProfit ? `<div class="sc-col">${generateColItems(profitItems)}</div>` : ''}
+                ${hasCycle ? `<div class="sc-col">${generateColItems(cycleItems)}</div>` : ''}
+            </div>
+            ${fields.yearlyStats?.visible && yearlyStats.length > 0 ? `
+            <div class="sc-yearly">
+                ${yearlyStats.map(ys => `
+                    <div class="sc-yearly-item">
+                        <span class="sc-yearly-year">${ys.year}年</span>
+                        <span class="sc-yearly-profit ${ys.profit >= 0 ? 'profit' : 'loss'}">${ys.profit >= 0 ? '+' : ''}¥${ys.profit.toFixed(0)}</span>
+                        <span class="sc-yearly-trades">${ys.trades}次</span>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+            <div class="sc-actions">
+                <button class="sc-action-btn" title="删除股票" data-action="delete" data-stock-code="${stock.code}">🗑</button>
+            </div>
         `;
 
-        // 动态绑定事件监听器
-        const editBtn = card.querySelector('.stock-card-action-edit');
-        const deleteBtn = card.querySelector('.stock-card-action-delete');
-        if (editBtn) {
-            editBtn.onclick = (e) => {
+        // 绑定股票名称点击事件（跳转详情页）
+        const nameEl = card.querySelector('.sc-name-clickable');
+        if (nameEl) {
+            nameEl.onclick = (e) => {
                 e.stopPropagation();
-                StockProfitCalculator.StockManager.editStock(stock.code);
+                StockProfitCalculator.EventBus.emit(StockProfitCalculator.EventBus.EventTypes.ROUTE_CHANGE, {
+                    page: 'detail',
+                    stockCode: stock.code
+                });
             };
         }
+
+        // 绑定删除按钮事件
+        const deleteBtn = card.querySelector('.sc-action-btn[data-action="delete"]');
+        if (deleteBtn) {
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                StockProfitCalculator.StockManager.deleteStock(stock.code);
+            };
+        }
+
+        // 绑定持仓周期点击事件
+        const cycleLink = card.querySelector('.sc-col-cycle-link');
+        if (cycleLink && cycleHistory.length > 0) {
+            cycleLink.onclick = (e) => {
+                e.stopPropagation();
+                this._showCycleHistoryModal(stock, cycleHistory);
+            };
+        }
+
+        return card;
+    },
+
+    /**
+     * 显示持仓周期历史弹窗
+     */
+    _showCycleHistoryModal(stock, cycleHistory) {
+        const modal = document.getElementById('cycleHistoryModal');
+        const content = document.getElementById('cycleHistoryContent');
+        const title = document.getElementById('cycleHistoryTitle');
+        
+        if (!modal || !content || !title) return;
+        
+        title.textContent = `${stock.name}(${stock.code}) - 持仓周期历史`;
+        
+        if (cycleHistory.length === 0) {
+            content.innerHTML = '<div class="cycle-history-empty">暂无持仓周期历史</div>';
+        } else {
+            // 计算总收益
+            const totalProfit = cycleHistory.reduce((sum, c) => sum + (c.profit || 0), 0);
+            const totalProfitClass = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
+            const totalProfitText = totalProfit >= 0 ? `+${totalProfit.toFixed(2)}` : totalProfit.toFixed(2);
+            
+            let listHtml = `<div style="margin-bottom:12px;font-weight:600;">总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span></div>`;
+            
+            cycleHistory.forEach(cycle => {
+                const isActive = cycle.status === 'active';
+                const statusClass = isActive ? 'cycle-item-active' : 'cycle-item-closed';
+                const statusText = isActive ? '当前' : '已结束';
+                
+                const startDate = cycle.startDate || '--';
+                const endDate = cycle.endDate || '至今';
+                
+                const profit = cycle.profit || 0;
+                const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+                const profitText = profit >= 0 ? `+${profit.toFixed(2)}` : profit.toFixed(2);
+                
+                const returnRate = cycle.returnRate || 0;
+                const returnRateText = returnRate >= 0 ? `+${returnRate.toFixed(2)}%` : `${returnRate.toFixed(2)}%`;
+                
+                const totalBuyCost = (cycle.totalBuyCost || 0).toFixed(2);
+                const totalSellAmount = (cycle.totalSellAmount || 0).toFixed(2);
+                const totalFee = (cycle.totalFee || 0).toFixed(2);
+                const totalDividend = (cycle.totalDividend || 0).toFixed(2);
+                
+                listHtml += `
+                    <div class="cycle-history-item ${statusClass}">
+                        <div class="cycle-item-header">
+                            <span class="cycle-number">第${cycle.cycle || 1}轮</span>
+                            <span class="cycle-status">${statusText}</span>
+                        </div>
+                        <div class="cycle-item-dates">
+                            <span class="cycle-date">${startDate} ~ ${endDate}</span>
+                            <span class="cycle-days">${cycle.days}天</span>
+                        </div>
+                        <div class="cycle-item-stats">
+                            <div class="cycle-stats-row cycle-stats-labels">
+                                <span>投入</span>
+                                <span>卖出</span>
+                                <span>手续费</span>
+                                <span>分红</span>
+                            </div>
+                            <div class="cycle-stats-row cycle-stats-values">
+                                <span>¥${totalBuyCost}</span>
+                                <span>¥${totalSellAmount}</span>
+                                <span>¥${totalFee}</span>
+                                <span>¥${totalDividend}</span>
+                            </div>
+                        </div>
+                        <div class="cycle-item-profit">
+                            <span class="profit-label">收益</span>
+                            <span class="profit-value ${profitClass}">¥${profitText} (${returnRateText})</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = listHtml;
+        }
+        
+        modal.style.display = 'flex';
+        
+        // 绑定关闭按钮
+        const closeBtn = modal.querySelector('.modal-close');
+        if (closeBtn) {
+            closeBtn.onclick = () => { modal.style.display = 'none'; };
+        }
+        
+        // 点击遮罩关闭
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    },
+
+    /**
+     * 创建列表卡片（横向布局）
+     */
+    createListCard(stock, result, snapshot = null, group = 'holding') {
+        const card = document.createElement('div');
+        
+        snapshot = snapshot || this.getStockSnapshot(stock);
+        const summary = snapshot.summary;
+        const quote = snapshot.quote;
+        const holdingInfo = snapshot.holdingInfo;
+        const marketValue = snapshot.marketValue;
+        const cycleProfit = snapshot.cycleProfit;
+        const cycleReturnRate = snapshot.cycleReturnRate;
+        const totalAllProfit = snapshot.totalAllProfit;
+        const totalAllReturnRate = snapshot.totalAllReturnRate;
+        const costPerShare = snapshot.costPerShare;
+        const dilutedCostPerShare = snapshot.dilutedCostPerShare;
+        const cycleHistory = snapshot.cycleHistory || [];
+        const currentCycleNumber = snapshot.currentCycleNumber;
+
+        const isCleared = summary.currentHolding === 0;
+        const isHolding = !isCleared;
+
+        // 获取字段显示配置
+        const fields = this._getFieldPreferences('list', group);
+
+        // ===== 计算核心收益显示 =====
+        let displayProfit, displayReturnRate;
+        let profitValueClass, profitRateClass;
+        
+        if (isCleared) {
+            // 已清仓：显示总收益
+            displayProfit = totalAllProfit;
+            displayReturnRate = totalAllReturnRate;
+        } else {
+            // 持仓中：显示当前持仓周期收益
+            displayProfit = cycleProfit !== null ? cycleProfit : 0;
+            displayReturnRate = cycleReturnRate !== null ? cycleReturnRate : 0;
+        }
+        
+        profitValueClass = displayProfit >= 0 ? 'profit' : 'loss';
+        profitRateClass = displayReturnRate >= 0 ? 'profit' : 'loss';
+        
+        const profitFmt = Utils.formatLargeNumberWithTooltip(displayProfit);
+        const profitDisplay = (displayProfit >= 0 ? '+' : '') + profitFmt.display;
+        const rateDisplay = (displayReturnRate >= 0 ? '+' : '') + displayReturnRate.toFixed(2) + '%';
+
+        // ===== 设置卡片类名 =====
+        let cardClass = 'stock-card-list-v2';
+        if (displayProfit > 0) cardClass += ' is-profit';
+        else if (displayProfit < 0) cardClass += ' is-loss';
+        if (isCleared) cardClass += ' is-cleared';
+        card.className = cardClass;
+
+        // ===== 构建字段项 =====
+        const fieldItems = [];
+        
+        // 持仓股数
+        if (fields.holding?.visible && isHolding) {
+            fieldItems.push({
+                label: '持仓',
+                value: summary.currentHolding + '股',
+                valueClass: ''
+            });
+        }
+        
+        // 持仓市值
+        if (fields.marketValue?.visible && isHolding) {
+            const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
+            fieldItems.push({
+                label: '市值',
+                value: mvFmt ? mvFmt.display : '--',
+                title: mvFmt && mvFmt.converted ? mvFmt.full : '',
+                valueClass: ''
+            });
+        }
+        
+        // 持仓成本
+        if (fields.cost?.visible && isHolding) {
+            const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
+            fieldItems.push({
+                label: '成本',
+                value: costFmt.display,
+                title: costFmt.converted ? costFmt.full : '',
+                valueClass: ''
+            });
+        }
+        
+        // 建仓日（持仓中）
+        if (fields.startDate?.visible && isHolding) {
+            fieldItems.push({
+                label: '建仓日',
+                value: holdingInfo.startDate || '--',
+                valueClass: ''
+            });
+        }
+        
+        // 持仓开始（已清仓）
+        if (fields.holdingStartDate?.visible && isCleared) {
+            let displayStartDate = '--';
+            if (cycleHistory.length > 0) {
+                const lastCycle = cycleHistory[cycleHistory.length - 1];
+                if (lastCycle && lastCycle.startDate) {
+                    displayStartDate = lastCycle.startDate;
+                }
+            }
+            fieldItems.push({
+                label: '持仓开始',
+                value: displayStartDate,
+                valueClass: ''
+            });
+        }
+        
+        // 持仓天数
+        if (fields.holdingDays?.visible) {
+            let displayDays = holdingInfo.holdingDays;
+            if (isCleared && cycleHistory.length > 0) {
+                const lastCycle = cycleHistory[cycleHistory.length - 1];
+                if (lastCycle && lastCycle.days !== undefined) {
+                    displayDays = lastCycle.days;
+                }
+            }
+            fieldItems.push({
+                label: '持仓天数',
+                value: displayDays !== undefined && displayDays !== null ? displayDays + '天' : '--',
+                valueClass: ''
+            });
+        }
+        
+        // 现价
+        if (fields.currentPrice?.visible) {
+            fieldItems.push({
+                label: '现价',
+                value: quote ? '¥' + quote.price.toFixed(3) : '--',
+                valueClass: ''
+            });
+        }
+        
+        // 当日涨幅
+        if (fields.dailyChange?.visible) {
+            fieldItems.push({
+                label: '涨幅',
+                value: this.formatDailyChange(quote),
+                valueClass: quote && quote.change >= 0 ? 'profit' : (quote && quote.change < 0 ? 'loss' : '')
+            });
+        }
+        
+        // 每股持仓成本
+        if (fields.costPerShare?.visible && isHolding) {
+            fieldItems.push({
+                label: '每股成本',
+                value: '¥' + costPerShare.toFixed(3),
+                valueClass: ''
+            });
+        }
+        
+        // 每股摊薄成本
+        if (fields.dilutedCostPerShare?.visible && isHolding) {
+            fieldItems.push({
+                label: '摊薄成本',
+                value: dilutedCostPerShare !== null ? '¥' + dilutedCostPerShare.toFixed(3) : '--',
+                valueClass: ''
+            });
+        }
+        
+        // 总收益
+        if (fields.totalProfit?.visible) {
+            const totalProfitFmt = Utils.formatLargeNumberWithTooltip(totalAllProfit);
+            fieldItems.push({
+                label: '总收益',
+                value: (totalAllProfit >= 0 ? '+' : '') + totalProfitFmt.display,
+                title: totalProfitFmt.converted ? totalProfitFmt.full : '',
+                valueClass: totalAllProfit >= 0 ? 'profit' : 'loss'
+            });
+        }
+        
+        // 总收益率
+        if (fields.totalReturnRate?.visible) {
+            fieldItems.push({
+                label: '总收益率',
+                value: (totalAllReturnRate >= 0 ? '+' : '') + totalAllReturnRate.toFixed(2) + '%',
+                valueClass: totalAllReturnRate >= 0 ? 'profit' : 'loss'
+            });
+        }
+        
+        // 清仓日期
+        if (fields.clearDate?.visible) {
+            const clearDate = this.getClearDate(stock);
+            fieldItems.push({
+                label: '清仓日期',
+                value: clearDate || '--',
+                valueClass: ''
+            });
+        }
+
+        // ===== 渲染字段 HTML =====
+        let fieldsHtml = fieldItems.map(item => `
+            <div class="scl-item">
+                <span class="scl-label">${item.label}</span>
+                <span class="scl-value ${item.valueClass}" ${item.title ? 'title="' + item.title + '"' : ''}>${item.value}</span>
+            </div>
+        `).join('');
+
+        // ===== 周期区 =====
+        const clearDate = this.getClearDate(stock);
+        let cycleRound, cycleDays;
+        
+        if (isCleared) {
+            cycleRound = cycleHistory.length > 0 ? '共' + cycleHistory.length + '轮' : '--';
+            cycleDays = clearDate ? '清仓于 ' + clearDate.substring(5) : '--';
+        } else {
+            cycleRound = currentCycleNumber !== null ? '第' + currentCycleNumber + '轮' : '--';
+            cycleDays = holdingInfo.holdingDays !== undefined ? holdingInfo.holdingDays + '天' : '--';
+        }
+
+        // ===== 组装 HTML =====
+        card.innerHTML = `
+            <div class="scl-identity">
+                <span class="scl-name scl-name-clickable" data-stock-code="${stock.code}">${stock.name}</span>
+                <span class="scl-code">${stock.code}</span>
+            </div>
+            
+            <div class="scl-profit ${profitValueClass}">
+                <span class="scl-profit-value ${profitValueClass}" ${profitFmt.converted ? 'title="' + profitFmt.full + '"' : ''}>${profitDisplay}</span>
+                <span class="scl-profit-rate ${profitRateClass}">${rateDisplay}</span>
+            </div>
+            
+            ${fieldsHtml ? '<div class="scl-divider"></div>' + fieldsHtml : ''}
+            
+            <div class="scl-divider"></div>
+            
+            <div class="scl-cycle">
+                <div class="scl-item">
+                    <span class="scl-label">轮次</span>
+                    <span class="scl-value">${cycleRound}</span>
+                </div>
+                <div class="scl-item">
+                    <span class="scl-label">天数</span>
+                    <span class="scl-value">${cycleDays}</span>
+                </div>
+            </div>
+            
+            <div class="scl-actions">
+                <button class="scl-action-btn scl-action-delete" title="删除股票">🗑</button>
+            </div>
+        `;
+
+        // 绑定股票名称点击事件（跳转详情页）
+        const nameEl = card.querySelector('.scl-name-clickable');
+        if (nameEl) {
+            nameEl.onclick = (e) => {
+                e.stopPropagation();
+                StockProfitCalculator.EventBus.emit(StockProfitCalculator.EventBus.EventTypes.ROUTE_CHANGE, {
+                    page: 'detail',
+                    stockCode: stock.code
+                });
+            };
+        }
+
+        // 绑定删除按钮事件
+        const deleteBtn = card.querySelector('.scl-action-delete');
         if (deleteBtn) {
             deleteBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -1398,232 +1746,34 @@ const Overview = {
     },
 
     /**
-     * 创建列表卡片（横向布局）
+     * 调整列表卡片缩放以防止溢出
+     * @param {HTMLElement} container - 卡片容器
      */
-    createListCard(stock, result, snapshot = null, group = 'holding') {
-        const card = document.createElement('div');
-        card.className = 'stock-card stock-card-list';
-        card.onclick = () => {
-            StockProfitCalculator.EventBus.emit(StockProfitCalculator.EventBus.EventTypes.ROUTE_CHANGE, {
-                page: 'detail',
-                stockCode: stock.code
-            });
-        };
-
-        snapshot = snapshot || this.getStockSnapshot(stock);
-        const summary = snapshot.summary;
-        const quote = snapshot.quote;
-        const holdingInfo = snapshot.holdingInfo;
-        const marketValue = snapshot.marketValue;
-        const holdingProfit = snapshot.holdingProfit;
-        const holdingReturnRate = snapshot.holdingReturnRate;
-        const cycleProfit = snapshot.cycleProfit;
-        const cycleReturnRate = snapshot.cycleReturnRate;
-        const totalAllProfit = snapshot.totalAllProfit;
-        const totalAllReturnRate = snapshot.totalAllReturnRate;
-        const costPerShare = snapshot.costPerShare;
-        const dilutedCostPerShare = snapshot.dilutedCostPerShare;
-        const cycleHistory = snapshot.cycleHistory || [];
-
-        const profitSign = totalAllProfit >= 0 ? '+' : '';
-
-        // 获取字段显示配置
-        const fields = this._getFieldPreferences('list', group);
-
-        // 动态构建字段 HTML
-        let fieldsHtml = '';
+    _adjustListCardScale(container) {
+        const cards = container.querySelectorAll('.stock-card-list-v2');
+        if (cards.length === 0) return;
         
-        // 股票名称和代码（始终显示）
-        fieldsHtml += `
-            <div class="stock-card-list-name">
-                <span class="stock-card-list-title">${stock.name}</span>
-                <span class="stock-card-list-code">${stock.code}</span>
-            </div>
-        `;
+        // 获取容器宽度（减去内边距）
+        const containerWidth = container.clientWidth;
         
-        // 根据配置添加字段
-        if (fields.holding?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">持仓股数</span>
-                    <span class="stock-card-list-value">${summary.currentHolding}股</span>
-                </div>
-            `;
-        }
-        
-        if (fields.marketValue?.visible) {
-            const mvFmt = marketValue !== null ? Utils.formatLargeNumberWithTooltip(marketValue) : null;
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">持仓市值</span>
-                    <span class="stock-card-list-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvFmt ? mvFmt.display : '--'}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.cost?.visible) {
-            const costFmt = Utils.formatLargeNumberWithTooltip(summary.currentCost);
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">持仓成本</span>
-                    <span class="stock-card-list-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.startDate?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">建仓日</span>
-                    <span class="stock-card-list-value">${holdingInfo.startDate}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.holdingStartDate?.visible) {
-            // 已清仓股票显示最后一轮持仓的开始日期
-            let displayStartDate = holdingInfo.startDate;
-            if (summary.currentHolding === 0 && cycleHistory.length > 0) {
-                // 获取最后一轮（最近一轮）持仓的开始日期
-                const lastCycle = cycleHistory[cycleHistory.length - 1];
-                if (lastCycle && lastCycle.startDate) {
-                    displayStartDate = lastCycle.startDate;
-                }
+        cards.forEach(card => {
+            // 重置缩放以获取真实宽度
+            card.style.transform = '';
+            card.style.width = '';
+            
+            // 强制重排以获取准确的 scrollWidth
+            const scrollWidth = card.scrollWidth;
+            
+            // 如果内容超出容器宽度
+            if (scrollWidth > containerWidth) {
+                // 计算缩放比例，最小 0.8 防止过度缩小
+                const scale = Math.max(0.8, containerWidth / scrollWidth);
+                card.style.transform = `scale(${scale})`;
+                card.style.transformOrigin = 'left center';
+                // 调整宽度以补偿缩放后的空间
+                card.style.width = `${100 / scale}%`;
             }
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">本轮持仓开始</span>
-                    <span class="stock-card-list-value">${displayStartDate}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.holdingDays?.visible) {
-            // 已清仓股票显示最后一轮持仓天数
-            let displayDays = holdingInfo.holdingDays;
-            if (summary.currentHolding === 0 && cycleHistory.length > 0) {
-                const lastCycle = cycleHistory[cycleHistory.length - 1];
-                if (lastCycle && lastCycle.days !== undefined) {
-                    displayDays = lastCycle.days;
-                }
-            }
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">持仓天数</span>
-                    <span class="stock-card-list-value">${displayDays}天</span>
-                </div>
-            `;
-        }
-        
-        if (fields.currentPrice?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">现价</span>
-                    <span class="stock-card-list-value">${quote ? '¥' + quote.price.toFixed(3) : '--'}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.dailyChange?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">当日涨幅</span>
-                    <span class="stock-card-list-value ${quote && quote.change >= 0 ? 'profit' : 'loss'}">${this.formatDailyChange(quote)}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.costPerShare?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">每股持仓成本</span>
-                    <span class="stock-card-list-value">¥${costPerShare.toFixed(3)}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.dilutedCostPerShare?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">每股摊薄成本</span>
-                    <span class="stock-card-list-value">${dilutedCostPerShare !== null ? '¥' + dilutedCostPerShare.toFixed(3) : '--'}</span>
-                </div>
-            `;
-        }
-        
-        if (fields.cycleProfit?.visible) {
-            const cycleProfitFmt = cycleProfit !== null ? Utils.formatLargeNumberWithTooltip(cycleProfit) : null;
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">当前持仓周期收益</span>
-                    <span class="stock-card-list-value ${cycleProfit !== null && cycleProfit >= 0 ? 'profit' : 'loss'}" ${cycleProfitFmt && cycleProfitFmt.converted ? 'title="' + cycleProfitFmt.full + '"' : ''}>
-                        ${cycleProfitFmt ? (cycleProfit >= 0 ? '+' : '') + cycleProfitFmt.display : '--'}
-                    </span>
-                </div>
-            `;
-        }
-        
-        if (fields.cycleReturnRate?.visible) {
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">当前持仓周期收益率</span>
-                    <span class="stock-card-list-value ${cycleReturnRate !== null && cycleReturnRate >= 0 ? 'profit' : 'loss'}">
-                        ${cycleReturnRate !== null ? (cycleReturnRate >= 0 ? '+' : '') + cycleReturnRate.toFixed(3) + '%' : '--'}
-                    </span>
-                </div>
-            `;
-        }
-        
-        if (fields.totalProfit?.visible) {
-            const totalProfitFmt = Utils.formatLargeNumberWithTooltip(totalAllProfit);
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">总收益</span>
-                    <span class="stock-card-list-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmt.converted ? 'title="' + totalProfitFmt.full + '"' : ''}>
-                        ${profitSign}${totalProfitFmt.display}
-                    </span>
-                </div>
-            `;
-        }
-        
-        if (fields.clearDate?.visible) {
-            const clearDate = this.getClearDate(stock);
-            const clearDateLabel = summary.currentHolding > 0 ? '上轮清仓日期' : '本轮清仓日期';
-            fieldsHtml += `
-                <div class="stock-card-list-item">
-                    <span class="stock-card-list-label">${clearDateLabel}</span>
-                    <span class="stock-card-list-value">${clearDate || '--'}</span>
-                </div>
-            `;
-        }
-
-        // 操作按钮（始终显示）
-        fieldsHtml += `
-            <div class="stock-card-list-actions">
-                <button class="stock-card-action stock-card-action-edit" title="编辑股票" aria-label="编辑股票" data-stock-code="${stock.code}">✎</button>
-                <button class="stock-card-action stock-card-action-delete" title="删除股票" aria-label="删除股票" data-stock-code="${stock.code}">🗑</button>
-            </div>
-        `;
-
-        card.innerHTML = fieldsHtml;
-
-        // 动态绑定事件监听器
-        const editBtn = card.querySelector('.stock-card-action-edit');
-        const deleteBtn = card.querySelector('.stock-card-action-delete');
-        if (editBtn) {
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                StockProfitCalculator.StockManager.editStock(stock.code);
-            };
-        }
-        if (deleteBtn) {
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                StockProfitCalculator.StockManager.deleteStock(stock.code);
-            };
-        }
-
-        return card;
+        });
     },
 
     /**
@@ -1884,11 +2034,11 @@ const Overview = {
             } catch (error) {
                 console.error('批量获取股价失败:', error);
             }
-
-            // 更新汇总统计
-            this.renderSummary();
-            this.renderStockLists();
         }
+
+        // 所有股价获取完成后，统一渲染一次
+        this.renderSummary();
+        this.renderStockLists();
 
         // 刷新完成提示
         ErrorHandler.showSuccess('刷新完成');
@@ -2514,7 +2664,7 @@ const Overview = {
         document.body.appendChild(modal);
         
         // 显示模态对话框
-        modal.style.display = 'block';
+        modal.style.display = 'flex';
         
         // 点击模态框外部关闭
         modal.addEventListener('click', (e) => {

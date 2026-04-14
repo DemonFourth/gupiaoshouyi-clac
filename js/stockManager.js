@@ -89,9 +89,14 @@ const StockManager = {
         document.getElementById('newStockCode').value = '';
         document.getElementById('newStockCode').disabled = false;
         document.getElementById('newStockName').value = '';
-        document.getElementById('newStockName').placeholder = '如: 赣锋锂业';
-        // 分组会在保存时根据持仓自动归一化；无交易记录默认归类为已清仓
-        document.getElementById('newStockGroup').value = 'cleared';
+        // 设置单选按钮默认值为已清仓
+        const clearedRadio = document.querySelector('input[name="stockGroup"][value="cleared"]');
+        if (clearedRadio) clearedRadio.checked = true;
+        // 重置已存在提示状态
+        const existsTip = document.getElementById('stockExistsTip');
+        if (existsTip) existsTip.style.display = 'none';
+        const saveBtn = document.getElementById('saveNewStockBtn');
+        if (saveBtn) saveBtn.disabled = false;
         document.getElementById('addStockModal').style.display = 'block';
     },
     
@@ -103,7 +108,9 @@ const StockManager = {
         
         const code = document.getElementById('newStockCode').value.trim();
         const name = document.getElementById('newStockName').value.trim();
-        const group = document.getElementById('newStockGroup').value;
+        // 获取单选按钮的值
+        const groupRadio = document.querySelector('input[name="stockGroup"]:checked');
+        const group = groupRadio ? groupRadio.value : 'cleared';
         console.log('[saveStock] 股票代码:', code, ', 名称:', name, ', 分组:', group);
 
         if (!code || !name) {
@@ -296,6 +303,59 @@ const StockManager = {
             // 使用 StockPriceAPI 获取股票名称
             const quote = await StockProfitCalculator.StockPriceAPI.fetchPrice(code);
             if (quote && quote.name) {
+                nameInput.value = quote.name;
+            }
+        } catch (error) {
+            console.warn('自动获取股票名称失败:', error);
+        }
+    },
+    
+    /**
+     * 处理股票代码输入（检测是否已存在 + 获取名称）
+     */
+    async onStockCodeInput(code) {
+        const nameInput = document.getElementById('newStockName');
+        const existsTip = document.getElementById('stockExistsTip');
+        const saveBtn = document.getElementById('saveNewStockBtn');
+        const goToLink = document.getElementById('goToStockDetailLink');
+        
+        // 重置状态
+        if (existsTip) existsTip.style.display = 'none';
+        if (saveBtn) saveBtn.disabled = false;
+        if (nameInput) nameInput.value = '';
+        
+        // 代码不完整，不处理
+        if (!code || code.length < 6) return;
+        
+        // 检测股票是否已存在
+        const DataManager = StockProfitCalculator.DataManager;
+        const data = await DataManager.load();
+        const existingStock = data.stocks.find(s => s.code === code);
+        
+        if (existingStock) {
+            // 已存在：显示提示，禁用保存按钮
+            if (existsTip) existsTip.style.display = 'flex';
+            if (saveBtn) saveBtn.disabled = true;
+            
+            // 设置跳转链接
+            if (goToLink) {
+                goToLink.onclick = () => {
+                    this.closeModal();
+                    // 跳转到详情页
+                    if (window.App && window.App.handleRouteChange) {
+                        window.App.handleRouteChange('detail', code);
+                    } else {
+                        StockProfitCalculator.Router.showDetail(code);
+                    }
+                };
+            }
+            return;
+        }
+        
+        // 不存在：获取股票名称
+        try {
+            const quote = await StockProfitCalculator.StockPriceAPI.fetchPrice(code);
+            if (quote && quote.name && nameInput) {
                 nameInput.value = quote.name;
             }
         } catch (error) {

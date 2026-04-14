@@ -25,19 +25,6 @@
                     <div class="stock-info" id="stockInfo">支持多股票管理 | FIFO先进先出计算</div>
                 </div>
 
-                <!-- 股票筛选器：仅交易记录页面显示 -->
-                <select id="tradeRecordsStockFilter" class="trade-records-filter-select" style="display: none;">
-                    <option value="">全部股票</option>
-                </select>
-
-                <!-- 交易记录日期筛选器：仅交易记录页面显示 -->
-                <div class="trade-records-date-filters" style="display: none;">
-                    <input type="date" id="tradeRecordsStartDate" class="trade-records-filter-input" placeholder="起始日期">
-                    <span class="trade-records-filter-separator">-</span>
-                    <input type="date" id="tradeRecordsEndDate" class="trade-records-filter-input" placeholder="结束日期">
-                    <button id="tradeRecordsFilterBtn" class="trade-records-filter-btn">筛选</button>
-                </div>
-
                 <!-- 详情页顶部行情：由 Router 切换时显示/隐藏 -->
                 <span class="header-quote" id="headerQuote" style="display:none;">
                     <span class="header-quote-item">
@@ -50,21 +37,31 @@
                     </span>
                 </span>
 
-                <!-- 交易记录汇总：仅交易记录页面显示 -->
-                <div class="trade-records-summary" style="display: none;">
-                    <span class="trade-records-summary-item">
-                        <span class="trade-records-summary-label">总收益：</span>
-                        <span class="trade-records-summary-value" id="tradeRecordsTotalProfit">¥0.00</span>
-                    </span>
-                    <span class="trade-records-summary-item">
-                        <span class="trade-records-summary-label">交易次数：</span>
-                        <span class="trade-records-summary-value" id="tradeRecordsCount">0</span>
-                    </span>
-                    <span class="trade-records-summary-item">
-                        <span class="trade-records-summary-label">总手续费：</span>
-                        <span class="trade-records-summary-value" id="tradeRecordsTotalFee">¥0.00</span>
-                    </span>
+                <!-- 交易记录筛选器：仅交易记录页面显示 -->
+                <div class="header-tr-filters" style="display: none;">
+                    <div class="header-tr-filter-group">
+                        <input type="date" id="tradeRecordsStartDate" class="header-tr-input" title="起始日期">
+                        <span class="header-tr-sep">~</span>
+                        <input type="date" id="tradeRecordsEndDate" class="header-tr-input" title="结束日期">
+                    </div>
+                    <select id="tradeRecordsStockFilter" class="header-tr-select">
+                        <option value="">全部股票</option>
+                    </select>
+                    <div class="header-tr-quick-btns">
+                        <button type="button" class="header-tr-quick-btn" data-range="today">今日</button>
+                        <button type="button" class="header-tr-quick-btn" data-range="week">本周</button>
+                        <button type="button" class="header-tr-quick-btn" data-range="month">本月</button>
+                        <button type="button" class="header-tr-quick-btn" data-range="year">本年</button>
+                    </div>
+                    <button type="button" id="tradeRecordsFilterBtn" class="header-tr-filter-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                        筛选
+                    </button>
                 </div>
+
+
             </div>
 
             <div class="header-right-actions">
@@ -255,7 +252,7 @@
             <!-- 股票列表 -->
             <div class="section">
                 <div class="section-header">
-                    <h2>持仓中</h2>
+                    <h2>持仓中 <span id="holdingProfitLossStats" class="profit-loss-stats"></span></h2>
                     <div class="section-header-right">
                         <select id="holdingSortSelect" class="sort-select" onchange="Overview.onSortChange('holding')">
                             <option value="change">当日涨幅</option>
@@ -270,17 +267,17 @@
                         <button type="button" id="holdingSortDescBtn" class="sort-direction-btn active" title="降序">↓</button>
                         <button type="button" id="holdingSortAscBtn" class="sort-direction-btn" title="升序">↑</button>
                         </div>
-                        <button type="button" id="viewModeBtnHolding" class="btn btn-icon" title="切换视图">
-                            <span class="view-icon-grid">▦</span>
-                            <span class="view-icon-list" style="display:none;">☰</span>
-                        </button>
+                        <div class="card-cols-group" id="holdingColsGroup" style="display:none;">
+                            <button type="button" class="card-cols-btn active" data-cols="2" title="每行2个卡片">2列</button>
+                            <button type="button" class="card-cols-btn" data-cols="3" title="每行3个卡片">3列</button>
+                            <button type="button" class="card-cols-btn" data-cols="4" title="每行4个卡片">4列</button>
+                        </div>
                         <button type="button" id="fieldSettingsBtnHolding" class="btn btn-icon" title="显示设置">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
                             </svg>
                         </button>
-                        <button type="button" class="btn btn-primary" id="addStockBtn">添加股票</button>
                     </div>
                 </div>
                 <div id="holdingStocksList" class="stock-cards-container">
@@ -290,7 +287,7 @@
 
             <div class="section">
                 <div class="section-header">
-                    <h2>已清仓</h2>
+                    <h2>已清仓 <span id="clearedProfitLossStats" class="profit-loss-stats"></span></h2>
                     <div class="section-header-right">
                         <select id="clearedSortSelect" class="sort-select" onchange="Overview.onSortChange('cleared')">
                             <option value="clear-date">清仓日期</option>
@@ -302,10 +299,11 @@
                             <button type="button" id="clearedSortDescBtn" class="sort-direction-btn active" title="降序">↓</button>
                             <button type="button" id="clearedSortAscBtn" class="sort-direction-btn" title="升序">↑</button>
                         </div>
-                        <button type="button" id="viewModeBtnCleared" class="btn btn-icon" title="切换视图">
-                            <span class="view-icon-grid">▦</span>
-                            <span class="view-icon-list" style="display:none;">☰</span>
-                        </button>
+                        <div class="card-cols-group" id="clearedColsGroup" style="display:none;">
+                            <button type="button" class="card-cols-btn active" data-cols="2" title="每行2个卡片">2列</button>
+                            <button type="button" class="card-cols-btn" data-cols="3" title="每行3个卡片">3列</button>
+                            <button type="button" class="card-cols-btn" data-cols="4" title="每行4个卡片">4列</button>
+                        </div>
                         <button type="button" id="fieldSettingsBtnCleared" class="btn btn-icon" title="显示设置">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
@@ -700,6 +698,46 @@
 
     <!-- 交易记录查询页面 -->
     <div id="tradeRecordsPage" class="page-container" style="display: none;">
+        <!-- 仪表盘风格统计卡片区 -->
+        <div class="tr-stats-section">
+            <div class="tr-stats-grid">
+                <div class="tr-stat-card tr-stat-profit">
+                    <div class="tr-stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="tr-stat-content">
+                        <span class="tr-stat-label">总收益</span>
+                        <span class="tr-stat-value" id="tradeRecordsTotalProfit">¥0.00</span>
+                    </div>
+                </div>
+                <div class="tr-stat-card tr-stat-count">
+                    <div class="tr-stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h18v18H3zM9 9h6v6H9z"/>
+                        </svg>
+                    </div>
+                    <div class="tr-stat-content">
+                        <span class="tr-stat-label">交易次数</span>
+                        <span class="tr-stat-value" id="tradeRecordsCount">0</span>
+                    </div>
+                </div>
+                <div class="tr-stat-card tr-stat-fee">
+                    <div class="tr-stat-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="tr-stat-content">
+                        <span class="tr-stat-label">总手续费</span>
+                        <span class="tr-stat-value" id="tradeRecordsTotalFee">¥0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 图表选择控件 -->
         <div class="trade-records-chart-selector">
             <span class="chart-selector-label">选择显示的图表：</span>
@@ -833,6 +871,20 @@
     </div>
 </div>
 
+    <!-- 悬浮添加股票按钮 -->
+    <button type="button" id="addStockFloatBtn" class="add-stock-float is-visible" title="添加股票" aria-label="添加股票">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+    
+    <!-- 悬浮视图切换按钮 -->
+    <button type="button" id="viewModeFloatBtn" class="view-mode-float is-visible" title="切换视图" aria-label="切换视图">
+        <span class="view-icon-grid">▦</span>
+        <span class="view-icon-list" style="display:none;">☰</span>
+    </button>
+    
     <!-- 悬浮刷新股价按钮 -->
     <button type="button" id="refreshPriceBtn" class="refresh-price-float" title="刷新股价" aria-label="刷新股价">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1101,6 +1153,18 @@
     </div>
     -->
 
+    <!-- 持仓周期历史弹窗 -->
+    <div id="cycleHistoryModal" class="modal">
+        <div class="modal-content" style="max-width:720px;">
+            <div class="modal-header">
+                <h2 id="cycleHistoryTitle">持仓周期历史</h2>
+                <button type="button" class="modal-close-btn modal-close" title="关闭">&times;</button>
+            </div>
+            <div class="modal-body" id="cycleHistoryContent" style="max-height:450px;overflow-y:auto;padding:16px 20px;">
+            </div>
+        </div>
+    </div>
+
     <!-- 提示弹窗 -->
     <div id="alertModal" class="modal">
         <div class="modal-content alert-modal-content">
@@ -1168,31 +1232,59 @@
 
     <!-- 添加股票弹窗 -->
     <div id="addStockModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content add-stock-modal">
             <div class="modal-header">
                 <h2>添加股票</h2>
                 <button type="button" class="modal-close-btn" id="closeAddStockModalBtn" title="关闭">&times;</button>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>股票代码</label>
-                    <input type="text" id="newStockCode" placeholder="如：002460" oninput="StockManager.fetchStockName(this.value)">
+            <div class="add-stock-body">
+                <div class="add-stock-field">
+                    <label class="add-stock-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                        </svg>
+                        股票代码
+                    </label>
+                    <input type="text" id="newStockCode" class="add-stock-input" placeholder="请输入6位股票代码，如：002460" maxlength="6" oninput="StockManager.onStockCodeInput(this.value)">
+                    <div id="stockExistsTip" class="add-stock-exists-tip" style="display:none;">
+                        <span class="exists-tip-icon">⚠️</span>
+                        <span class="exists-tip-text">该股票已记录，</span>
+                        <a href="javascript:void(0)" id="goToStockDetailLink" class="exists-tip-link">点击查看详情</a>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>股票名称</label>
-                    <input type="text" id="newStockName" placeholder="如：赣锋锂业">
+                <div class="add-stock-field">
+                    <label class="add-stock-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        股票名称
+                    </label>
+                    <input type="text" id="newStockName" class="add-stock-input" placeholder="输入代码后自动获取，也可手动填写">
                 </div>
-                <div class="form-group">
-                    <label>分组</label>
-                    <select id="newStockGroup">
-                        <option value="cleared">已清仓</option>
-                        <option value="holding">持仓中</option>
-                    </select>
+                <div class="add-stock-field">
+                    <label class="add-stock-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        分组
+                    </label>
+                    <div class="add-stock-radio-group">
+                        <label class="add-stock-radio">
+                            <input type="radio" name="stockGroup" value="cleared" checked>
+                            <span class="add-stock-radio-label">已清仓</span>
+                        </label>
+                        <label class="add-stock-radio">
+                            <input type="radio" name="stockGroup" value="holding">
+                            <span class="add-stock-radio-label">持仓中</span>
+                        </label>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="add-stock-footer">
+                <button type="button" class="btn btn-secondary" id="cancelAddStockBtn">取消</button>
                 <button type="button" class="btn btn-primary" id="saveNewStockBtn">保存</button>
-                <button type="button" class="btn" id="cancelAddStockBtn">取消</button>
             </div>
         </div>
     </div>

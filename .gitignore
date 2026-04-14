@@ -30,3 +30,13 @@ package.json
 package-lock.json
 .eslintrc.json
 .eslintignore
+
+# 开发计划和预览文件
+docs/superpowers/
+
+# 测试配置
+playwright.config.js
+
+# 临时备份文件
+temp_*.js
+temp_*.css

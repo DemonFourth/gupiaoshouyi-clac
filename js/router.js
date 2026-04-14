@@ -86,6 +86,12 @@ const Router = {
             refreshBtn.classList.add('is-visible');
         }
 
+        // 显示悬浮按钮（添加股票、切换视图）
+        const addStockBtn = document.getElementById('addStockFloatBtn');
+        const viewModeBtn = document.getElementById('viewModeFloatBtn');
+        if (addStockBtn) addStockBtn.classList.add('is-visible');
+        if (viewModeBtn) viewModeBtn.classList.add('is-visible');
+
         const headerQuote = document.getElementById('headerQuote');
         if (headerQuote) {
             headerQuote.style.display = 'none';
@@ -97,13 +103,9 @@ const Router = {
         if (searchContainer) searchContainer.style.display = 'flex';
         if (settingsBtn) settingsBtn.style.display = 'inline-flex';
 
-        // 隐藏交易记录筛选器元素
-        const stockFilter = document.getElementById('tradeRecordsStockFilter');
-        const dateFilters = document.querySelector('.trade-records-date-filters');
-        const summary = document.querySelector('.trade-records-summary');
-        if (stockFilter) stockFilter.style.display = 'none';
-        if (dateFilters) dateFilters.style.display = 'none';
-        if (summary) summary.style.display = 'none';
+        // 隐藏交易记录筛选器
+        const trFilters = document.querySelector('.header-tr-filters');
+        if (trFilters) trFilters.style.display = 'none';
 
         const overviewPage = document.getElementById(this.pages.overview);
         const detailPage = document.getElementById(this.pages.detail);
@@ -178,6 +180,12 @@ const Router = {
             refreshBtn.classList.add('is-visible');
         }
 
+        // 隐藏悬浮按钮（添加股票、切换视图）
+        const addStockBtn = document.getElementById('addStockFloatBtn');
+        const viewModeBtn = document.getElementById('viewModeFloatBtn');
+        if (addStockBtn) addStockBtn.classList.remove('is-visible');
+        if (viewModeBtn) viewModeBtn.classList.remove('is-visible');
+
         const headerQuote = document.getElementById('headerQuote');
         if (headerQuote) {
             headerQuote.style.display = 'inline-flex';
@@ -195,13 +203,9 @@ const Router = {
         if (searchContainer) searchContainer.style.display = 'none';
         if (settingsBtn) settingsBtn.style.display = 'none';
 
-        // 隐藏交易记录筛选器元素
-        const stockFilter = document.getElementById('tradeRecordsStockFilter');
-        const dateFilters = document.querySelector('.trade-records-date-filters');
-        const summary = document.querySelector('.trade-records-summary');
-        if (stockFilter) stockFilter.style.display = 'none';
-        if (dateFilters) dateFilters.style.display = 'none';
-        if (summary) summary.style.display = 'none';
+        // 隐藏交易记录筛选器
+        const trFilters = document.querySelector('.header-tr-filters');
+        if (trFilters) trFilters.style.display = 'none';
 
         const overviewPage = document.getElementById(this.pages.overview);
         const detailPage = document.getElementById(this.pages.detail);
@@ -432,6 +436,12 @@ const Router = {
             refreshBtn.classList.remove('is-visible');
         }
 
+        // 隐藏悬浮按钮（添加股票、切换视图）
+        const addStockBtn = document.getElementById('addStockFloatBtn');
+        const viewModeBtn = document.getElementById('viewModeFloatBtn');
+        if (addStockBtn) addStockBtn.classList.remove('is-visible');
+        if (viewModeBtn) viewModeBtn.classList.remove('is-visible');
+
         // 隐藏行情信息
         const headerQuote = document.getElementById('headerQuote');
         if (headerQuote) {
@@ -444,13 +454,9 @@ const Router = {
         if (searchContainer) searchContainer.style.display = 'none';
         if (settingsBtn) settingsBtn.style.display = 'none';
 
-        // 显示交易记录筛选器元素
-        const stockFilter = document.getElementById('tradeRecordsStockFilter');
-        const dateFilters = document.querySelector('.trade-records-date-filters');
-        const summary = document.querySelector('.trade-records-summary');
-        if (stockFilter) stockFilter.style.display = 'inline-block';
-        if (dateFilters) dateFilters.style.display = 'flex';
-        if (summary) summary.style.display = 'flex';
+        // 显示交易记录筛选器
+        const trFilters = document.querySelector('.header-tr-filters');
+        if (trFilters) trFilters.style.display = 'flex';
 
         // 修改页面标题为"交易记录"
         const titleElement = document.querySelector('.header-title h1');

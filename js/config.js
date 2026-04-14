@@ -165,14 +165,16 @@ const Config = {
         preferences: {
             showHoldingDetail: true,
             showCycleHistory: true,  // 持仓周期历史显示开关
-            largeNumberThreshold: 10000  // 大数字转换阈值，超过此值自动转为"万"或"亿"单位
+            largeNumberThreshold: 10000,  // 大数字转换阈值，超过此值自动转为"万"或"亿"单位
+            cardCols: {
+                holding: 2,  // 持仓中卡片每行列数
+                cleared: 2   // 已清仓卡片每行列数
+            }
         },
         
         // 列表视图显示字段配置
         listFields: {
             holding: {
-                stockName: { label: '股票名称', default: true },
-                stockCode: { label: '股票代码', default: true },
                 holding: { label: '持仓股数', default: true },
                 marketValue: { label: '持仓市值', default: true },
                 cost: { label: '持仓成本', default: true },
@@ -182,13 +184,11 @@ const Config = {
                 dailyChange: { label: '当日涨幅', default: true },
                 costPerShare: { label: '每股持仓成本', default: false },
                 dilutedCostPerShare: { label: '每股摊薄成本', default: false },
-                cycleProfit: { label: '当前持仓周期收益', default: false },
-                cycleReturnRate: { label: '当前持仓周期收益率', default: false },
                 totalProfit: { label: '总收益', default: true },
-                clearDate: { label: '上轮清仓日期', default: true }
+                clearDate: { label: '清仓日期', default: true }
             },
             cleared: {
-                holdingStartDate: { label: '本轮持仓开始', default: true },
+                holdingStartDate: { label: '持仓开始', default: true },
                 holdingDays: { label: '持仓天数', default: true },
                 totalProfit: { label: '总收益', default: true },
                 totalReturnRate: { label: '总收益率', default: true },
@@ -199,8 +199,6 @@ const Config = {
         // 卡片视图显示字段配置
         cardFields: {
             holding: {
-                stockName: { label: '股票名称', default: true },
-                stockCode: { label: '股票代码', default: true },
                 holding: { label: '持仓股数', default: true },
                 marketValue: { label: '持仓市值', default: true },
                 cost: { label: '持仓成本', default: true },
@@ -208,21 +206,27 @@ const Config = {
                 dilutedCostPerShare: { label: '每股摊薄成本', default: true },
                 currentPrice: { label: '当日股价', default: true },
                 dailyChange: { label: '当日涨幅', default: true },
-                cycleProfit: { label: '当前持仓周期收益', default: true },
-                cycleReturnRate: { label: '当前持仓周期收益率', default: true },
                 totalProfit: { label: '总收益', default: true },
                 totalReturnRate: { label: '总收益率', default: true },
-                holdingStartDate: { label: '本轮持仓开始', default: true },
+                holdingStartDate: { label: '持仓开始', default: true },
                 holdingDays: { label: '持仓天数', default: true },
                 yearlyStats: { label: '年度统计', default: true },
-                clearDate: { label: '上轮清仓日期', default: true }
+                clearDate: { label: '清仓日期', default: true }
             },
             cleared: {
+                holding: { label: '持仓股数', default: true },
+                marketValue: { label: '持仓市值', default: true },
+                cost: { label: '持仓成本', default: true },
+                costPerShare: { label: '每股持仓成本', default: true },
+                dilutedCostPerShare: { label: '每股摊薄成本', default: true },
+                currentPrice: { label: '当日股价', default: true },
+                dailyChange: { label: '当日涨幅', default: true },
                 totalProfit: { label: '总收益', default: true },
                 totalReturnRate: { label: '总收益率', default: true },
-                holdingStartDate: { label: '本轮持仓开始', default: true },
+                holdingStartDate: { label: '持仓开始', default: true },
                 holdingDays: { label: '持仓天数', default: true },
-                clearDate: { label: '本轮清仓日期', default: true }
+                yearlyStats: { label: '年度统计', default: true },
+                clearDate: { label: '清仓日期', default: true }
             }
         }
     },
@@ -658,10 +662,10 @@ const Config = {
     _cleanupRemovedFields() {
         // 定义默认字段配置的有效键
         const defaultFieldKeys = {
-            'listFields.holding': ['stockName', 'stockCode', 'holding', 'marketValue', 'cost', 'startDate', 'holdingDays', 'currentPrice', 'dailyChange', 'costPerShare', 'dilutedCostPerShare', 'cycleProfit', 'cycleReturnRate', 'totalProfit', 'clearDate'],
+            'listFields.holding': ['holding', 'marketValue', 'cost', 'startDate', 'holdingDays', 'currentPrice', 'dailyChange', 'costPerShare', 'dilutedCostPerShare', 'totalProfit', 'clearDate'],
             'listFields.cleared': ['holdingStartDate', 'holdingDays', 'totalProfit', 'totalReturnRate', 'clearDate'],
-            'cardFields.holding': ['stockName', 'stockCode', 'holding', 'marketValue', 'cost', 'costPerShare', 'dilutedCostPerShare', 'currentPrice', 'dailyChange', 'cycleProfit', 'cycleReturnRate', 'totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'yearlyStats', 'clearDate'],
-            'cardFields.cleared': ['totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'clearDate']
+            'cardFields.holding': ['holding', 'marketValue', 'cost', 'costPerShare', 'dilutedCostPerShare', 'currentPrice', 'dailyChange', 'totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'yearlyStats', 'clearDate'],
+            'cardFields.cleared': ['holding', 'marketValue', 'cost', 'costPerShare', 'dilutedCostPerShare', 'currentPrice', 'dailyChange', 'totalProfit', 'totalReturnRate', 'holdingStartDate', 'holdingDays', 'yearlyStats', 'clearDate']
         };
 
         // 清理默认配置中的无效字段
