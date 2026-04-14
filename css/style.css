@@ -6160,10 +6160,10 @@
     border-radius: 2px;
 }
 
-/* 核心指标区：4列布局 */
+/* 核心指标区：5列布局 */
 .rtv2-hero-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 0;
     padding: 20px 24px;
 }
@@ -6345,17 +6345,17 @@
 }
 
 /* 响应式适配 */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .rtv2-hero-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
     
-    .rtv2-hero-card:nth-child(2) {
+    .rtv2-hero-card:nth-child(3) {
         border-right: none;
     }
     
-    .rtv2-hero-card:nth-child(3),
-    .rtv2-hero-card:nth-child(4) {
+    .rtv2-hero-card:nth-child(4),
+    .rtv2-hero-card:nth-child(5) {
         border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     
@@ -6369,6 +6369,22 @@
     
     .rtv2-detail-item:nth-child(3) {
         border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
+@media (max-width: 768px) {
+    .rtv2-hero-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rtv2-hero-card:nth-child(2) {
+        border-right: none;
+    }
+    
+    .rtv2-hero-card:nth-child(3),
+    .rtv2-hero-card:nth-child(4),
+    .rtv2-hero-card:nth-child(5) {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
 }
 
