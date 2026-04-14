@@ -1333,14 +1333,29 @@ const Overview = {
                 ${hasCycle ? `<div class="sc-col">${generateColItems(cycleItems)}</div>` : ''}
             </div>
             ${fields.yearlyStats?.visible && yearlyStats.length > 0 ? `
-            <div class="sc-yearly">
-                ${yearlyStats.map(ys => `
+            <div class="sc-yearly" data-count="${yearlyStats.length}">
+                ${yearlyStats.slice(0, 3).map(ys => `
                     <div class="sc-yearly-item">
                         <span class="sc-yearly-year">${ys.year}年</span>
                         <span class="sc-yearly-profit ${ys.profit >= 0 ? 'profit' : 'loss'}">${ys.profit >= 0 ? '+' : ''}¥${ys.profit.toFixed(0)}</span>
                         <span class="sc-yearly-trades">${ys.trades}次</span>
                     </div>
                 `).join('')}
+                ${yearlyStats.length > 3 ? yearlyStats.slice(3).map(ys => `
+                    <div class="sc-yearly-item sc-yearly-hidden">
+                        <span class="sc-yearly-year">${ys.year}年</span>
+                        <span class="sc-yearly-profit ${ys.profit >= 0 ? 'profit' : 'loss'}">${ys.profit >= 0 ? '+' : ''}¥${ys.profit.toFixed(0)}</span>
+                        <span class="sc-yearly-trades">${ys.trades}次</span>
+                    </div>
+                `).join('') : ''}
+                ${yearlyStats.length > 3 ? `
+                    <button class="sc-yearly-more" data-action="toggle-yearly">
+                        <span class="sc-yearly-more-text">查看更多 ${yearlyStats.length - 3} 年</span>
+                        <svg class="sc-yearly-more-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                ` : ''}
             </div>
             ` : ''}
             <div class="sc-actions">
@@ -1369,12 +1384,33 @@ const Overview = {
             };
         }
 
+        // 绑定年度统计"查看更多"按钮事件
+        const yearlyMoreBtn = card.querySelector('.sc-yearly-more');
+        if (yearlyMoreBtn) {
+            yearlyMoreBtn.onclick = (e) => {
+                e.stopPropagation();
+                const yearlyContainer = yearlyMoreBtn.closest('.sc-yearly');
+                const isExpanded = yearlyContainer.classList.toggle('expanded');
+                const textEl = yearlyMoreBtn.querySelector('.sc-yearly-more-text');
+                const iconEl = yearlyMoreBtn.querySelector('.sc-yearly-more-icon');
+                const hiddenCount = yearlyContainer.querySelectorAll('.sc-yearly-hidden').length;
+                
+                if (isExpanded) {
+                    textEl.textContent = '收起';
+                    iconEl.style.transform = 'rotate(180deg)';
+                } else {
+                    textEl.textContent = `查看更多 ${hiddenCount} 年`;
+                    iconEl.style.transform = 'rotate(0deg)';
+                }
+            };
+        }
+
         // 绑定持仓周期点击事件
         const cycleLink = card.querySelector('.sc-col-cycle-link');
         if (cycleLink && cycleHistory.length > 0) {
             cycleLink.onclick = (e) => {
                 e.stopPropagation();
-                this._showCycleHistoryModal(stock, cycleHistory);
+                this._showCycleHistoryModal(stock, cycleHistory, snapshot);
             };
         }
 
@@ -1383,8 +1419,11 @@ const Overview = {
 
     /**
      * 显示持仓周期历史弹窗
+     * @param {Object} stock - 股票信息
+     * @param {Array} cycleHistory - 周期历史数据
+     * @param {Object} snapshot - 快照数据（可选，用于获取浮动盈亏）
      */
-    _showCycleHistoryModal(stock, cycleHistory) {
+    _showCycleHistoryModal(stock, cycleHistory, snapshot = null) {
         const modal = document.getElementById('cycleHistoryModal');
         const content = document.getElementById('cycleHistoryContent');
         const title = document.getElementById('cycleHistoryTitle');
@@ -1393,70 +1432,14 @@ const Overview = {
         
         title.textContent = `${stock.name}(${stock.code}) - 持仓周期历史`;
         
-        if (cycleHistory.length === 0) {
-            content.innerHTML = '<div class="cycle-history-empty">暂无持仓周期历史</div>';
-        } else {
-            // 计算总收益
-            const totalProfit = cycleHistory.reduce((sum, c) => sum + (c.profit || 0), 0);
-            const totalProfitClass = totalProfit >= 0 ? 'profit-positive' : 'profit-negative';
-            const totalProfitText = totalProfit >= 0 ? `+${totalProfit.toFixed(2)}` : totalProfit.toFixed(2);
-            
-            let listHtml = `<div style="margin-bottom:12px;font-weight:600;">总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span></div>`;
-            
-            cycleHistory.forEach(cycle => {
-                const isActive = cycle.status === 'active';
-                const statusClass = isActive ? 'cycle-item-active' : 'cycle-item-closed';
-                const statusText = isActive ? '当前' : '已结束';
-                
-                const startDate = cycle.startDate || '--';
-                const endDate = cycle.endDate || '至今';
-                
-                const profit = cycle.profit || 0;
-                const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
-                const profitText = profit >= 0 ? `+${profit.toFixed(2)}` : profit.toFixed(2);
-                
-                const returnRate = cycle.returnRate || 0;
-                const returnRateText = returnRate >= 0 ? `+${returnRate.toFixed(2)}%` : `${returnRate.toFixed(2)}%`;
-                
-                const totalBuyCost = (cycle.totalBuyCost || 0).toFixed(2);
-                const totalSellAmount = (cycle.totalSellAmount || 0).toFixed(2);
-                const totalFee = (cycle.totalFee || 0).toFixed(2);
-                const totalDividend = (cycle.totalDividend || 0).toFixed(2);
-                
-                listHtml += `
-                    <div class="cycle-history-item ${statusClass}">
-                        <div class="cycle-item-header">
-                            <span class="cycle-number">第${cycle.cycle || 1}轮</span>
-                            <span class="cycle-status">${statusText}</span>
-                        </div>
-                        <div class="cycle-item-dates">
-                            <span class="cycle-date">${startDate} ~ ${endDate}</span>
-                            <span class="cycle-days">${cycle.days}天</span>
-                        </div>
-                        <div class="cycle-item-stats">
-                            <div class="cycle-stats-row cycle-stats-labels">
-                                <span>投入</span>
-                                <span>卖出</span>
-                                <span>手续费</span>
-                                <span>分红</span>
-                            </div>
-                            <div class="cycle-stats-row cycle-stats-values">
-                                <span>¥${totalBuyCost}</span>
-                                <span>¥${totalSellAmount}</span>
-                                <span>¥${totalFee}</span>
-                                <span>¥${totalDividend}</span>
-                            </div>
-                        </div>
-                        <div class="cycle-item-profit">
-                            <span class="profit-label">收益</span>
-                            <span class="profit-value ${profitClass}">¥${profitText} (${returnRateText})</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            content.innerHTML = listHtml;
-        }
+        // 使用通用渲染函数
+        StockProfitCalculator.renderCycleHistoryList({
+            cycleHistory: cycleHistory,
+            container: content,
+            holdingProfit: snapshot ? snapshot.holdingProfit : null,
+            totalAllProfit: snapshot ? snapshot.totalAllProfit : null,
+            showClearPrice: false  // 弹窗不显示清仓股价
+        });
         
         modal.style.display = 'flex';
         

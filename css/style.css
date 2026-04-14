@@ -6589,6 +6589,12 @@
     overflow-y: auto;
 }
 
+/* 详情页持仓周期历史自适应高度（不限制高度） */
+#detailPage .cycle-history-list {
+    max-height: none;
+    overflow-y: visible;
+}
+
 .cycle-history-empty {
     text-align: center;
     padding: 40px;
@@ -7153,6 +7159,12 @@
     gap: 4px;
     font-size: 11px;
 }
+.sc-yearly-item.sc-yearly-hidden {
+    display: none;
+}
+.sc-yearly.expanded .sc-yearly-hidden {
+    display: flex;
+}
 .sc-yearly-year {
     color: var(--card-text-muted);
 }
@@ -7167,6 +7179,25 @@
 }
 .sc-yearly-trades {
     color: var(--card-text-muted);
+}
+.sc-yearly-more {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sc-yearly-more:hover {
+    background: rgba(102, 126, 234, 0.2);
+}
+.sc-yearly-more-icon {
+    transition: transform 0.2s;
 }
 
 

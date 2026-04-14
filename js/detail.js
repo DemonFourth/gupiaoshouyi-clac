@@ -1860,7 +1860,7 @@ const Detail = {
 
         const cycleHistory = snapshot.cycleHistory || [];
 
-        // 如果没有周期历史，显示空状态
+        // 空数据处理
         if (cycleHistory.length === 0) {
             totalElement.textContent = '总收益：¥0.00';
             listElement.innerHTML = '<div class="cycle-history-empty">暂无持仓周期历史</div>';
@@ -1873,92 +1873,15 @@ const Detail = {
         const totalProfitText = totalProfit >= 0 ? `+${totalProfit.toFixed(2)}` : totalProfit.toFixed(2);
         totalElement.innerHTML = `总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span>`;
 
-        // 构建周期列表
-        let listHtml = '';
-        cycleHistory.forEach(cycle => {
-            const isActive = cycle.status === 'active';
-            const statusClass = isActive ? 'cycle-item-active' : 'cycle-item-closed';
-            const statusText = isActive ? '当前' : '已结束';
-
-            // 格式化日期范围（显示完整年份）
-            const startDate = cycle.startDate || '--';
-            const endDate = cycle.endDate || '至今';
-
-            // 格式化收益
-            let profit = cycle.profit || 0;
-            // 如果是当前持仓周期，加上浮动盈亏
-            if (isActive && snapshot.holdingProfit !== null) {
-                profit += snapshot.holdingProfit;
-            }
-            const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
-            const profitText = profit >= 0 ? `+${profit.toFixed(2)}` : profit.toFixed(2);
-
-            // 格式化统计字段
-            const totalBuyCost = (cycle.totalBuyCost || 0).toFixed(2);
-            const totalSellAmount = (cycle.totalSellAmount || 0).toFixed(2);
-            const totalFee = (cycle.totalFee || 0).toFixed(2);
-            const totalDividend = (cycle.totalDividend || 0).toFixed(2);
-
-            // 清仓股价和涨跌幅（仅已结束周期）
-            let clearPriceText = '--';
-            let changePercentText = '--';
-            let changePercentClass = '';
-            if (!isActive && cycle.clearPrice) {
-                clearPriceText = cycle.clearPrice.toFixed(3);
-                // 计算涨跌幅（需要当前股价）
-                const currentPrice = this.currentStockPrice || snapshot.currentStockPrice;
-                if (currentPrice && currentPrice > 0) {
-                    const changePercent = ((currentPrice - cycle.clearPrice) / cycle.clearPrice) * 100;
-                    changePercentText = changePercent >= 0 ? `+${changePercent.toFixed(2)}%` : `${changePercent.toFixed(2)}%`;
-                    changePercentClass = changePercent >= 0 ? 'profit-positive' : 'profit-negative';
-                }
-            }
-
-            // 计算收益率（当前持仓周期需要用实际收益计算）
-            let returnRate = cycle.returnRate || 0;
-            if (isActive && snapshot.holdingProfit !== null && cycle.totalBuyCost > 0) {
-                // 当前持仓周期：收益率 = (周期收益 + 浮动盈亏) / 投入金额
-                returnRate = (profit / cycle.totalBuyCost) * 100;
-            }
-            const returnRateText = returnRate >= 0 ? `+${returnRate.toFixed(2)}%` : `${returnRate.toFixed(2)}%`;
-
-            listHtml += `
-                <div class="cycle-history-item ${statusClass}">
-                    <div class="cycle-item-header">
-                        <span class="cycle-number">第${cycle.cycle}轮</span>
-                        <span class="cycle-status">${statusText}</span>
-                    </div>
-                    <div class="cycle-item-dates">
-                        <span class="cycle-date">${startDate} ~ ${endDate}</span>
-                        <span class="cycle-days">${cycle.days}天</span>
-                    </div>
-                    <div class="cycle-item-stats">
-                        <div class="cycle-stats-row cycle-stats-labels">
-                            <span>投入</span>
-                            <span>卖出</span>
-                            <span>手续费</span>
-                            <span>分红</span>
-                            <span>清仓价</span>
-                            <span>至今涨跌</span>
-                        </div>
-                        <div class="cycle-stats-row cycle-stats-values">
-                            <span>¥${totalBuyCost}</span>
-                            <span>¥${totalSellAmount}</span>
-                            <span>¥${totalFee}</span>
-                            <span>¥${totalDividend}</span>
-                            <span>${clearPriceText}</span>
-                            <span class="${changePercentClass}">${changePercentText}</span>
-                        </div>
-                    </div>
-                    <div class="cycle-item-profit">
-                        <span class="profit-label">收益</span>
-                        <span class="profit-value ${profitClass}">¥${profitText} (${returnRateText})</span>
-                    </div>
-                </div>
-            `;
+        // 使用通用渲染函数
+        StockProfitCalculator.renderCycleHistoryList({
+            cycleHistory: cycleHistory,
+            container: listElement,
+            holdingProfit: snapshot.holdingProfit,
+            currentPrice: this.currentStockPrice || snapshot.currentStockPrice,
+            totalAllProfit: snapshot.totalAllProfit,
+            showClearPrice: true  // 详情页显示清仓股价
         });
-
-        listElement.innerHTML = listHtml;
 
         // 绑定折叠按钮事件（只绑定一次）
         const collapseBtn = this._domCache.cycleHistoryCollapseBtn;
