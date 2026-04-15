@@ -131,6 +131,7 @@ const Calculator = {
                 tradeId: trade.id,
                 date: trade.date,
                 price: trade.price,
+                amount: trade.amount,
                 lastPrice: state.lastAdditionPrice,
                 change: change,
                 changePercent: changePercent,
