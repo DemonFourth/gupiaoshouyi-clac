@@ -233,16 +233,21 @@
         }
 
         .header-quote {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: space-between;
+            gap: 0;
             padding: 0;
             border-radius: 0;
             background: transparent;
             border: none;
+            flex-wrap: nowrap;
+            flex: 7;
+            min-width: 0;
         }
 
         .header-quote-item {
+            flex: 1;
             display: inline-flex;
             flex-direction: column;
             align-items: center;
@@ -389,10 +394,45 @@
         }
 
         .header-quote-value {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             font-variant-numeric: tabular-nums;
             line-height: 1.1;
+        }
+
+        /* 一列双行卡片样式 */
+        .header-quote-inline {
+            min-width: 110px;
+            padding: 4px 10px; /* 调整padding使高度与单行卡片一致 */
+        }
+
+        .header-quote-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            line-height: 1.2;
+        }
+
+        .header-quote-row + .header-quote-row {
+            margin-top: 2px;
+            padding-top: 2px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .header-quote-row .header-quote-label {
+            font-size: 12px;
+            flex-shrink: 0;
+            line-height: 1.2;
+        }
+
+        .header-quote-row .header-quote-value {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+            min-width: 60px;
         }
 
         /* 顶部工具条内刷新提示：放在刷新按钮左侧 */
@@ -413,6 +453,9 @@
             margin-bottom: 5px;
             font-size: 28px;
             line-height: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .header-bar .stock-info {
@@ -426,6 +469,10 @@
             display: inline-flex;
             flex-direction: column;
             gap: 0;
+            flex: 3;
+            min-width: 0;
+            max-width: 300px;
+            overflow: hidden;
         }
 
         /* 设置按钮 */
@@ -3013,6 +3060,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1;
+            min-width: 0;
+            flex-wrap: nowrap;
+            justify-content: space-between;
         }
 
         .back-btn {
@@ -6651,16 +6702,18 @@
 }
 
 .ac-table thead {
-    background: #f5f7fa;
+    /* 使用 th 的渐变背景 */
 }
 
 .ac-table th {
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #606266;
-    border-bottom: 1px solid #ebeef5;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+    color: white;
+    border-bottom: 1px solid #e0e0e0;
     white-space: nowrap;
+    font-size: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .ac-table td {
@@ -6757,6 +6810,60 @@
     font-size: 12px;
 }
 
+/* 分组标题和折叠按钮 */
+.ac-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f5f7fa;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #ebeef5;
+}
+
+.ac-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.ac-collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #909399;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ac-collapse-btn:hover {
+    background: #e4e7ed;
+    color: #606266;
+}
+
+.ac-table-wrapper {
+    overflow-x: auto;
+}
+
+/* 折叠状态 */
+.addition-comparison-table.ac-collapsed .ac-table-wrapper {
+    display: none;
+}
+
+.addition-comparison-table.ac-collapsed .ac-collapse-btn svg {
+    transform: rotate(-90deg);
+}
+
+.addition-comparison-table .ac-collapse-btn svg {
+    transition: transform 0.2s;
+}
+
 /* 移动端响应式 */
 @media (max-width: 768px) {
     .ac-table {
@@ -6767,6 +6874,74 @@
     .ac-table td {
         padding: 8px 10px;
     }
+}
+
+/* 轮次分组容器 */
+.ac-cycles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 轮次分组 */
+.ac-cycle-group {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ebeef5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.ac-cycle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f5f7fa;
+    border-bottom: 1px solid #ebeef5;
+}
+
+.ac-cycle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.ac-cycle-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #909399;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ac-cycle-toggle:hover {
+    background: #e4e7ed;
+    color: #606266;
+}
+
+.ac-cycle-toggle svg {
+    transition: transform 0.2s;
+}
+
+.ac-cycle-content {
+    padding: 0;
+}
+
+/* 折叠状态 */
+.ac-cycle-collapsed .ac-cycle-content {
+    display: none;
+}
+
+.ac-cycle-collapsed .ac-cycle-toggle svg {
+    transform: rotate(-90deg);
 }
 
 

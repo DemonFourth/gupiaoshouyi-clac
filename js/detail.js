@@ -388,7 +388,10 @@ const Detail = {
         }
 
         // 更新页面标题
-        document.querySelector('h1').textContent = `${stock.name}(${stock.code})`;
+        const h1 = document.querySelector('h1');
+        const fullName = `${stock.name}(${stock.code})`;
+        h1.textContent = fullName;
+        h1.title = fullName;  // 悬浮显示完整名称
         document.getElementById('stockInfo').textContent = '点击返回查看所有股票';
         console.log('[loadStock] 更新页面标题:', stock.name);
 
@@ -655,6 +658,9 @@ const Detail = {
 
             this._domCache.costPerShare.textContent = '¥' + (result.currentHolding > 0 ? (result.currentCost / result.currentHolding).toFixed(3) : '--');
 
+            // 更新标题栏新增数据
+            this._updateHeaderQuoteData(result, snapshot, marketValue, currentHoldingProfit, currentHoldingReturnRate, this.currentStockPrice);
+
             const totalAllProfit = snapshot.totalAllProfit;
             const totalAllProfitElement = this._domCache.totalAllProfit;
             totalAllProfitElement.textContent = Utils.formatNullableCurrency(totalAllProfit, 2);
@@ -684,6 +690,9 @@ const Detail = {
             
             // 重置持仓市值为 --（已清仓股票持仓股数为0）
             this._domCache.marketValue.textContent = '--';
+
+            // 更新标题栏新增数据（已清仓）
+            this._updateHeaderQuoteData(result, snapshot, 0, null, null, null);
 
             // 更新当前持有股收益和收益率（显示为 --）
             this._domCache.latestProfit.textContent = '--';
@@ -715,6 +724,104 @@ const Detail = {
 
             // 渲染持仓周期历史区块
             this._renderCycleHistorySection(snapshot);
+        }
+    },
+
+    /**
+     * 更新标题栏新增数据（每股成本、持仓成本、持有收益等）
+     * @private
+     */
+    _updateHeaderQuoteData(result, snapshot, marketValue, holdingProfit, holdingReturnRate, currentPrice) {
+        const Utils = StockProfitCalculator.Utils;
+
+        // 每股成本
+        const costPerShareHeader = document.getElementById('costPerShareHeader');
+        if (costPerShareHeader) {
+            if (result.currentHolding > 0) {
+                const costPerShare = result.currentCost / result.currentHolding;
+                costPerShareHeader.textContent = '¥' + costPerShare.toFixed(3);
+                // 现价 > 成本 = 盈利（红色），现价 < 成本 = 亏损（绿色）
+                if (currentPrice != null) {
+                    costPerShareHeader.className = 'header-quote-value ' + (currentPrice > costPerShare ? 'profit' : (currentPrice < costPerShare ? 'loss' : ''));
+                } else {
+                    costPerShareHeader.className = 'header-quote-value';
+                }
+            } else {
+                costPerShareHeader.textContent = '--';
+                costPerShareHeader.className = 'header-quote-value';
+            }
+        }
+
+        // 每股摊薄成本
+        const dilutedCostPerShareHeader = document.getElementById('dilutedCostPerShareHeader');
+        if (dilutedCostPerShareHeader) {
+            const dilutedCost = snapshot?.dilutedCostPerShare;
+            if (dilutedCost != null && result.currentHolding > 0) {
+                dilutedCostPerShareHeader.textContent = '¥' + dilutedCost.toFixed(3);
+                // 现价 > 摊薄成本 = 盈利（红色），现价 < 摊薄成本 = 亏损（绿色）
+                if (currentPrice != null) {
+                    dilutedCostPerShareHeader.className = 'header-quote-value ' + (currentPrice > dilutedCost ? 'profit' : (currentPrice < dilutedCost ? 'loss' : ''));
+                } else {
+                    dilutedCostPerShareHeader.className = 'header-quote-value';
+                }
+            } else {
+                dilutedCostPerShareHeader.textContent = '--';
+                dilutedCostPerShareHeader.className = 'header-quote-value';
+            }
+        }
+
+        // 持仓成本
+        const holdingCostHeader = document.getElementById('holdingCostHeader');
+        if (holdingCostHeader) {
+            if (result.currentHolding > 0) {
+                holdingCostHeader.textContent = '¥' + result.currentCost.toFixed(0);
+                // 持仓成本固定显示黑色（中性）
+                holdingCostHeader.className = 'header-quote-value';
+            } else {
+                holdingCostHeader.textContent = '--';
+                holdingCostHeader.className = 'header-quote-value';
+            }
+        }
+
+        // 持仓市值
+        const marketValueHeader = document.getElementById('marketValueHeader');
+        if (marketValueHeader) {
+            if (marketValue > 0) {
+                marketValueHeader.textContent = '¥' + marketValue.toFixed(0);
+                // 市值 > 成本 = 盈利（红色），市值 < 成本 = 亏损（绿色）
+                marketValueHeader.className = 'header-quote-value ' + (marketValue > result.currentCost ? 'profit' : (marketValue < result.currentCost ? 'loss' : ''));
+            } else {
+                marketValueHeader.textContent = '--';
+                marketValueHeader.className = 'header-quote-value';
+            }
+        }
+
+        // 持有收益
+        const holdingProfitHeader = document.getElementById('holdingProfitHeader');
+        if (holdingProfitHeader) {
+            if (holdingProfit != null && result.currentHolding > 0) {
+                // 格式：+¥4,448 或 -¥4,448，与收益率格式一致（符号在前）
+                const sign = holdingProfit >= 0 ? '+' : '-';
+                holdingProfitHeader.textContent = sign + '¥' + Math.abs(holdingProfit).toFixed(0);
+                holdingProfitHeader.className = 'header-quote-value ' + (holdingProfit >= 0 ? 'profit' : 'loss');
+            } else {
+                holdingProfitHeader.textContent = '--';
+                holdingProfitHeader.className = 'header-quote-value';
+            }
+        }
+
+        // 收益率
+        const holdingReturnRateHeader = document.getElementById('holdingReturnRateHeader');
+        if (holdingReturnRateHeader) {
+            if (holdingReturnRate != null && result.currentHolding > 0) {
+                // 格式：+6.65% 或 -6.65%，与持有收益格式一致（符号在前）
+                const sign = holdingReturnRate >= 0 ? '+' : '-';
+                holdingReturnRateHeader.textContent = sign + Math.abs(holdingReturnRate).toFixed(2) + '%';
+                holdingReturnRateHeader.className = 'header-quote-value ' + (holdingReturnRate >= 0 ? 'profit' : 'loss');
+            } else {
+                holdingReturnRateHeader.textContent = '--';
+                holdingReturnRateHeader.className = 'header-quote-value';
+            }
         }
     },
 
@@ -1834,224 +1941,273 @@ const Detail = {
         this._chartInstances.perShareCostTrendChartResizeHandler = onResize;
 
         // 渲染加仓对比表格
-        this._renderAdditionComparisonTable(additionComparisons, timeSeries, latestPrice, lastCps, lastDps, this.calcResult?.holdingCycleHistory);
+        this._renderAdditionComparisonTable(
+            additionComparisons, 
+            this.calcResult?.additionComparisonsByCycle || {},
+            timeSeries, 
+            latestPrice, 
+            lastCps, 
+            lastDps, 
+            this.calcResult?.holdingCycleHistory
+        );
     },
 
     /**
-     * 渲染加仓对比表格
+     * 渲染加仓对比表格（多轮分组版本）
      * @private
-     * @param {Array} additionComparisons - 加仓对比数据
+     * @param {Array} additionComparisons - 加仓对比数据（最新一轮）
+     * @param {Object} additionComparisonsByCycle - 按轮次保存的加仓对比数据
      * @param {Object} timeSeries - 时间序列数据
      * @param {number} latestPrice - 最新股价
      * @param {number} lastCps - 最新每股持仓成本
      * @param {number} lastDps - 最新每股摊薄成本
      * @param {Array} cycleHistory - 持仓周期历史
      */
-    _renderAdditionComparisonTable(additionComparisons, timeSeries, latestPrice, lastCps, lastDps, cycleHistory) {
+    _renderAdditionComparisonTable(additionComparisons, additionComparisonsByCycle, timeSeries, latestPrice, lastCps, lastDps, cycleHistory) {
         const container = document.getElementById('additionComparisonTable');
         if (!container) return;
 
-        // 如果没有加仓数据，不显示表格
-        if (!additionComparisons || additionComparisons.length === 0) {
+        // 只要有持仓周期历史就显示表格
+        const cycleArray = cycleHistory || [];
+        if (cycleArray.length === 0) {
             container.innerHTML = '';
             return;
         }
 
-        // 获取当前持仓周期的建仓信息
-        const cycleArray = cycleHistory || [];
-        const currentCycle = cycleArray.find(c => c.status === 'active') || cycleArray[cycleArray.length - 1];
-        
-        // 获取建仓日期（当前周期的 startDate）
-        const buildDate = currentCycle?.startDate || '--';
-        
-        // 获取建仓价格（从 timeSeries 中查找建仓日期对应的成本）
-        const dates = timeSeries.dates || [];
-        const costPerShares = timeSeries.costPerShares || [];
-        const buildDateIndex = dates.indexOf(buildDate);
-        const buildPrice = buildDateIndex >= 0 ? costPerShares[buildDateIndex] : costPerShares[0];
+        const additionsByCycle = additionComparisonsByCycle || {};
+        const dates = timeSeries?.dates || [];
+        const costPerShares = timeSeries?.costPerShares || [];
+        const dilutedCosts = timeSeries?.dilutedCostPerShares || [];
+        const holdings = timeSeries?.holdings || [];
 
-        // 获取最后一次加仓价格
-        const lastAddition = additionComparisons[additionComparisons.length - 1];
-        const lastAdditionPrice = lastAddition?.price;
+        // 构建总标题
+        const cycleCount = cycleArray.length;
+        const totalTitle = cycleCount > 1 
+            ? `加仓对比记录（共${cycleCount}轮）` 
+            : '加仓对比记录';
 
-        // 构建表格HTML
-        let tableHtml = `
-            <table class="ac-table">
-                <thead>
-                    <tr>
-                        <th>日期</th>
-                        <th>价格</th>
-                        <th>股数</th>
-                        <th>金额</th>
-                        <th>相对上次</th>
-                        <th>持仓成本</th>
-                        <th>摊薄成本</th>
-                        <th>现价对比</th>
-                    </tr>
-                </thead>
-                <tbody>
+        let html = `
+            <div class="ac-section-header">
+                <span class="ac-section-title">${totalTitle}</span>
+            </div>
+            <div class="ac-cycles-container">
         `;
 
-        // 建仓行
-        if (buildPrice != null && buildDate !== '--') {
-            const buildPriceText = buildPrice.toFixed(3);
+        // 倒序遍历轮次（最新在前）
+        const reversedCycles = [...cycleArray].reverse();
+        
+        reversedCycles.forEach((cycle, index) => {
+            const cycleNum = cycle.cycle;
+            const isFirstCycle = (index === 0);  // 第一轮是最新轮次
+            const isCurrentHolding = cycle.status === 'active';
             
-            // 建仓时的成本（使用建仓日期对应的成本）
-            const dilutedCosts = timeSeries.dilutedCostPerShares || [];
-            const buildCps = buildPrice;  // 建仓时持仓成本等于建仓价格
-            const buildDps = buildDateIndex >= 0 ? dilutedCosts[buildDateIndex] : buildPrice;
+            // 默认：最新一轮展开，其他折叠
+            const collapsedClass = isFirstCycle ? '' : 'ac-cycle-collapsed';
             
-            const buildCpsText = buildCps != null ? buildCps.toFixed(3) : buildPriceText;
-            const buildDpsText = buildDps != null ? buildDps.toFixed(3) : buildPriceText;
+            // 轮次标题
+            const cycleLabel = isCurrentHolding ? '当前持仓' : '已清仓';
+            const cycleTitle = `第${cycleNum}轮（${cycleLabel}）`;
+            
+            // 筛选属于该轮的加仓记录（从按轮次保存的数据中获取）
+            const cycleAdditions = additionsByCycle[cycleNum] || [];
+            
+            // 获取该轮的建仓信息
+            const buildDate = cycle.startDate || '--';
+            const buildDateIndex = dates.indexOf(buildDate);
+            const buildPrice = buildDateIndex >= 0 ? costPerShares[buildDateIndex] : null;
+            const buildHolding = buildDateIndex >= 0 ? holdings[buildDateIndex] : null;
+            const buildDps = buildDateIndex >= 0 ? dilutedCosts[buildDateIndex] : null;
 
-            // 现价对比
-            let buildCompareText = '--';
-            if (latestPrice != null) {
-                const cpsDiff = buildCps != null ? latestPrice - buildCps : null;
-                const dpsDiff = buildDps != null ? latestPrice - buildDps : null;
-                const cpsPct = cpsDiff != null && buildCps > 0 ? (cpsDiff / buildCps * 100) : null;
-                const dpsPct = dpsDiff != null && buildDps > 0 ? (dpsDiff / buildDps * 100) : null;
+            html += `
+                <div class="ac-cycle-group ${collapsedClass}" data-cycle="${cycleNum}">
+                    <div class="ac-cycle-header">
+                        <span class="ac-cycle-title">${cycleTitle}</span>
+                        <button type="button" class="ac-cycle-toggle" title="折叠/展开">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="ac-cycle-content">
+                    <table class="ac-table">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>价格</th>
+                                <th>股数</th>
+                                <th>金额</th>
+                                <th>相对上次</th>
+                                <th>持仓成本</th>
+                                <th>摊薄成本</th>
+                                <th>现价对比</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // 建仓行
+            if (buildPrice != null && buildDate !== '--') {
+                const buildCps = buildPrice;
+                const buildDpsVal = buildDps != null ? buildDps : buildPrice;
                 
-                if (cpsDiff != null || dpsDiff != null) {
-                    const cpsLine = cpsDiff != null 
-                        ? `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)}${cpsPct != null ? ` (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)` : ''}</span>` 
-                        : '<span>持仓: --</span>';
-                    const dpsLine = dpsDiff != null 
-                        ? `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)}${dpsPct != null ? ` (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)` : ''}</span>` 
-                        : '<span>摊薄: --</span>';
+                // 现价对比（只有最新一轮才用最新价格对比）
+                let buildCompareText = '--';
+                if (isFirstCycle && latestPrice != null) {
+                    const cpsDiff = latestPrice - buildCps;
+                    const dpsDiff = latestPrice - buildDpsVal;
+                    const cpsPct = buildCps > 0 ? (cpsDiff / buildCps * 100) : 0;
+                    const dpsPct = buildDpsVal > 0 ? (dpsDiff / buildDpsVal * 100) : 0;
+                    
+                    const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
+                    const dpsLine = `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`;
+                    buildCompareText = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
+                } else if (!isFirstCycle && cycle.clearPrice != null) {
+                    // 历史轮次用清仓价对比
+                    const cpsDiff = cycle.clearPrice - buildCps;
+                    const dpsDiff = cycle.clearPrice - buildDpsVal;
+                    const cpsPct = buildCps > 0 ? (cpsDiff / buildCps * 100) : 0;
+                    const dpsPct = buildDpsVal > 0 ? (dpsDiff / buildDpsVal * 100) : 0;
+                    
+                    const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
+                    const dpsLine = `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`;
                     buildCompareText = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
                 }
+
+                const buildAmountText = buildHolding != null ? buildHolding.toLocaleString() : '--';
+                const buildTotalAmount = (buildPrice != null && buildHolding != null) ? (buildPrice * buildHolding) : null;
+                const buildAmountMoneyText = buildTotalAmount != null ? '¥' + buildTotalAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '--';
+
+                html += `
+                    <tr class="ac-build">
+                        <td>${buildDate}</td>
+                        <td>¥${buildPrice.toFixed(3)}</td>
+                        <td>${buildAmountText}</td>
+                        <td>${buildAmountMoneyText}</td>
+                        <td><span class="ac-build-label">建仓</span></td>
+                        <td>¥${buildCps.toFixed(3)}</td>
+                        <td>¥${buildDpsVal.toFixed(3)}</td>
+                        <td>${buildCompareText}</td>
+                    </tr>
+                `;
             }
 
-            // 建仓股数（从timeSeries获取建仓时的持仓数量）
-            const holdings = timeSeries.holdings || [];
-            const buildHolding = buildDateIndex >= 0 ? holdings[buildDateIndex] : holdings[0];
-            const buildAmountText = buildHolding != null ? buildHolding.toLocaleString() : '--';
-            
-            // 建仓金额
-            const buildTotalAmount = (buildPrice != null && buildHolding != null) ? (buildPrice * buildHolding) : null;
-            const buildAmountMoneyText = buildTotalAmount != null ? '¥' + buildTotalAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '--';
-
-            tableHtml += `
-                <tr class="ac-build">
-                    <td>${buildDate}</td>
-                    <td>¥${buildPriceText}</td>
-                    <td>${buildAmountText}</td>
-                    <td>${buildAmountMoneyText}</td>
-                    <td><span class="ac-build-label">建仓</span></td>
-                    <td>¥${buildCpsText}</td>
-                    <td>¥${buildDpsText}</td>
-                    <td>${buildCompareText}</td>
-                </tr>
-            `;
-        }
-
-        // 加仓行
-        additionComparisons.forEach((item, index) => {
-            const date = item.date || '--';
-            const price = item.price != null ? item.price.toFixed(3) : '--';
-            
-            // 相对上次涨跌
-            let changeText = '--';
-            if (item.change != null && item.lastPrice != null) {
-                const change = item.change;
-                const changePercent = item.changePercent || 0;
-                const sign = change >= 0 ? '+' : '';
-                changeText = `<span class="${change >= 0 ? 'ac-profit' : 'ac-loss'}">${sign}${change.toFixed(3)} (${sign}${changePercent.toFixed(2)}%)</span>`;
-            }
-
-            // 股数
-            const amount = item.amount || '--';
-            const amountText = typeof amount === 'number' ? amount.toLocaleString() : amount;
-
-            // 查找对应日期的成本数据
-            const dateIndex = (timeSeries.dates || []).indexOf(date);
-            const costPerShare = dateIndex >= 0 ? timeSeries.costPerShares?.[dateIndex] : null;
-            const dilutedCost = dateIndex >= 0 ? timeSeries.dilutedCostPerShares?.[dateIndex] : null;
-            
-            const cpsText = costPerShare != null ? costPerShare.toFixed(3) : '--';
-            const dpsText = dilutedCost != null ? dilutedCost.toFixed(3) : '--';
-
-            // 金额
-            const itemPrice = item.price || 0;
-            const itemAmount = item.amount || 0;
-            const totalAmountText = (itemPrice && itemAmount) ? '¥' + (itemPrice * itemAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '--';
-
-            // 现价对比（每行都显示）
-            let priceCompareText = '--';
-            if (latestPrice != null) {
-                const cpsDiff = costPerShare != null ? latestPrice - costPerShare : null;
-                const dpsDiff = dilutedCost != null ? latestPrice - dilutedCost : null;
-                const cpsPct = cpsDiff != null && costPerShare > 0 ? (cpsDiff / costPerShare * 100) : null;
-                const dpsPct = dpsDiff != null && dilutedCost > 0 ? (dpsDiff / dilutedCost * 100) : null;
+            // 加仓行
+            cycleAdditions.forEach((item) => {
+                const date = item.date || '--';
+                const price = item.price != null ? item.price.toFixed(3) : '--';
                 
-                if (cpsDiff != null || dpsDiff != null) {
-                    const cpsLine = cpsDiff != null 
-                        ? `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)}${cpsPct != null ? ` (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)` : ''}</span>` 
-                        : '<span>持仓: --</span>';
-                    const dpsLine = dpsDiff != null 
-                        ? `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)}${dpsPct != null ? ` (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)` : ''}</span>` 
+                // 相对上次涨跌
+                let changeText = '--';
+                if (item.change != null && item.lastPrice != null) {
+                    const change = item.change;
+                    const changePercent = item.changePercent || 0;
+                    const sign = change >= 0 ? '+' : '';
+                    changeText = `<span class="${change >= 0 ? 'ac-profit' : 'ac-loss'}">${sign}${change.toFixed(3)} (${sign}${changePercent.toFixed(2)}%)</span>`;
+                }
+
+                const amount = item.amount || '--';
+                const amountText = typeof amount === 'number' ? amount.toLocaleString() : amount;
+
+                const dateIndex = dates.indexOf(date);
+                const costPerShare = dateIndex >= 0 ? costPerShares[dateIndex] : null;
+                const dilutedCost = dateIndex >= 0 ? dilutedCosts[dateIndex] : null;
+                
+                const cpsText = costPerShare != null ? costPerShare.toFixed(3) : '--';
+                const dpsText = dilutedCost != null ? dilutedCost.toFixed(3) : '--';
+
+                const itemPrice = item.price || 0;
+                const itemAmount = item.amount || 0;
+                const totalAmountText = (itemPrice && itemAmount) ? '¥' + (itemPrice * itemAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '--';
+
+                // 现价对比
+                let priceCompareText = '--';
+                if (isFirstCycle && latestPrice != null && costPerShare != null) {
+                    const cpsDiff = latestPrice - costPerShare;
+                    const dpsDiff = dilutedCost != null ? latestPrice - dilutedCost : null;
+                    const cpsPct = costPerShare > 0 ? (cpsDiff / costPerShare * 100) : 0;
+                    const dpsPct = dilutedCost != null && dilutedCost > 0 ? (dpsDiff / dilutedCost * 100) : 0;
+                    
+                    const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
+                    const dpsLine = dilutedCost != null 
+                        ? `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`
+                        : '<span>摊薄: --</span>';
+                    priceCompareText = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
+                } else if (!isFirstCycle && cycle.clearPrice != null && costPerShare != null) {
+                    const cpsDiff = cycle.clearPrice - costPerShare;
+                    const dpsDiff = dilutedCost != null ? cycle.clearPrice - dilutedCost : null;
+                    const cpsPct = costPerShare > 0 ? (cpsDiff / costPerShare * 100) : 0;
+                    const dpsPct = dilutedCost != null && dilutedCost > 0 ? (dpsDiff / dilutedCost * 100) : 0;
+                    
+                    const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
+                    const dpsLine = dilutedCost != null 
+                        ? `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`
                         : '<span>摊薄: --</span>';
                     priceCompareText = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
                 }
+
+                const rowClass = item.isLatestAddition ? 'ac-latest' : '';
+
+                html += `
+                    <tr class="${rowClass}">
+                        <td>${date}</td>
+                        <td>¥${price}</td>
+                        <td>${amountText}</td>
+                        <td>${totalAmountText}</td>
+                        <td>${changeText}</td>
+                        <td>¥${cpsText}</td>
+                        <td>¥${dpsText}</td>
+                        <td>${priceCompareText}</td>
+                    </tr>
+                `;
+            });
+
+            // 预测行（只有最新一轮显示）
+            if (isFirstCycle && latestPrice != null) {
+                const lastAdditionPrice = cycleAdditions.length > 0 ? cycleAdditions[cycleAdditions.length - 1].price : null;
+                
+                let predictChangeText = '--';
+                if (lastAdditionPrice != null && lastAdditionPrice > 0) {
+                    const predictChange = latestPrice - lastAdditionPrice;
+                    const predictChangePercent = (predictChange / lastAdditionPrice * 100);
+                    const predictSign = predictChange >= 0 ? '+' : '';
+                    predictChangeText = `<span class="${predictChange >= 0 ? 'ac-profit' : 'ac-loss'}">${predictSign}${predictChange.toFixed(3)} (${predictSign}${predictChangePercent.toFixed(2)}%)</span>`;
+                }
+
+                html += `
+                    <tr class="ac-predict">
+                        <td><span class="ac-predict-label">预测</span></td>
+                        <td>¥${latestPrice.toFixed(3)}</td>
+                        <td><input type="number" class="ac-predict-input" id="predictAmount" placeholder="股数" min="100" step="100"></td>
+                        <td class="ac-predict-amount" id="predictAmountMoney">--</td>
+                        <td>${predictChangeText}</td>
+                        <td class="ac-predict-cps" id="predictCps">--</td>
+                        <td class="ac-predict-dps" id="predictDps">--</td>
+                        <td class="ac-predict-compare" id="predictCompare">--</td>
+                    </tr>
+                `;
             }
 
-            // 标记最新加仓
-            const rowClass = item.isLatestAddition ? 'ac-latest' : '';
-
-            tableHtml += `
-                <tr class="${rowClass}">
-                    <td>${date}</td>
-                    <td>¥${price}</td>
-                    <td>${amountText}</td>
-                    <td>${totalAmountText}</td>
-                    <td>${changeText}</td>
-                    <td>¥${cpsText}</td>
-                    <td>¥${dpsText}</td>
-                    <td>${priceCompareText}</td>
-                </tr>
+            html += `
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
             `;
         });
 
-        // 预测行（始终显示，让用户预测下一次加仓）
-        if (latestPrice != null) {
-            const predictPrice = latestPrice.toFixed(3);
-            
-            // 预估相对上次涨跌（如果有上次加仓价格则显示，否则显示"--"）
-            let predictChangeText = '--';
-            if (lastAdditionPrice != null && lastAdditionPrice > 0) {
-                const predictChange = latestPrice - lastAdditionPrice;
-                const predictChangePercent = (predictChange / lastAdditionPrice * 100);
-                const predictSign = predictChange >= 0 ? '+' : '';
-                predictChangeText = `<span class="${predictChange >= 0 ? 'ac-profit' : 'ac-loss'}">${predictSign}${predictChange.toFixed(3)} (${predictSign}${predictChangePercent.toFixed(2)}%)</span>`;
-            }
+        html += '</div>';
 
-            // 获取当前持仓信息用于预估计算
-            const currentHolding = this.calcResult?.summary?.currentHolding || 0;
-            const currentCost = this.calcResult?.summary?.currentCost || 0;
+        container.innerHTML = html;
 
-            tableHtml += `
-                <tr class="ac-predict">
-                    <td><span class="ac-predict-label">预测</span></td>
-                    <td>¥${predictPrice}</td>
-                    <td><input type="number" class="ac-predict-input" id="predictAmount" placeholder="股数" min="100" step="100"></td>
-                    <td class="ac-predict-amount" id="predictAmountMoney">--</td>
-                    <td>${predictChangeText}</td>
-                    <td class="ac-predict-cps" id="predictCps">--</td>
-                    <td class="ac-predict-dps" id="predictDps">--</td>
-                    <td class="ac-predict-compare" id="predictCompare">--</td>
-                </tr>
-            `;
-        }
+        // 绑定折叠按钮事件
+        container.querySelectorAll('.ac-cycle-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cycleGroup = btn.closest('.ac-cycle-group');
+                cycleGroup.classList.toggle('ac-cycle-collapsed');
+            });
+        });
 
-        tableHtml += `
-                </tbody>
-            </table>
-        `;
-
-        container.innerHTML = tableHtml;
-
-        // 绑定预估股数输入框事件
+        // 绑定预测输入框事件
         const predictInput = document.getElementById('predictAmount');
         if (predictInput) {
             predictInput.addEventListener('input', () => {
@@ -2061,21 +2217,17 @@ const Detail = {
                 const predictAmountMoneyEl = document.getElementById('predictAmountMoney');
                 
                 if (amount > 0 && latestPrice != null) {
-                    // 获取当前持仓信息
                     const currentHolding = this.calcResult?.summary?.currentHolding || 0;
                     const currentCost = this.calcResult?.summary?.currentCost || 0;
                     const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
                     
-                    // 预估金额
                     const predictAmountMoney = latestPrice * amount;
                     if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '¥' + predictAmountMoney.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
                     
-                    // 预估持仓成本 = (当前持仓成本 + 现价 × 输入股数) / (当前持仓 + 输入股数)
                     const newHolding = currentHolding + amount;
                     const newCost = currentCost + latestPrice * amount;
                     const predictCps = newHolding > 0 ? newCost / newHolding : 0;
                     
-                    // 预估摊薄成本 = (当前摊薄成本 - 当前周期收益 + 现价 × 输入股数) / (当前持仓 + 输入股数)
                     const dilutedBase = currentCost - currentCycleProfit;
                     const newDilutedBase = dilutedBase + latestPrice * amount;
                     const predictDps = newHolding > 0 ? newDilutedBase / newHolding : 0;
@@ -2083,7 +2235,6 @@ const Detail = {
                     if (predictCpsEl) predictCpsEl.textContent = '¥' + predictCps.toFixed(3);
                     if (predictDpsEl) predictDpsEl.textContent = '¥' + predictDps.toFixed(3);
                     
-                    // 计算现价对比
                     const predictCompareEl = document.getElementById('predictCompare');
                     if (predictCompareEl) {
                         const cpsDiff = latestPrice - predictCps;

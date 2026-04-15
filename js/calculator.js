@@ -52,11 +52,12 @@ const Calculator = {
             cycleStartDates: {},
             hasPosition: false,
             
-            // 加仓对比
+            // 加仓对比（按轮次保存）
             lastAdditionPrice: null,
             lastAdditionTradeId: null,
             lastAdditionDate: null,
-            additionComparisons: []
+            additionComparisons: [],
+            additionComparisonsByCycle: {}  // 按轮次保存加仓对比数据
         };
     },
 
@@ -127,7 +128,7 @@ const Calculator = {
             const changePercent = state.lastAdditionPrice > 0
                 ? (change / state.lastAdditionPrice * 100)
                 : 0;
-            state.additionComparisons.push({
+            const additionItem = {
                 tradeId: trade.id,
                 date: trade.date,
                 price: trade.price,
@@ -135,8 +136,16 @@ const Calculator = {
                 lastPrice: state.lastAdditionPrice,
                 change: change,
                 changePercent: changePercent,
-                isLatestAddition: false
-            });
+                isLatestAddition: false,
+                cycle: state.currentCycle
+            };
+            state.additionComparisons.push(additionItem);
+            
+            // 同时按轮次保存
+            if (!state.additionComparisonsByCycle[state.currentCycle]) {
+                state.additionComparisonsByCycle[state.currentCycle] = [];
+            }
+            state.additionComparisonsByCycle[state.currentCycle].push(additionItem);
         }
         
         // 更新上次加仓信息
@@ -257,10 +266,11 @@ const Calculator = {
             // 清仓时重置周期投入成本和卖出金额
             state.currentCycleBuyCost = 0;
             state.currentCycleSellAmount = 0;
-            // 清仓时重置加仓对比数据
+            // 清仓时重置上次加仓信息（不清空历史加仓对比数据）
             state.lastAdditionPrice = null;
             state.lastAdditionTradeId = null;
             state.lastAdditionDate = null;
+            // 清空 additionComparisons 但保留 additionComparisonsByCycle
             state.additionComparisons.length = 0;
         }
         
@@ -688,6 +698,16 @@ const Calculator = {
                 item.isLatestAddition = (index === state.additionComparisons.length - 1);
             });
         }
+        
+        // 同时更新 additionComparisonsByCycle 中的最新标记
+        Object.keys(state.additionComparisonsByCycle).forEach(cycleNum => {
+            const cycleAdditions = state.additionComparisonsByCycle[cycleNum];
+            if (cycleAdditions && cycleAdditions.length > 0) {
+                cycleAdditions.forEach((item, index) => {
+                    item.isLatestAddition = (index === cycleAdditions.length - 1);
+                });
+            }
+        });
 
         // 计算周期收益
         const periodProfit = this._calculatePeriodProfit(sortedTrades);
@@ -728,6 +748,8 @@ const Calculator = {
             holdingCycleHistory: this._extractHoldingCycleHistory(trades, state.tradeCycleInfo, state.currentHolding > 0, state.sellRecords),
             // 加仓对比数据（图表用）
             additionComparisons: state.additionComparisons,
+            // 加仓对比数据（按轮次保存）
+            additionComparisonsByCycle: state.additionComparisonsByCycle,
             // 周期收益
             weeklyProfit: periodProfit.weeklyProfit,
             monthlyProfit: periodProfit.monthlyProfit
