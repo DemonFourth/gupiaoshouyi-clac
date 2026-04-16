@@ -387,16 +387,25 @@
             document.addEventListener('mouseenter', (e) => {
                 // 检查 e.target 是否为 Element 节点（避免 text 节点报错）
                 if (!(e.target instanceof Element)) return;
+                
+                // 大数字转换 tooltip
                 const target = e.target.closest('.large-number-tooltip[data-full-value]');
                 if (target) {
                     this.show(target, target.getAttribute('data-full-value'));
+                    return;
+                }
+                
+                // 无交易记录图标 tooltip
+                const noTradeIcon = e.target.closest('.no-trade-icon[data-tooltip]');
+                if (noTradeIcon) {
+                    this.show(noTradeIcon, noTradeIcon.getAttribute('data-tooltip'));
                 }
             }, true);
 
             document.addEventListener('mouseleave', (e) => {
                 // 检查 e.target 是否为 Element 节点（避免 text 节点报错）
                 if (!(e.target instanceof Element)) return;
-                if (e.target.closest('.large-number-tooltip')) {
+                if (e.target.closest('.large-number-tooltip, .no-trade-icon')) {
                     this.hide();
                 }
             }, true);

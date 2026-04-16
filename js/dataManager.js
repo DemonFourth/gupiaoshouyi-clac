@@ -477,8 +477,12 @@ const DataManager = {
     async _loadFromD1() {
         // 本地开发环境，不尝试连接 D1 API
         if (this._isLocalDevelopment()) {
-            console.log('[DataManager._loadFromD1] 本地开发环境，跳过 D1 加载');
-            return null;
+            console.log('[DataManager._loadFromD1] 本地开发环境，返回默认数据结构');
+            // 返回默认数据结构，而不是 null
+            const defaultData = this.getDefaultData();
+            this._cache = defaultData;
+            this._cacheValid = true;
+            return defaultData;
         }
 
         console.log('[DataManager._loadFromD1] 开始从 API 加载数据');

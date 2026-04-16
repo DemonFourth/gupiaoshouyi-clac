@@ -213,6 +213,7 @@ const TradeManager = {
             // 金额可编辑
             amountDisplay.readOnly = false;
             amountDisplay.style.background = '#fff';
+            amountDisplay.style.cursor = 'text';
             amountDisplay.placeholder = '请输入金额';
             // 价格字段用于输入金额
             priceInput.oninput = () => {
@@ -231,6 +232,7 @@ const TradeManager = {
             // 金额只读
             amountDisplay.readOnly = true;
             amountDisplay.style.background = '#f5f5f5';
+            amountDisplay.style.cursor = 'not-allowed';
             amountDisplay.placeholder = '自动计算';
             this.updateEditAmount();
         }

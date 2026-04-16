@@ -38,15 +38,6 @@ const StockManager = {
                             <input type="text" id="stockName" placeholder="如: 赣锋锂业">
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>分组</label>
-                            <select id="stockGroup">
-                                <option value="holding">持仓中</option>
-                                <option value="cleared">已清仓</option>
-                            </select>
-                        </div>
-                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" id="saveStockBtn">保存</button>
                         <button type="button" class="btn" id="cancelStockBtn">取消</button>
@@ -89,15 +80,12 @@ const StockManager = {
         document.getElementById('newStockCode').value = '';
         document.getElementById('newStockCode').disabled = false;
         document.getElementById('newStockName').value = '';
-        // 设置单选按钮默认值为已清仓
-        const clearedRadio = document.querySelector('input[name="stockGroup"][value="cleared"]');
-        if (clearedRadio) clearedRadio.checked = true;
         // 重置已存在提示状态
         const existsTip = document.getElementById('stockExistsTip');
         if (existsTip) existsTip.style.display = 'none';
         const saveBtn = document.getElementById('saveNewStockBtn');
         if (saveBtn) saveBtn.disabled = false;
-        document.getElementById('addStockModal').style.display = 'block';
+        document.getElementById('addStockModal').style.display = 'flex';
     },
     
     /**
@@ -108,9 +96,8 @@ const StockManager = {
         
         const code = document.getElementById('newStockCode').value.trim();
         const name = document.getElementById('newStockName').value.trim();
-        // 获取单选按钮的值
-        const groupRadio = document.querySelector('input[name="stockGroup"]:checked');
-        const group = groupRadio ? groupRadio.value : 'cleared';
+        // 新股票默认分组为 cleared，后续会根据交易记录自动归一化
+        const group = 'cleared';
         console.log('[saveStock] 股票代码:', code, ', 名称:', name, ', 分组:', group);
 
         if (!code || !name) {
@@ -144,23 +131,13 @@ const StockManager = {
         console.log('[saveStock] result.success:', result?.success);
 
         if (result.success) {
-            console.log('[saveStock] 操作成功，准备刷新和跳转');
+            console.log('[saveStock] 操作成功，准备跳转');
             this.closeModal();
-
-            // 刷新页面：交给统一入口处理，避免模块间直接调用
-            if (window.App && window.App.updateAll) {
-                console.log('[saveStock] 调用 App.updateAll()');
-                await window.App.updateAll();
-            }
 
             ErrorHandler.showSuccess(result.message);
 
-            // 添加新股票成功后，提示用户添加交易记录
-            if (!isEdit) {
-                ErrorHandler.showInfo('股票添加成功！请添加第一笔交易记录');
-            }
-
             // 添加新股票成功后，自动跳转到详情页，让用户开始添加交易记录
+            // 详情页会自动检测并提示"请添加第一笔交易"
             if (!isEdit) {
                 console.log('[saveStock] 准备跳转到详情页:', code);
                 // 使用统一的路由处理函数，确保 Detail.loadStock() 被调用
@@ -238,12 +215,12 @@ const StockManager = {
         document.getElementById('newStockCode').value = stock.code;
         document.getElementById('newStockCode').disabled = true;
         document.getElementById('newStockName').value = stock.name;
-        document.getElementById('newStockGroup').value = stock.group;
-        document.getElementById('addStockModal').style.display = 'block';
+        document.getElementById('addStockModal').style.display = 'flex';
     },
 
     /**
      * 删除股票（汇总页面使用）
+     * 使用自定义确认弹窗，需要输入股票名称确认
      */
     async deleteStock(stockCode) {
         const DataManager = StockProfitCalculator.DataManager;
@@ -255,7 +232,9 @@ const StockManager = {
             return;
         }
 
-        if (!confirm(`确定要删除股票 ${stock.name} (${stock.code}) 吗？\n\n该操作将删除所有相关交易记录，且不可恢复！`)) {
+        // 使用自定义确认弹窗
+        const confirmed = await this.showDeleteConfirmDialog(stock);
+        if (!confirmed) {
             return;
         }
 
@@ -270,6 +249,107 @@ const StockManager = {
         } else {
             ErrorHandler.showErrorSimple(result.message);
         }
+    },
+
+    /**
+     * 显示删除确认弹窗
+     * @param {Object} stock - 股票对象
+     * @returns {Promise<boolean>} - 确认返回 true，取消返回 false
+     */
+    showDeleteConfirmDialog(stock) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('deleteStockModal');
+            const nameEl = document.getElementById('deleteStockName');
+            const codeEl = document.getElementById('deleteStockCode');
+            const countEl = document.getElementById('deleteTradeCount');
+            const inputEl = document.getElementById('deleteConfirmInput');
+            const hintEl = document.getElementById('deleteConfirmHint');
+            const confirmBtn = document.getElementById('confirmDeleteStockBtn');
+            const cancelBtn = document.getElementById('cancelDeleteStockBtn');
+
+            // 填充股票信息
+            nameEl.textContent = stock.name;
+            codeEl.textContent = stock.code;
+            countEl.textContent = (stock.trades && stock.trades.length ? stock.trades.length : 0) + ' 条';
+            
+            // 设置输入框 placeholder
+            inputEl.placeholder = stock.name;
+            inputEl.value = '';
+            inputEl.className = 'delete-confirm-input';
+            hintEl.textContent = '';
+            hintEl.className = 'delete-confirm-hint';
+            confirmBtn.disabled = true;
+
+            // 当前股票名称（用于验证）
+            const targetName = stock.name;
+
+            // 输入验证函数
+            const validateInput = () => {
+                const inputValue = inputEl.value.trim();
+                
+                if (inputValue === targetName) {
+                    inputEl.className = 'delete-confirm-input valid';
+                    hintEl.textContent = '✓ 名称匹配，可以删除';
+                    hintEl.className = 'delete-confirm-hint success';
+                    confirmBtn.disabled = false;
+                } else if (inputValue === '') {
+                    inputEl.className = 'delete-confirm-input';
+                    hintEl.textContent = '';
+                    hintEl.className = 'delete-confirm-hint';
+                    confirmBtn.disabled = true;
+                } else {
+                    inputEl.className = 'delete-confirm-input invalid';
+                    hintEl.textContent = '✗ 名称不匹配';
+                    hintEl.className = 'delete-confirm-hint error';
+                    confirmBtn.disabled = true;
+                }
+            };
+
+            // 绑定输入事件
+            inputEl.addEventListener('input', validateInput);
+
+            // 回车确认
+            const handleKeydown = (e) => {
+                if (e.key === 'Enter' && !confirmBtn.disabled) {
+                    closeModal(true);
+                } else if (e.key === 'Escape') {
+                    closeModal(false);
+                }
+            };
+            inputEl.addEventListener('keydown', handleKeydown);
+
+            // 关闭弹窗函数
+            const closeModal = (result) => {
+                modal.style.display = 'none';
+                inputEl.removeEventListener('input', validateInput);
+                inputEl.removeEventListener('keydown', handleKeydown);
+                confirmBtn.removeEventListener('click', handleConfirm);
+                cancelBtn.removeEventListener('click', handleCancel);
+                modal.removeEventListener('click', handleModalClick);
+                resolve(result);
+            };
+
+            // 确认按钮
+            const handleConfirm = () => closeModal(true);
+            const handleCancel = () => closeModal(false);
+            
+            // 点击背景关闭
+            const handleModalClick = (e) => {
+                if (e.target === modal) {
+                    closeModal(false);
+                }
+            };
+
+            confirmBtn.addEventListener('click', handleConfirm);
+            cancelBtn.addEventListener('click', handleCancel);
+            modal.addEventListener('click', handleModalClick);
+
+            // 显示弹窗
+            modal.style.display = 'flex';
+            
+            // 聚焦输入框
+            setTimeout(() => inputEl.focus(), 100);
+        });
     },
     
     /**

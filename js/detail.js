@@ -1162,12 +1162,13 @@ const Detail = {
         const amountDisplay = document.getElementById('tradeAmountDisplay');
 
         if (type === 'dividend' || type === 'tax') {
-            // 分红和红利税补缴：价格、数量、手续费只读显示"-"，金额可输入
+            // 分红和红利税：价格、数量、手续费只读显示"-"，金额可输入
             
             // 金额变为可编辑
             amountDisplay.readOnly = false;
             amountDisplay.placeholder = '请输入金额';
             amountDisplay.style.background = '#fff';
+            amountDisplay.style.cursor = 'text';
             amountDisplay.value = '';
             
             // 价格、数量、手续费显示"-"且只读
@@ -1982,6 +1983,9 @@ const Detail = {
             lastDps, 
             this.calcResult?.holdingCycleHistory
         );
+
+        // 渲染卖出预测区域
+        this._renderSellPrediction(latestPrice);
     },
 
     /**
@@ -2020,7 +2024,14 @@ const Detail = {
 
         let html = `
             <div class="ac-section-header">
-                <span class="ac-section-title">${totalTitle}</span>
+                <div class="ac-title-row">
+                    <span class="ac-section-title">${totalTitle}</span>
+                    <button type="button" class="ac-section-toggle" title="折叠/展开全部">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="ac-cycles-container">
         `;
@@ -2053,12 +2064,14 @@ const Detail = {
             html += `
                 <div class="ac-cycle-group ${collapsedClass}" data-cycle="${cycleNum}">
                     <div class="ac-cycle-header">
-                        <span class="ac-cycle-title">${cycleTitle}</span>
-                        <button type="button" class="ac-cycle-toggle" title="折叠/展开">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M6 9l6 6 6-6"/>
-                            </svg>
-                        </button>
+                        <div class="ac-cycle-title-row">
+                            <span class="ac-cycle-title">${cycleTitle}</span>
+                            <button type="button" class="ac-cycle-toggle" title="折叠/展开">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="ac-cycle-content">
                     <table class="ac-table">
@@ -2208,7 +2221,7 @@ const Detail = {
                 html += `
                     <tr class="ac-predict">
                         <td><span class="ac-predict-label">预测</span></td>
-                        <td>¥${latestPrice.toFixed(3)}</td>
+                        <td><input type="number" class="ac-predict-input" id="predictPrice" value="${latestPrice.toFixed(3)}" step="0.001" min="0.001" placeholder="价格"></td>
                         <td><input type="number" class="ac-predict-input" id="predictAmount" placeholder="股数" min="100" step="100"></td>
                         <td class="ac-predict-amount" id="predictAmountMoney">--</td>
                         <td>${predictChangeText}</td>
@@ -2231,6 +2244,25 @@ const Detail = {
 
         container.innerHTML = html;
 
+        // 绑定总折叠按钮事件
+        const sectionToggle = container.querySelector('.ac-section-toggle');
+        if (sectionToggle) {
+            sectionToggle.addEventListener('click', () => {
+                const cyclesContainer = container.querySelector('.ac-cycles-container');
+                const isCollapsed = sectionToggle.classList.contains('ac-section-collapsed');
+                
+                if (isCollapsed) {
+                    // 展开
+                    sectionToggle.classList.remove('ac-section-collapsed');
+                    cyclesContainer.style.display = 'flex';
+                } else {
+                    // 折叠
+                    sectionToggle.classList.add('ac-section-collapsed');
+                    cyclesContainer.style.display = 'none';
+                }
+            });
+        }
+
         // 绑定折叠按钮事件
         container.querySelectorAll('.ac-cycle-toggle').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -2241,51 +2273,62 @@ const Detail = {
 
         // 绑定预测输入框事件
         const predictInput = document.getElementById('predictAmount');
-        if (predictInput) {
-            predictInput.addEventListener('input', () => {
-                const amount = parseInt(predictInput.value) || 0;
-                const predictCpsEl = document.getElementById('predictCps');
-                const predictDpsEl = document.getElementById('predictDps');
-                const predictAmountMoneyEl = document.getElementById('predictAmountMoney');
+        const predictPriceInput = document.getElementById('predictPrice');
+        
+        // 计算预测结果的函数
+        const calculatePrediction = () => {
+            const amount = parseInt(predictInput?.value) || 0;
+            const price = parseFloat(predictPriceInput?.value) || 0;
+            const predictCpsEl = document.getElementById('predictCps');
+            const predictDpsEl = document.getElementById('predictDps');
+            const predictAmountMoneyEl = document.getElementById('predictAmountMoney');
+            const predictCompareEl = document.getElementById('predictCompare');
+            
+            if (amount > 0 && price > 0) {
+                const currentHolding = this.calcResult?.summary?.currentHolding || 0;
+                const currentCost = this.calcResult?.summary?.currentCost || 0;
+                const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
                 
-                if (amount > 0 && latestPrice != null) {
-                    const currentHolding = this.calcResult?.summary?.currentHolding || 0;
-                    const currentCost = this.calcResult?.summary?.currentCost || 0;
-                    const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
+                const predictAmountMoney = price * amount;
+                if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '¥' + predictAmountMoney.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                
+                const newHolding = currentHolding + amount;
+                const newCost = currentCost + price * amount;
+                const predictCps = newHolding > 0 ? newCost / newHolding : 0;
+                
+                const dilutedBase = currentCost - currentCycleProfit;
+                const newDilutedBase = dilutedBase + price * amount;
+                const predictDps = newHolding > 0 ? newDilutedBase / newHolding : 0;
+                
+                if (predictCpsEl) predictCpsEl.textContent = '¥' + predictCps.toFixed(3);
+                if (predictDpsEl) predictDpsEl.textContent = '¥' + predictDps.toFixed(3);
+                
+                if (predictCompareEl) {
+                    const cpsDiff = price - predictCps;
+                    const dpsDiff = price - predictDps;
+                    const cpsPct = predictCps > 0 ? (cpsDiff / predictCps * 100) : 0;
+                    const dpsPct = predictDps > 0 ? (dpsDiff / predictDps * 100) : 0;
                     
-                    const predictAmountMoney = latestPrice * amount;
-                    if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '¥' + predictAmountMoney.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    
-                    const newHolding = currentHolding + amount;
-                    const newCost = currentCost + latestPrice * amount;
-                    const predictCps = newHolding > 0 ? newCost / newHolding : 0;
-                    
-                    const dilutedBase = currentCost - currentCycleProfit;
-                    const newDilutedBase = dilutedBase + latestPrice * amount;
-                    const predictDps = newHolding > 0 ? newDilutedBase / newHolding : 0;
-                    
-                    if (predictCpsEl) predictCpsEl.textContent = '¥' + predictCps.toFixed(3);
-                    if (predictDpsEl) predictDpsEl.textContent = '¥' + predictDps.toFixed(3);
-                    
-                    const predictCompareEl = document.getElementById('predictCompare');
-                    if (predictCompareEl) {
-                        const cpsDiff = latestPrice - predictCps;
-                        const dpsDiff = latestPrice - predictDps;
-                        const cpsPct = predictCps > 0 ? (cpsDiff / predictCps * 100) : 0;
-                        const dpsPct = predictDps > 0 ? (dpsDiff / predictDps * 100) : 0;
-                        
-                        const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
-                        const dpsLine = `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`;
-                        predictCompareEl.innerHTML = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
-                    }
-                } else {
-                    if (predictCpsEl) predictCpsEl.textContent = '--';
-                    if (predictDpsEl) predictDpsEl.textContent = '--';
-                    if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '--';
-                    const predictCompareEl = document.getElementById('predictCompare');
-                    if (predictCompareEl) predictCompareEl.textContent = '--';
+                    const cpsLine = `<span class="${cpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">持仓: ${cpsDiff >= 0 ? '+' : ''}${cpsDiff.toFixed(3)} (${cpsPct >= 0 ? '+' : ''}${cpsPct.toFixed(2)}%)</span>`;
+                    const dpsLine = `<span class="${dpsDiff >= 0 ? 'ac-profit' : 'ac-loss'}">摊薄: ${dpsDiff >= 0 ? '+' : ''}${dpsDiff.toFixed(3)} (${dpsPct >= 0 ? '+' : ''}${dpsPct.toFixed(2)}%)</span>`;
+                    predictCompareEl.innerHTML = `<div class="ac-compare">${cpsLine}${dpsLine}</div>`;
                 }
-            });
+            } else {
+                if (predictCpsEl) predictCpsEl.textContent = '--';
+                if (predictDpsEl) predictDpsEl.textContent = '--';
+                if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '--';
+                if (predictCompareEl) predictCompareEl.textContent = '--';
+            }
+        };
+        
+        // 绑定股数输入事件
+        if (predictInput) {
+            predictInput.addEventListener('input', calculatePrediction);
+        }
+        
+        // 绑定价格输入事件
+        if (predictPriceInput) {
+            predictPriceInput.addEventListener('input', calculatePrediction);
         }
     },
 
@@ -2417,6 +2460,282 @@ const Detail = {
 
         // 显示弹窗
         this._showModal('持仓周期历史', contentHtml);
+    },
+
+    /**
+     * 计算FIFO卖出成本
+     * @private
+     * @param {Array} holdingQueue - 持仓队列
+     * @param {number} sellAmount - 卖出股数
+     * @returns {number} FIFO卖出成本
+     */
+    _calculateFIFOSellCost(holdingQueue, sellAmount) {
+        if (!holdingQueue || holdingQueue.length === 0 || sellAmount <= 0) {
+            return 0;
+        }
+
+        // 深拷贝队列，避免影响原数据
+        const queue = holdingQueue.map(h => ({ ...h }));
+        let remainingAmount = sellAmount;
+        let totalCost = 0;
+
+        while (remainingAmount > 0 && queue.length > 0) {
+            const holding = queue[0];
+            if (holding.amount <= remainingAmount) {
+                // 完全卖出该批次
+                totalCost += holding.price * holding.amount + (holding.fee || 0);
+                remainingAmount -= holding.amount;
+                queue.shift();
+            } else {
+                // 部分卖出该批次
+                const feePortion = (holding.fee || 0) * remainingAmount / holding.amount;
+                totalCost += holding.price * remainingAmount + feePortion;
+                holding.amount -= remainingAmount;
+                remainingAmount = 0;
+            }
+        }
+
+        return totalCost;
+    },
+
+    /**
+     * 渲染卖出预测区域
+     * @private
+     * @param {number} latestPrice - 最新股价
+     */
+    _renderSellPrediction(latestPrice) {
+        const container = document.getElementById('sellPredictionSection');
+        if (!container) return;
+
+        const currentHolding = this.calcResult?.summary?.currentHolding || 0;
+
+        // 无持仓时隐藏区域
+        if (currentHolding <= 0) {
+            container.innerHTML = '';
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'block';
+
+        const currentCost = this.calcResult?.summary?.currentCost || 0;
+        const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
+        const holdingQueue = this.calcResult?.holdingQueue || [];
+
+        // 当前每股成本
+        const currentCps = currentHolding > 0 ? currentCost / currentHolding : 0;
+        // 当前每股摊薄成本
+        const currentDps = currentHolding > 0 ? (currentCost - currentCycleProfit) / currentHolding : 0;
+
+        // 默认卖出价格
+        const defaultSellPrice = latestPrice != null ? latestPrice.toFixed(3) : '';
+
+        // 计算快捷按钮股数（向下取整到100的倍数）
+        const calcQuickAmount = (ratio) => Math.floor(currentHolding * ratio / 100) * 100;
+
+        const html = `
+            <div class="sp-container">
+                <div class="sp-header">
+                    <h3 class="sp-title">卖出预测</h3>
+                    <button type="button" class="sp-toggle-btn" id="sellPredictionToggle">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="sp-content" id="sellPredictionContent">
+                    <div class="sp-holding-row">
+                        <div class="sp-holding-group sp-current-group">
+                            <div class="sp-holding-title">当前持仓</div>
+                            <div class="sp-holding-data">
+                                <span class="sp-holding-value">${currentHolding.toLocaleString()}股</span>
+                                <span class="sp-holding-cost">成本 ¥${currentCps.toFixed(3)}</span>
+                                <span class="sp-holding-cost">摊薄 ¥${currentDps.toFixed(3)}</span>
+                            </div>
+                        </div>
+                        <div class="sp-holding-group sp-after-group">
+                            <div class="sp-holding-title">卖出后</div>
+                            <div class="sp-holding-data">
+                                <span class="sp-holding-value" id="sellPredictAfterHolding">--</span>
+                                <span class="sp-holding-cost" id="sellPredictAfterCps">--</span>
+                                <span class="sp-holding-cost" id="sellPredictAfterDps">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sp-input-row">
+                        <div class="sp-input-group">
+                            <label class="sp-input-label">卖出价格</label>
+                            <input type="number" class="sp-input" id="sellPredictPrice" 
+                                   value="${defaultSellPrice}" step="0.001" min="0.001" placeholder="价格">
+                        </div>
+                        <div class="sp-input-group sp-amount-group">
+                            <label class="sp-input-label">卖出股数</label>
+                            <div class="sp-amount-row">
+                                <input type="number" class="sp-input sp-amount-input" id="sellPredictAmount" 
+                                       placeholder="股数" min="100" step="100" max="${currentHolding}">
+                                <div class="sp-quick-btns">
+                                    <button type="button" class="sp-quick-btn" data-ratio="0.25">1/4仓</button>
+                                    <button type="button" class="sp-quick-btn" data-ratio="0.33">1/3仓</button>
+                                    <button type="button" class="sp-quick-btn" data-ratio="0.5">半仓</button>
+                                    <button type="button" class="sp-quick-btn" data-ratio="1">全仓</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sp-result-group">
+                            <label class="sp-input-label">卖出金额</label>
+                            <span class="sp-result-value" id="sellPredictAmountMoney">--</span>
+                        </div>
+                        <div class="sp-result-group">
+                            <label class="sp-input-label">预估收益</label>
+                            <span class="sp-result-value" id="sellPredictProfit">--</span>
+                        </div>
+                        <div class="sp-result-group">
+                            <label class="sp-input-label">收益率</label>
+                            <span class="sp-result-value" id="sellPredictRate">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        // 绑定折叠按钮事件
+        const toggleBtn = document.getElementById('sellPredictionToggle');
+        const content = document.getElementById('sellPredictionContent');
+        if (toggleBtn && content) {
+            toggleBtn.addEventListener('click', () => {
+                const isCollapsed = content.classList.contains('sp-collapsed');
+                if (isCollapsed) {
+                    content.classList.remove('sp-collapsed');
+                    toggleBtn.classList.remove('sp-toggle-collapsed');
+                } else {
+                    content.classList.add('sp-collapsed');
+                    toggleBtn.classList.add('sp-toggle-collapsed');
+                }
+            });
+        }
+
+        // 绑定输入事件
+        const priceInput = document.getElementById('sellPredictPrice');
+        const amountInput = document.getElementById('sellPredictAmount');
+
+        // 计算快捷按钮股数（向下取整到100的倍数）
+        const getQuickAmount = (ratio) => {
+            const amount = Math.floor(currentHolding * ratio / 100) * 100;
+            return Math.max(0, amount);
+        };
+
+        // 绑定快捷按钮事件
+        container.querySelectorAll('.sp-quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ratio = parseFloat(btn.dataset.ratio) || 0;
+                const quickAmount = getQuickAmount(ratio);
+                if (amountInput) {
+                    amountInput.value = quickAmount;
+                    amountInput.dispatchEvent(new Event('input'));
+                }
+            });
+        });
+
+        const calculateSellPrediction = () => {
+            const sellPrice = parseFloat(priceInput?.value) || 0;
+            const sellAmount = parseInt(amountInput?.value) || 0;
+
+            const amountMoneyEl = document.getElementById('sellPredictAmountMoney');
+            const profitEl = document.getElementById('sellPredictProfit');
+            const rateEl = document.getElementById('sellPredictRate');
+            const afterHoldingEl = document.getElementById('sellPredictAfterHolding');
+            const afterCpsEl = document.getElementById('sellPredictAfterCps');
+            const afterDpsEl = document.getElementById('sellPredictAfterDps');
+
+            // 验证卖出股数
+            if (sellAmount > currentHolding) {
+                if (amountMoneyEl) amountMoneyEl.textContent = '超过持仓';
+                if (amountMoneyEl) amountMoneyEl.classList.add('sp-error');
+                if (profitEl) profitEl.textContent = '--';
+                if (rateEl) rateEl.textContent = '--';
+                if (afterHoldingEl) afterHoldingEl.textContent = '--';
+                if (afterCpsEl) afterCpsEl.textContent = '--';
+                if (afterDpsEl) afterDpsEl.textContent = '--';
+                return;
+            }
+
+            if (amountMoneyEl) amountMoneyEl.classList.remove('sp-error');
+
+            if (sellAmount > 0 && sellPrice > 0) {
+                // 计算FIFO成本
+                const sellCost = this._calculateFIFOSellCost(holdingQueue, sellAmount);
+
+                // 卖出金额
+                const sellAmountMoney = sellPrice * sellAmount;
+
+                // 预估收益
+                const estimatedProfit = sellAmountMoney - sellCost;
+
+                // 收益率
+                const profitRate = sellCost > 0 ? (estimatedProfit / sellCost * 100) : 0;
+
+                // 更新显示
+                if (amountMoneyEl) amountMoneyEl.textContent = '¥' + sellAmountMoney.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                if (profitEl) {
+                    const profitClass = estimatedProfit >= 0 ? 'sp-profit' : 'sp-loss';
+                    profitEl.className = 'sp-result-value ' + profitClass;
+                    profitEl.textContent = (estimatedProfit >= 0 ? '+' : '') + '¥' + estimatedProfit.toFixed(2);
+                }
+
+                if (rateEl) {
+                    const rateClass = profitRate >= 0 ? 'sp-profit' : 'sp-loss';
+                    rateEl.className = 'sp-result-value ' + rateClass;
+                    rateEl.textContent = (profitRate >= 0 ? '+' : '') + profitRate.toFixed(2) + '%';
+                }
+
+                // 卖出后数据
+                const afterHolding = currentHolding - sellAmount;
+                const afterCost = currentCost - sellCost;
+                const afterCps = afterHolding > 0 ? afterCost / afterHolding : 0;
+
+                // 摊薄成本
+                const dilutedBase = currentCost - currentCycleProfit;
+                const afterDilutedBase = dilutedBase - sellCost;
+                const afterDps = afterHolding > 0 ? afterDilutedBase / afterHolding : 0;
+
+                // 更新卖出后显示
+                if (afterHoldingEl) {
+                    afterHoldingEl.textContent = afterHolding > 0 ? afterHolding.toLocaleString() + '股' : '清仓';
+                }
+
+                if (afterCpsEl) {
+                    afterCpsEl.textContent = afterHolding > 0 ? '成本 ¥' + afterCps.toFixed(3) : '--';
+                }
+
+                if (afterDpsEl) {
+                    afterDpsEl.textContent = afterHolding > 0 ? '摊薄 ¥' + afterDps.toFixed(3) : '--';
+                }
+            } else {
+                if (amountMoneyEl) amountMoneyEl.textContent = '--';
+                if (profitEl) {
+                    profitEl.className = 'sp-result-value';
+                    profitEl.textContent = '--';
+                }
+                if (rateEl) {
+                    rateEl.className = 'sp-result-value';
+                    rateEl.textContent = '--';
+                }
+                if (afterHoldingEl) afterHoldingEl.textContent = '--';
+                if (afterCpsEl) afterCpsEl.textContent = '--';
+                if (afterDpsEl) afterDpsEl.textContent = '--';
+            }
+        };
+
+        if (priceInput) {
+            priceInput.addEventListener('input', calculateSellPrediction);
+        }
+
+        if (amountInput) {
+            amountInput.addEventListener('input', calculateSellPrediction);
+        }
     },
 
     /**

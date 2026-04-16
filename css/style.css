@@ -1232,6 +1232,20 @@
             transition: border-color 0.3s;
         }
 
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 32px;
+            background-color: #fff;
+        }
+
+        .form-group select:hover {
+            border-color: #667eea;
+        }
+
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #667eea;
@@ -6772,8 +6786,129 @@
 
 /* ==================== 加仓对比表格样式 ==================== */
 .addition-comparison-table {
-    margin-top: 16px;
+    margin-top: 20px;
     overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 加仓对比头部 - 紫色渐变 */
+.ac-section-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+}
+
+.ac-title-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+.ac-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.ac-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ac-section-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.ac-section-toggle svg {
+    color: #fff;
+    transition: transform 0.2s ease;
+}
+
+.ac-section-collapsed svg {
+    transform: rotate(-90deg);
+}
+
+/* 轮次容器 */
+.ac-cycles-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 轮次分组 */
+.ac-cycle-group {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.ac-cycle-header {
+    padding: 10px 12px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.ac-cycle-title-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 6px;
+}
+
+.ac-cycle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.ac-cycle-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ac-cycle-toggle svg {
+    color: #667eea;
+    transition: transform 0.2s ease;
+}
+
+.ac-cycle-content {
+    padding: 0;
+}
+
+.ac-cycle-collapsed .ac-cycle-content {
+    display: none;
+}
+
+.ac-cycle-collapsed .ac-cycle-toggle svg {
+    transform: rotate(-90deg);
+}
+
+/* 折叠状态 */
+.ac-collapsed .ac-cycles-container {
+    display: none;
 }
 
 .ac-table {
@@ -6895,23 +7030,6 @@
     font-size: 12px;
 }
 
-/* 分组标题和折叠按钮 */
-.ac-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: #f5f7fa;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 1px solid #ebeef5;
-}
-
-.ac-section-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #303133;
-}
-
 .ac-collapse-btn {
     display: flex;
     align-items: center;
@@ -6936,19 +7054,6 @@
     overflow-x: auto;
 }
 
-/* 折叠状态 */
-.addition-comparison-table.ac-collapsed .ac-table-wrapper {
-    display: none;
-}
-
-.addition-comparison-table.ac-collapsed .ac-collapse-btn svg {
-    transform: rotate(-90deg);
-}
-
-.addition-comparison-table .ac-collapse-btn svg {
-    transition: transform 0.2s;
-}
-
 /* 移动端响应式 */
 @media (max-width: 768px) {
     .ac-table {
@@ -6958,6 +7063,14 @@
     .ac-table th,
     .ac-table td {
         padding: 8px 10px;
+    }
+    
+    .ac-cycle-header {
+        padding: 8px 10px;
+    }
+    
+    .ac-cycle-title {
+        font-size: 13px;
     }
 }
 
@@ -6980,10 +7093,16 @@
 .ac-cycle-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
     padding: 10px 14px;
     background: #f5f7fa;
     border-bottom: 1px solid #ebeef5;
+}
+
+.ac-cycle-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .ac-cycle-title {
@@ -8048,9 +8167,565 @@
     display: none !important;
 }
 
+/* ==================== 添加股票弹窗垂直居中 ==================== */
+#addStockModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+/* ==================== 删除确认弹窗样式 ==================== */
+/* 弹窗容器使用 flexbox 垂直居中 */
+#deleteStockModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+#deleteStockModal.show {
+    display: flex;
+}
+
+.delete-confirm-modal {
+    max-width: 500px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin: auto;
+}
+
+.delete-confirm-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+    color: #fff;
+}
+
+.delete-confirm-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-confirm-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.delete-confirm-header h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.delete-confirm-body {
+    padding: 20px;
+}
+
+.delete-stock-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.delete-stock-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.delete-stock-row:last-child {
+    border-bottom: none;
+}
+
+.delete-stock-label {
+    color: #666;
+    font-size: 13px;
+}
+
+.delete-stock-value {
+    font-weight: 600;
+    font-size: 13px;
+    color: #333;
+}
+
+.delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #fff3e0;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    color: #e65100;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.delete-warning svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.delete-confirm-input-section {
+    margin-top: 4px;
+}
+
+.delete-confirm-label {
+    display: block;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.delete-confirm-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.delete-confirm-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.delete-confirm-input.valid {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.delete-confirm-input.invalid {
+    border-color: #f44336;
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15);
+}
+
+.delete-confirm-hint {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+    min-height: 16px;
+}
+
+.delete-confirm-hint.error {
+    color: #f44336;
+}
+
+.delete-confirm-hint.success {
+    color: #4caf50;
+}
+
+.delete-confirm-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.delete-confirm-footer .btn {
+    min-width: 90px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.delete-confirm-footer .btn-secondary {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.delete-confirm-footer .btn-secondary:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.delete-confirm-footer .btn-danger {
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+    border: none;
+    color: #fff;
+}
+
+.delete-confirm-footer .btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff1744 0%, #c62828 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+.delete-confirm-footer .btn-danger:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .delete-confirm-modal {
+        max-width: 95%;
+        margin: 10px;
+    }
+
+    .delete-confirm-header {
+        padding: 16px;
+    }
+
+    .delete-confirm-body {
+        padding: 16px;
+    }
+
+    .delete-confirm-footer {
+        padding: 12px 16px;
+    }
+
+    .delete-confirm-footer .btn {
+        min-width: 80px;
+        padding: 8px 16px;
+    }
+}
+
 /* 大数字转换 tooltip 样式 */
 .large-number-tooltip {
     cursor: help;
     border-bottom: 1px dotted rgba(102, 126, 234, 0.5);
+}
+
+/* 无交易记录图标样式 */
+.no-trade-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    width: 18px;
+    height: 18px;
+    background: #ff9800;
+    border-radius: 50%;
+    cursor: help;
+    vertical-align: middle;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.no-trade-icon svg {
+    width: 12px;
+    height: 12px;
+    color: #fff;
+    stroke: #fff;
+}
+
+/* ==================== 卖出预测区域样式 ==================== */
+.sell-prediction-section {
+    margin-top: 20px;
+}
+
+.sp-container {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f5f9ff 100%);
+    border-radius: 12px;
+    border: 1px solid #bbdefb;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+}
+
+.sp-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+    border-bottom: 1px solid #1e88e5;
+}
+
+.sp-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.sp-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sp-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.sp-toggle-btn svg {
+    color: #fff;
+    transition: transform 0.2s ease;
+}
+
+.sp-toggle-collapsed svg {
+    transform: rotate(-90deg);
+}
+
+.sp-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sp-collapsed {
+    display: none;
+}
+
+/* 持仓信息行（当前 + 卖出后） */
+.sp-holding-row {
+    display: flex;
+    gap: 24px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+}
+
+.sp-holding-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.sp-holding-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2196f3;
+}
+
+.sp-holding-data {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.sp-holding-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.sp-holding-cost {
+    font-size: 12px;
+    color: #666;
+}
+
+.sp-after-group {
+    border-left: 1px solid #bbdefb;
+    padding-left: 24px;
+}
+
+/* 输入行 */
+.sp-input-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.sp-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
+}
+
+.sp-input-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.sp-input {
+    width: 100px;
+    padding: 8px 10px;
+    border: 1px solid #bbdefb;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.sp-input:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+}
+
+.sp-input::placeholder {
+    color: #aaa;
+}
+
+/* 卖出股数组（输入框 + 快捷按钮） */
+.sp-amount-group {
+    min-width: 280px;
+}
+
+.sp-amount-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.sp-amount-input {
+    width: 80px;
+    flex-shrink: 0;
+}
+
+/* 快捷按钮 */
+.sp-quick-btns {
+    display: flex;
+    gap: 3px;
+    flex-wrap: nowrap;
+}
+
+.sp-quick-btn {
+    padding: 7px 6px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #2196f3;
+    background: rgba(33, 150, 243, 0.1);
+    border: 1px solid #bbdefb;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.sp-quick-btn:hover {
+    background: rgba(33, 150, 243, 0.2);
+    border-color: #2196f3;
+}
+
+.sp-quick-btn:active {
+    background: rgba(33, 150, 243, 0.3);
+}
+
+/* 结果显示 */
+.sp-result-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 90px;
+}
+
+.sp-result-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 6px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.sp-result-value.sp-profit {
+    color: #f44336;
+}
+
+.sp-result-value.sp-loss {
+    color: #4caf50;
+}
+
+.sp-result-value.sp-error {
+    color: #ff9800;
+    font-size: 12px;
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+    .sp-input-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sp-input-group,
+    .sp-result-group {
+        width: 100%;
+    }
+
+    .sp-input {
+        width: 100%;
+    }
+
+    .sp-holding-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .sp-holding-data {
+        flex-wrap: wrap;
+    }
+
+    .sp-after-group {
+        border-left: none;
+        border-top: 1px solid #c8e6c9;
+        padding-left: 0;
+        padding-top: 12px;
+    }
+
+    .sp-amount-group {
+        min-width: 100%;
+    }
+
+    .sp-amount-input {
+        width: 100px;
+        flex-shrink: 0;
+    }
+
+    .sp-quick-btns {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
 }
 

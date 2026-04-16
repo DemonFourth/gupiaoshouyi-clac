@@ -1339,9 +1339,14 @@ const Overview = {
         const hasProfit = profitItems.some(i => i.visible);
         const hasCycle = cycleItems.some(i => i.visible);
 
+        // 无交易记录图标（仅已清仓且无交易记录时显示）
+        const noTradeIcon = (isCleared && (!stock.trades || stock.trades.length === 0))
+            ? '<span class="no-trade-icon" data-tooltip="暂无交易记录"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>'
+            : '';
+
         card.innerHTML = `
             <div class="sc-header">
-                <span class="sc-name sc-name-clickable" data-stock-code="${stock.code}">${stock.name}</span>
+                <span class="sc-name sc-name-clickable" data-stock-code="${stock.code}">${stock.name}${noTradeIcon}</span>
                 <span class="sc-code">${stock.code}</span>
                 ${dailyChangeValue !== null ? `<span class="sc-daily-badge ${dailyBadgeClass}">${dailyBadgeText}</span>` : ''}
             </div>
@@ -1695,10 +1700,15 @@ const Overview = {
             cycleDays = holdingInfo.holdingDays !== undefined ? holdingInfo.holdingDays + '天' : '--';
         }
 
+        // 无交易记录图标（仅已清仓且无交易记录时显示）
+        const noTradeIconList = (isCleared && (!stock.trades || stock.trades.length === 0))
+            ? '<span class="no-trade-icon" data-tooltip="暂无交易记录"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg></span>'
+            : '';
+
         // ===== 组装 HTML =====
         card.innerHTML = `
             <div class="scl-identity">
-                <span class="scl-name scl-name-clickable" data-stock-code="${stock.code}">${stock.name}</span>
+                <span class="scl-name scl-name-clickable" data-stock-code="${stock.code}">${stock.name}${noTradeIconList}</span>
                 <span class="scl-code">${stock.code}</span>
             </div>
             
