@@ -241,7 +241,7 @@
             border-radius: 0;
             background: transparent;
             border: none;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             flex: 7;
             min-width: 0;
         }
@@ -400,39 +400,40 @@
             line-height: 1.1;
         }
 
-        /* 一列双行卡片样式 */
-        .header-quote-inline {
-            min-width: 110px;
-            padding: 4px 10px; /* 调整padding使高度与单行卡片一致 */
+        /* 标签列和数值列容器 */
+        .header-quote-group {
+            flex: 1;
+            display: inline-flex;
+            align-items: stretch;
+            min-width: 0;
         }
 
-        .header-quote-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6px;
-            line-height: 1.2;
+        /* 标签列和数值列样式（6列布局） */
+        .header-quote-label-col {
+            flex: 0 0 auto;
+            min-width: 50px;
+            padding: 4px 6px;
+            align-items: flex-end;
+            background: rgba(102, 126, 234, 0.08);
         }
 
-        .header-quote-row + .header-quote-row {
-            margin-top: 2px;
-            padding-top: 2px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        .header-quote-value-col {
+            flex: 1 1 auto;
+            min-width: 40px;
+            padding: 4px 8px;
+            align-items: flex-start;
         }
 
-        .header-quote-row .header-quote-label {
+        .header-quote-label-col .header-quote-label,
+        .header-quote-value-col .header-quote-value {
             font-size: 12px;
-            flex-shrink: 0;
-            line-height: 1.2;
+            line-height: 1.4;
         }
 
-        .header-quote-row .header-quote-value {
-            font-size: 14px;
+        .header-quote-value-col .header-quote-value {
             font-weight: 600;
-            text-align: right;
-            line-height: 1.2;
             font-variant-numeric: tabular-nums;
-            min-width: 60px;
+        }
         }
 
         /* 顶部工具条内刷新提示：放在刷新按钮左侧 */
@@ -2807,6 +2808,9 @@
 }
 
 .osv2-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 14px 16px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -2819,13 +2823,30 @@
   border-color: var(--border-color-hover);
 }
 
+.osv2-stat-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+.osv2-stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .osv2-stat-label {
   display: block;
   font-size: 11px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .osv2-stat-value {
@@ -6276,6 +6297,27 @@
     border-radius: 12px;
     transition: all 0.3s ease;
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+.summary-hero-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.summary-hero-content {
+    flex: 1;
+    min-width: 0;
 }
 
 .summary-hero-card::before {
@@ -6412,8 +6454,9 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
     transition: all 0.25s ease;
 }
 
@@ -6421,6 +6464,26 @@
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
+}
+
+.flow-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.flow-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .flow-label {
@@ -6456,14 +6519,36 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
     transition: all 0.25s ease;
 }
 
 .detail-item:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.15);
+}
+
+.detail-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 2px;
+}
+
+.detail-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .detail-label {
@@ -6988,11 +7073,11 @@
 }
 
 .rtv2-hero-card {
-    padding: 20px 24px;
+    padding: 16px 20px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 14px;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     position: relative;
     transition: all 0.25s ease;
@@ -7006,21 +7091,39 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
+.rtv2-hero-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.rtv2-hero-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .rtv2-hero-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    text-align: center;
 }
 
 .rtv2-hero-value {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
     color: #fff;
     font-variant-numeric: tabular-nums;
-    text-align: center;
 }
 
 /* 盈亏状态变色 */
@@ -7049,10 +7152,11 @@
 }
 
 .rtv2-detail-item {
-    padding: 16px 20px;
+    padding: 14px 18px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
     border-right: 1px solid rgba(255, 255, 255, 0.08);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.25s ease;
@@ -7072,10 +7176,31 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
+.rtv2-detail-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+.rtv2-detail-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .rtv2-detail-label {
     font-size: 11px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     display: inline-flex;
@@ -7086,7 +7211,7 @@
 .rtv2-detail-value {
     font-size: 18px;
     font-weight: 700;
-    color: #fff;
+    color: rgba(255, 255, 255, 0.95);
     font-variant-numeric: tabular-nums;
 }
 
@@ -7114,7 +7239,7 @@
 .rtv2-detail-dual-label {
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.7);
     min-width: 32px;
     text-transform: uppercase;
 }
@@ -7122,7 +7247,7 @@
 .rtv2-detail-dual-value {
     font-size: 16px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95);
     font-variant-numeric: tabular-nums;
 }
 
@@ -7844,5 +7969,88 @@
         opacity: 1;
         justify-content: flex-end;
     }
+}
+
+/* ==================== 统一 Tooltip 样式 (fixed 定位) ==================== */
+
+.tooltip-fixed {
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 99999;
+    
+    /* 样式 */
+    background-color: rgba(30, 30, 40, 0.95);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 尺寸 */
+    min-width: 160px;
+    max-width: min(420px, 90vw);
+    max-height: 300px;
+    
+    /* 动画 */
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    white-space: normal;
+    text-align: left;
+}
+
+/* 小箭头 */
+.tooltip-fixed::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+}
+
+/* 上方弹出时箭头向下 */
+.tooltip-fixed.placement-top::after {
+    top: 100%;
+    border-color: rgba(30, 30, 40, 0.95) transparent transparent transparent;
+}
+
+/* 下方弹出时箭头向上 */
+.tooltip-fixed.placement-bottom::after {
+    bottom: 100%;
+    border-color: transparent transparent rgba(30, 30, 40, 0.95) transparent;
+}
+
+/* 内容样式 */
+.tooltip-fixed strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.tooltip-fixed br {
+    display: block;
+    margin: 2px 0;
+}
+
+/* 已绑定 TooltipManager 的容器，禁用默认 CSS hover 行为 */
+.tooltip-manager-bound .tooltip-text {
+    display: none !important;
+}
+
+.tooltip-manager-bound {
+    position: static;
+}
+
+/* 禁用交易记录 tooltip 的默认 hover 行为 */
+.tooltip-manager-bound .trade-amount-detail-tooltip {
+    display: none !important;
+}
+
+/* 大数字转换 tooltip 样式 */
+.large-number-tooltip {
+    cursor: help;
+    border-bottom: 1px dotted rgba(102, 126, 234, 0.5);
 }
 

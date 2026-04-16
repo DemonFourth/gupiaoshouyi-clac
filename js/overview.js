@@ -575,8 +575,19 @@ const Overview = {
             .slice(0, 5);
 
         // 更新UI - 基础数据
-        this._domCache.overviewTotalMarketValue.textContent = '¥' + totalMarketValue.toFixed(2);
-        this._domCache.overviewTotalHoldingCost.textContent = '¥' + totalHoldingCost.toFixed(2);
+        const totalMarketValueFmt = Utils.formatLargeNumberWithTooltip(totalMarketValue);
+        this._domCache.overviewTotalMarketValue.textContent = totalMarketValueFmt.display;
+        if (totalMarketValueFmt.converted) {
+            this._domCache.overviewTotalMarketValue.classList.add('large-number-tooltip');
+            this._domCache.overviewTotalMarketValue.setAttribute('data-full-value', totalMarketValueFmt.full);
+        }
+
+        const totalHoldingCostFmt = Utils.formatLargeNumberWithTooltip(totalHoldingCost);
+        this._domCache.overviewTotalHoldingCost.textContent = totalHoldingCostFmt.display;
+        if (totalHoldingCostFmt.converted) {
+            this._domCache.overviewTotalHoldingCost.classList.add('large-number-tooltip');
+            this._domCache.overviewTotalHoldingCost.setAttribute('data-full-value', totalHoldingCostFmt.full);
+        }
 
         const profitElement = this._domCache.overviewTotalProfit;
         profitElement.textContent = '¥' + totalHoldingProfit.toFixed(2);
@@ -597,13 +608,19 @@ const Overview = {
         // 更新UI - 历史累计统计（使用大数字格式化，自动添加tooltip）
         const totalInvestmentFmt = Utils.formatLargeNumberWithTooltip(totalInvestment);
         this._domCache.overviewTotalInvestment.textContent = totalInvestmentFmt.display;
-        this._domCache.overviewTotalInvestment.title = totalInvestmentFmt.converted ? totalInvestmentFmt.full : '';
+        if (totalInvestmentFmt.converted) {
+            this._domCache.overviewTotalInvestment.classList.add('large-number-tooltip');
+            this._domCache.overviewTotalInvestment.setAttribute('data-full-value', totalInvestmentFmt.full);
+        }
         
         const overallProfitElement = this._domCache.overviewOverallProfit;
         const overallProfitFmt = Utils.formatLargeNumberWithTooltip(overallProfit);
         overallProfitElement.textContent = overallProfitFmt.display;
-        overallProfitElement.title = overallProfitFmt.converted ? overallProfitFmt.full : '';
         overallProfitElement.className = 'osv2-stat-value ' + (overallProfit >= 0 ? 'profit' : 'loss');
+        if (overallProfitFmt.converted) {
+            overallProfitElement.classList.add('large-number-tooltip');
+            overallProfitElement.setAttribute('data-full-value', overallProfitFmt.full);
+        }
 
         // 计算衍生指标
         const netInvestment = totalInvestment - totalSellAmount;  // 净投入资金
@@ -613,7 +630,10 @@ const Overview = {
         // 更新UI - 净投入资金
         const netInvestmentFmt = Utils.formatLargeNumberWithTooltip(netInvestment);
         this._domCache.overviewNetInvestment.textContent = netInvestmentFmt.display;
-        this._domCache.overviewNetInvestment.title = netInvestmentFmt.converted ? netInvestmentFmt.full : '';
+        if (netInvestmentFmt.converted) {
+            this._domCache.overviewNetInvestment.classList.add('large-number-tooltip');
+            this._domCache.overviewNetInvestment.setAttribute('data-full-value', netInvestmentFmt.full);
+        }
 
         // 更新UI - 整体收益率
         const overallReturnRateElement = this._domCache.overviewOverallReturnRate;
@@ -623,7 +643,10 @@ const Overview = {
         // 更新UI - 总手续费
         const totalFeeFmt = Utils.formatLargeNumberWithTooltip(totalFee);
         this._domCache.overviewTotalFee.textContent = totalFeeFmt.display;
-        this._domCache.overviewTotalFee.title = totalFeeFmt.converted ? totalFeeFmt.full : '';
+        if (totalFeeFmt.converted) {
+            this._domCache.overviewTotalFee.classList.add('large-number-tooltip');
+            this._domCache.overviewTotalFee.setAttribute('data-full-value', totalFeeFmt.full);
+        }
 
         // 更新UI - 资金周转率
         this._domCache.overviewTurnoverRate.textContent = turnoverRate.toFixed(3) + '%';
@@ -1269,8 +1292,8 @@ const Overview = {
         // 持仓列
         const positionItems = [
             { visible: fields.holding?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓股数</span><span class="sc-col-value">${summary.currentHolding}股</span></div>` },
-            { visible: fields.marketValue?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓市值</span><span class="sc-col-value" ${mvFmt && mvFmt.converted ? 'title="' + mvFmt.full + '"' : ''}>${mvDisplay}</span></div>` },
-            { visible: fields.cost?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓成本</span><span class="sc-col-value" ${costFmt.converted ? 'title="' + costFmt.full + '"' : ''}>${costFmt.display}</span></div>` }
+            { visible: fields.marketValue?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓市值</span><span class="sc-col-value ${mvFmt && mvFmt.converted ? 'large-number-tooltip' : ''}" ${mvFmt && mvFmt.converted ? 'data-full-value="' + mvFmt.full + '"' : ''}>${mvDisplay}</span></div>` },
+            { visible: fields.cost?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">持仓成本</span><span class="sc-col-value ${costFmt.converted ? 'large-number-tooltip' : ''}" ${costFmt.converted ? 'data-full-value="' + costFmt.full + '"' : ''}>${costFmt.display}</span></div>` }
         ];
 
         // 价格列
@@ -1285,7 +1308,7 @@ const Overview = {
         const totalProfitDisplay = (totalAllProfit >= 0 ? '+' : '') + totalProfitFmtCol.display;
         const totalReturnRateDisplay = (totalAllReturnRate >= 0 ? '+' : '') + totalAllReturnRate.toFixed(2) + '%';
         const profitItems = [
-            { visible: fields.totalProfit?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">总收益</span><span class="sc-col-value ${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmtCol.converted ? 'title="' + totalProfitFmtCol.full + '"' : ''}>${totalProfitDisplay}</span></div>` },
+            { visible: fields.totalProfit?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">总收益</span><span class="sc-col-value ${totalProfitFmtCol.converted ? 'large-number-tooltip ' : ''}${totalAllProfit >= 0 ? 'profit' : 'loss'}" ${totalProfitFmtCol.converted ? 'data-full-value="' + totalProfitFmtCol.full + '"' : ''}>${totalProfitDisplay}</span></div>` },
             { visible: fields.totalReturnRate?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">总收益率</span><span class="sc-col-value ${totalAllReturnRate >= 0 ? 'profit' : 'loss'}">${totalReturnRateDisplay}</span></div>` }
         ];
 
@@ -1323,7 +1346,7 @@ const Overview = {
                 ${dailyChangeValue !== null ? `<span class="sc-daily-badge ${dailyBadgeClass}">${dailyBadgeText}</span>` : ''}
             </div>
             <div class="sc-main">
-                <div class="sc-profit-value ${isProfit ? 'profit' : 'loss'}" ${cycleProfitFmtMain.converted ? 'title="' + cycleProfitFmtMain.full + '"' : ''}>${profitDisplay}</div>
+                <div class="sc-profit-value ${cycleProfitFmtMain.converted ? 'large-number-tooltip ' : ''}${isProfit ? 'profit' : 'loss'}" ${cycleProfitFmtMain.converted ? 'data-full-value="' + cycleProfitFmtMain.full + '"' : ''}>${profitDisplay}</div>
                 <div class="sc-profit-rate ${isProfit ? 'profit' : 'loss'}">${returnRateDisplay}</div>
             </div>
             <div class="sc-data">
@@ -1529,7 +1552,7 @@ const Overview = {
             fieldItems.push({
                 label: '市值',
                 value: mvFmt ? mvFmt.display : '--',
-                title: mvFmt && mvFmt.converted ? mvFmt.full : '',
+                dataFullValue: mvFmt && mvFmt.converted ? mvFmt.full : '',
                 valueClass: ''
             });
         }
@@ -1540,7 +1563,7 @@ const Overview = {
             fieldItems.push({
                 label: '成本',
                 value: costFmt.display,
-                title: costFmt.converted ? costFmt.full : '',
+                dataFullValue: costFmt.converted ? costFmt.full : '',
                 valueClass: ''
             });
         }
@@ -1628,7 +1651,7 @@ const Overview = {
             fieldItems.push({
                 label: '总收益',
                 value: (totalAllProfit >= 0 ? '+' : '') + totalProfitFmt.display,
-                title: totalProfitFmt.converted ? totalProfitFmt.full : '',
+                dataFullValue: totalProfitFmt.converted ? totalProfitFmt.full : '',
                 valueClass: totalAllProfit >= 0 ? 'profit' : 'loss'
             });
         }
@@ -1656,7 +1679,7 @@ const Overview = {
         let fieldsHtml = fieldItems.map(item => `
             <div class="scl-item">
                 <span class="scl-label">${item.label}</span>
-                <span class="scl-value ${item.valueClass}" ${item.title ? 'title="' + item.title + '"' : ''}>${item.value}</span>
+                <span class="scl-value ${item.valueClass} ${item.dataFullValue ? 'large-number-tooltip' : ''}" ${item.dataFullValue ? 'data-full-value="' + item.dataFullValue + '"' : ''}>${item.value}</span>
             </div>
         `).join('');
 
@@ -1680,7 +1703,7 @@ const Overview = {
             </div>
             
             <div class="scl-profit ${profitValueClass}">
-                <span class="scl-profit-value ${profitValueClass}" ${profitFmt.converted ? 'title="' + profitFmt.full + '"' : ''}>${profitDisplay}</span>
+                <span class="scl-profit-value ${profitFmt.converted ? 'large-number-tooltip ' : ''}${profitValueClass}" ${profitFmt.converted ? 'data-full-value="' + profitFmt.full + '"' : ''}>${profitDisplay}</span>
                 <span class="scl-profit-rate ${profitRateClass}">${rateDisplay}</span>
             </div>
             

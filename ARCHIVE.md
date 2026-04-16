@@ -1,7 +1,7 @@
 # 股票收益计算器 - 功能存档
 
-> 存档日期：2026-04-15
-> 版本：v2.6.8
+> 存档日期：2026-04-16
+> 版本：v2.6.9
 
 ## 一、项目概述
 
@@ -838,6 +838,39 @@ myChart.setOption({
 ```
 
 ## 五、版本历史
+
+### v2.6.9 (2026-04-16)
+- **新功能（1项）**：
+  - **TooltipManager 统一管理器**：
+    - 新增 `js/tooltipManager.js` 模块
+    - 使用 position: fixed 定位，脱离文档流，不受父容器 overflow 限制
+    - 自动检测视口边界，智能切换上下位置
+    - 单例模式，同一时间只显示一个 tooltip
+    - 支持延迟显示/隐藏，防止闪烁
+- **功能改进（2项）**：
+  - **大数字转换 Tooltip 优化**：
+    - 从原生 HTML title 属性改为自定义 TooltipManager 组件
+    - 深色背景 tooltip，圆角，阴影
+    - 只在数值转换时显示下划线和 tooltip
+    - 事件委托实现，性能更优
+  - **标题栏布局优化**：
+    - 从 3 个双行列改为 6 个单列（标签列 + 数值列）
+    - 每股成本/每股摊薄、持仓成本/持仓市值、持有收益/盈亏比率
+    - 弹性布局，自动分配空间
+- **代码重构（1项）**：
+  - **移除各模块独立的 tooltip 绑定逻辑**：
+    - 移除 `detail.js` 的 `bindTooltipAutoFlip()` 方法
+    - 移除 `tradeManager.js` 的 `bindTooltipAutoFlip()` 方法
+    - 统一由 `TooltipManager` 管理
+- **修改文件**：
+  - 新增 `js/tooltipManager.js`：Tooltip 统一管理器
+  - 修改 `js/app.js`：初始化 TooltipManager
+  - 修改 `js/overview.js`：大数字 tooltip 改用 data-full-value
+  - 修改 `js/detail.js`：大数字 tooltip 改用 data-full-value，移除 bindTooltipAutoFlip
+  - 修改 `js/tradeManager.js`：移除 bindTooltipAutoFlip
+  - 修改 `js/tradeRecords.js`：大数字 tooltip 改用 data-full-value
+  - 修改 `js/router.js`：页面切换后重新绑定 tooltip
+  - 修改 `css/style.css`：新增 .large-number-tooltip 和 .tooltip-fixed 样式
 
 ### v2.6.8 (2026-04-15)
 - **功能改进（3项）**：

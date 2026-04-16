@@ -99,6 +99,13 @@ window.App = {
         // 初始化路由（会触发 route:change）
         await Router.init();
 
+        // 初始化 TooltipManager 并绑定现有 tooltip
+        if (window.TooltipManager) {
+            TooltipManager.init();
+            TooltipManager.bindExistingTooltips();
+            TooltipManager.bindLargeNumberTooltips();
+        }
+
         // 显示存储模式提示（首次打开时）
         this._showStorageModeTip();
 
@@ -475,6 +482,10 @@ window.App = {
             if (typeof Overview !== 'undefined') {
                 Overview.init();
             }
+            // 重新绑定 tooltip
+            if (window.TooltipManager) {
+                TooltipManager.rebind();
+            }
             return;
         }
 
@@ -487,6 +498,10 @@ window.App = {
                 console.log('[handleRouteChange] 调用 Detail.loadStock()');
                 await Detail.loadStock(stockCode);  // 再加载股票数据
                 console.log('[handleRouteChange] Detail.loadStock() 完成');
+            }
+            // 重新绑定 tooltip
+            if (window.TooltipManager) {
+                TooltipManager.rebind();
             }
             return;
         }

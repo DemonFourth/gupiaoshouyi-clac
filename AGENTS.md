@@ -4,8 +4,8 @@
 
 这是一个股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，适合个人投资记录和分析使用。
 
-**当前版本**：v2.6.8
-**存档日期**：2026-04-15
+**当前版本**：v2.6.9
+**存档日期**：2026-04-16
 
 **项目类型**：前端 Web 应用（部署在 Cloudflare Pages）
 
@@ -72,6 +72,7 @@ gupiaoshouyi-clac/
 │   ├── utils.js            # 工具函数（ErrorHandler、Validator、Loading）
 │   ├── perf.js             # 性能监控（可选）
 │   ├── stockSnapshot.js    # 股票快照（缓存优化）
+│   ├── tooltipManager.js   # Tooltip统一管理器（v2.6.9新增）
 │   └── moduleRegistry.js   # 模块注册表（v2.2.0新增）
 └── lib/
     └── echarts.min.js      # ECharts 图表库
@@ -525,7 +526,50 @@ _chartTypeConfig: {
 - `_chartDataCache`：缓存计算后的图表数据，避免重复计算
 - 支持图表类型切换时快速重新渲染
 
-### 13. 事件总线 (eventBus.js)
+### 13. Tooltip 统一管理器 (tooltipManager.js) 【v2.6.9新增】
+**职责**：统一管理所有 tooltip 的显示、隐藏和定位。
+
+**核心功能**：
+```javascript
+const TooltipManager = {
+    config: {
+        offset: 10,              // 与触发元素的间距(px)
+        padding: 10,             // 视口边距(px)
+        showDelay: 100,          // 显示延迟(ms)
+        hideDelay: 200,          // 隐藏延迟(ms)
+        maxWidth: 400,           // 最大宽度(px)
+        maxHeight: 300           // 最大高度(px)
+    },
+    
+    // 初始化
+    init(),
+    
+    // 显示/隐藏 tooltip
+    show(triggerEl, content, options),
+    hide(delay),
+    
+    // 绑定现有 tooltip
+    bindExistingTooltips(),
+    rebind(),
+    
+    // 绑定大数字转换 tooltip
+    bindLargeNumberTooltips()
+}
+```
+
+**特性**：
+- **position: fixed 定位**：脱离文档流，不受父容器 overflow 限制
+- **智能定位**：自动检测视口边界，智能切换上下位置
+- **单例模式**：同一时间只显示一个 tooltip
+- **延迟显示/隐藏**：防止闪烁
+- **事件委托**：大数字 tooltip 使用事件委托，性能更优
+
+**使用场景**：
+- 统计信息的 tooltip（.tooltip-container）
+- 交易记录的 tooltip（.trade-amount-state-wrap）
+- 大数字转换的 tooltip（.large-number-tooltip）
+
+### 14. 事件总线 (eventBus.js)
 **职责**：解耦模块间通信
 
 **使用场景**：
@@ -1211,9 +1255,42 @@ console.log(backups);
 
 ## 版本信息
 
-**当前版本**：v2.6.8（2026-04-15）
+**当前版本**：v2.6.9（2026-04-16）
 
-**最新更新**（v2.6.8）：
+**最新更新**（v2.6.9）：
+- **新功能（1项）**：
+  - **TooltipManager 统一管理器**：
+    - 新增 `js/tooltipManager.js` 模块
+    - 使用 position: fixed 定位，脱离文档流，不受父容器 overflow 限制
+    - 自动检测视口边界，智能切换上下位置
+    - 单例模式，同一时间只显示一个 tooltip
+    - 支持延迟显示/隐藏，防止闪烁
+- **功能改进（2项）**：
+  - **大数字转换 Tooltip 优化**：
+    - 从原生 HTML title 属性改为自定义 TooltipManager 组件
+    - 深色背景 tooltip，圆角，阴影
+    - 只在数值转换时显示下划线和 tooltip
+    - 事件委托实现，性能更优
+  - **标题栏布局优化**：
+    - 从 3 个双行列改为 6 个单列（标签列 + 数值列）
+    - 每股成本/每股摊薄、持仓成本/持仓市值、持有收益/盈亏比率
+    - 弹性布局，自动分配空间
+- **代码重构（1项）**：
+  - **移除各模块独立的 tooltip 绑定逻辑**：
+    - 移除 `detail.js` 的 `bindTooltipAutoFlip()` 方法
+    - 移除 `tradeManager.js` 的 `bindTooltipAutoFlip()` 方法
+    - 统一由 `TooltipManager` 管理
+- **修改文件**：
+  - 新增 `js/tooltipManager.js`：Tooltip 统一管理器
+  - 修改 `js/app.js`：初始化 TooltipManager
+  - 修改 `js/overview.js`：大数字 tooltip 改用 data-full-value
+  - 修改 `js/detail.js`：大数字 tooltip 改用 data-full-value，移除 bindTooltipAutoFlip
+  - 修改 `js/tradeManager.js`：移除 bindTooltipAutoFlip
+  - 修改 `js/tradeRecords.js`：大数字 tooltip 改用 data-full-value
+  - 修改 `js/router.js`：页面切换后重新绑定 tooltip
+  - 修改 `css/style.css`：新增 .large-number-tooltip 和 .tooltip-fixed 样式
+
+**历史版本**（v2.6.8）：
 - **功能改进（3项）**：
   - **标题栏自适应布局优化**：
     - #headerLeft 三元素（返回按钮、股票名称、行情数据）同行显示

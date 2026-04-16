@@ -131,61 +131,17 @@ const TradeManager = {
         // 渲染分页控件
         this._renderPaginationControls(paginationState);
 
-        this.bindTooltipAutoFlip();
+        // 重新绑定 tooltip（交易记录表格是动态生成的）
+        if (window.TooltipManager) {
+            TooltipManager.rebind();
+        }
     },
     
     init() {
         // 表单事件由 Detail 模块绑定，这里不再重复绑定
     },
 
-    _autoFlipBound: false,
 
-    /**
-     * 只处理一种特殊情况：tooltip 出现在页面最上方会被裁切时，翻转为向下。
-     * 不修改样式，只通过 data-tooltip-placement="bottom" 触发 CSS 翻转规则。
-     */
-    bindTooltipAutoFlip() {
-        if (this._autoFlipBound) return;
-        if (typeof document === 'undefined' || !document || typeof document.addEventListener !== 'function') return;
-
-        this._autoFlipBound = true;
-
-        const updatePlacement = (wrap) => {
-            // 只处理“表格最上面那一行”：该行向上弹出会被容器顶部裁切
-            const tooltip = wrap.querySelector ? wrap.querySelector('.trade-amount-detail-tooltip') : null;
-            if (!tooltip) return;
-
-            const tr = wrap.closest ? wrap.closest('tr') : null;
-            const tbody = this._domCache.tradeTableBody;
-
-            const isFirstRow = !!(tbody && tr && tbody.firstElementChild === tr);
-            if (isFirstRow) {
-                wrap.setAttribute('data-tooltip-placement', 'bottom');
-            } else {
-                wrap.removeAttribute('data-tooltip-placement');
-            }
-        };
-
-        document.addEventListener('mouseover', (e) => {
-            const target = e && e.target;
-            if (!target || !target.closest) return;
-            const wrap = target.closest('.trade-amount-state-wrap');
-            if (!wrap) return;
-            updatePlacement(wrap);
-        });
-
-        document.addEventListener('mouseout', (e) => {
-            const target = e && e.target;
-            if (!target || !target.closest) return;
-            const wrap = target.closest('.trade-amount-state-wrap');
-            if (!wrap) return;
-
-            const related = e.relatedTarget;
-            if (related && wrap.contains && wrap.contains(related)) return;
-            wrap.removeAttribute('data-tooltip-placement');
-        });
-    },
-    
     /**
      * 编辑交易记录
      * @param {number} tradeId - 交易记录ID
@@ -828,8 +784,7 @@ const TradeManager = {
         // 渲染分页控件
         this._renderPaginationControls(paginationState);
 
-        // Tooltips are handled via CSS hover in this debugging mode.
-        this.bindTooltipAutoFlip();
+        // Tooltip 已由 TooltipManager 统一管理
 
         if (window.Perf) window.Perf.end(perfToken, { rows: paginatedTrades.length });
     }

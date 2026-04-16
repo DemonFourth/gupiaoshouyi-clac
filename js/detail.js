@@ -416,53 +416,9 @@ const Detail = {
         console.log('[loadStock] 绑定表单事件');
         this.bindFormEvents();
 
-        // 绑定 tooltip 自动左右翻转（仅详情页 realtime/summary）
-        this.bindTooltipAutoFlip();
+        // Tooltip 已由 TooltipManager 统一管理，在 app.js 中初始化
 
         if (window.Perf) window.Perf.end(perfToken, { stockCode });
-    },
-
-    bindTooltipAutoFlip() {
-        if (this._tooltipAutoFlipBound) return;
-        if (typeof document === 'undefined' || !document || typeof document.addEventListener !== 'function') return;
-        this._tooltipAutoFlipBound = true;
-
-        const selector = '#detailPage .realtime-info-v2 .tooltip-container, #detailPage .summary-info-v2 .tooltip-container';
-        const margin = 8;
-
-        const update = (container) => {
-            const tooltip = container.querySelector ? container.querySelector('.tooltip-text') : null;
-            if (!tooltip) return;
-
-            // Make it measurable
-            const prevVisibility = tooltip.style.visibility;
-            const prevOpacity = tooltip.style.opacity;
-            const prevDisplay = tooltip.style.display;
-            tooltip.style.visibility = 'hidden';
-            tooltip.style.opacity = '0';
-            tooltip.style.display = 'block';
-
-            // Default is right-aligned in CSS (right:0). Check if it clips left.
-            tooltip.classList.remove('tooltip-align-left');
-            const rectRight = tooltip.getBoundingClientRect();
-            const clipsLeft = rectRight.left < margin;
-            if (clipsLeft) {
-                tooltip.classList.add('tooltip-align-left');
-            }
-
-            // Restore
-            tooltip.style.visibility = prevVisibility;
-            tooltip.style.opacity = prevOpacity;
-            tooltip.style.display = prevDisplay;
-        };
-
-        document.addEventListener('mouseover', (e) => {
-            const target = e && e.target;
-            if (!target || !target.closest) return;
-            const container = target.closest(selector);
-            if (!container) return;
-            update(container);
-        });
     },
 
     /**
@@ -576,32 +532,80 @@ const Detail = {
             monthlyProfit: 0
         };
 
-        // 使用缓存的 DOM 元素
-        this._domCache.totalCost.textContent = '¥' + result.totalBuyCost.toFixed(2);
-        this._domCache.totalSell.textContent = '¥' + result.totalSellAmount.toFixed(2);
-        this._domCache.totalFee.textContent = '¥' + result.totalFee.toFixed(2);
+        // 使用缓存的 DOM 元素 - 应用大数字转换
+        const totalCostFmt = Utils.formatLargeNumberWithTooltip(result.totalBuyCost);
+        this._domCache.totalCost.textContent = totalCostFmt.display;
+        if (totalCostFmt.converted) {
+            this._domCache.totalCost.classList.add('large-number-tooltip');
+            this._domCache.totalCost.setAttribute('data-full-value', totalCostFmt.full);
+        }
+
+        const totalSellFmt = Utils.formatLargeNumberWithTooltip(result.totalSellAmount);
+        this._domCache.totalSell.textContent = totalSellFmt.display;
+        if (totalSellFmt.converted) {
+            this._domCache.totalSell.classList.add('large-number-tooltip');
+            this._domCache.totalSell.setAttribute('data-full-value', totalSellFmt.full);
+        }
+
+        const totalFeeFmt = Utils.formatLargeNumberWithTooltip(result.totalFee);
+        this._domCache.totalFee.textContent = totalFeeFmt.display;
+        if (totalFeeFmt.converted) {
+            this._domCache.totalFee.classList.add('large-number-tooltip');
+            this._domCache.totalFee.setAttribute('data-full-value', totalFeeFmt.full);
+        }
 
         const profitElement = this._domCache.totalProfit;
-        profitElement.textContent = '¥' + result.totalProfit.toFixed(2);
+        const totalProfitFmt = Utils.formatLargeNumberWithTooltip(result.totalProfit);
+        profitElement.textContent = totalProfitFmt.display;
         profitElement.className = 'detail-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
+        if (totalProfitFmt.converted) {
+            profitElement.classList.add('large-number-tooltip');
+            profitElement.setAttribute('data-full-value', totalProfitFmt.full);
+        }
 
         const weeklyProfitElement = this._domCache.weeklyProfit;
-        weeklyProfitElement.textContent = '¥' + periodProfit.weeklyProfit.toFixed(2);
+        const weeklyProfitFmt = Utils.formatLargeNumberWithTooltip(periodProfit.weeklyProfit);
+        weeklyProfitElement.textContent = weeklyProfitFmt.display;
         weeklyProfitElement.className = 'detail-value ' + (periodProfit.weeklyProfit >= 0 ? 'profit' : 'loss');
+        if (weeklyProfitFmt.converted) {
+            weeklyProfitElement.classList.add('large-number-tooltip');
+            weeklyProfitElement.setAttribute('data-full-value', weeklyProfitFmt.full);
+        }
 
         const monthlyProfitElement = this._domCache.monthlyProfit;
-        monthlyProfitElement.textContent = '¥' + periodProfit.monthlyProfit.toFixed(2);
+        const monthlyProfitFmt = Utils.formatLargeNumberWithTooltip(periodProfit.monthlyProfit);
+        monthlyProfitElement.textContent = monthlyProfitFmt.display;
         monthlyProfitElement.className = 'detail-value ' + (periodProfit.monthlyProfit >= 0 ? 'profit' : 'loss');
+        if (monthlyProfitFmt.converted) {
+            monthlyProfitElement.classList.add('large-number-tooltip');
+            monthlyProfitElement.setAttribute('data-full-value', monthlyProfitFmt.full);
+        }
 
         this._domCache.totalReturnRate.textContent = result.totalReturnRate.toFixed(3) + '%';
 
-        // 更新实时持仓区域
-        this._domCache.realtimeCost.textContent = '¥' + result.currentCost.toFixed(2);
+        // 更新实时持仓区域 - 应用大数字转换
+        const realtimeCostFmt = Utils.formatLargeNumberWithTooltip(result.currentCost);
+        this._domCache.realtimeCost.textContent = realtimeCostFmt.display;
+        if (realtimeCostFmt.converted) {
+            this._domCache.realtimeCost.classList.add('large-number-tooltip');
+            this._domCache.realtimeCost.setAttribute('data-full-value', realtimeCostFmt.full);
+        }
         this._domCache.realtimeHolding.textContent = result.currentHolding + '股';
 
-        // 更新当前持仓周期投入成本和卖出金额
-        this._domCache.currentCycleBuyCost.textContent = '¥' + result.currentCycleBuyCost.toFixed(2);
-        this._domCache.currentCycleSellAmount.textContent = '¥' + result.currentCycleSellAmount.toFixed(2);
+        // 更新当前持仓周期投入成本和卖出金额 - 应用大数字转换
+        const buyCostFmt = Utils.formatLargeNumberWithTooltip(result.currentCycleBuyCost);
+        this._domCache.currentCycleBuyCost.textContent = buyCostFmt.display;
+        if (buyCostFmt.converted) {
+            this._domCache.currentCycleBuyCost.classList.add('large-number-tooltip');
+            this._domCache.currentCycleBuyCost.setAttribute('data-full-value', buyCostFmt.full);
+        }
+
+        const sellAmountFmt = Utils.formatLargeNumberWithTooltip(result.currentCycleSellAmount);
+        this._domCache.currentCycleSellAmount.textContent = sellAmountFmt.display;
+        if (sellAmountFmt.converted) {
+            this._domCache.currentCycleSellAmount.classList.add('large-number-tooltip');
+            this._domCache.currentCycleSellAmount.setAttribute('data-full-value', sellAmountFmt.full);
+        }
 
         // 计算并更新净投入（投入成本 - 卖出金额）
         const netInvest = result.currentCycleBuyCost - result.currentCycleSellAmount;
@@ -621,25 +625,41 @@ const Detail = {
             const cycleProfit = snapshot.cycleProfit;
             const cycleReturnRate = snapshot.cycleReturnRate;
 
-            this._domCache.marketValue.textContent = '¥' + marketValue.toFixed(2);
-            this._domCache.latestProfit.textContent = '¥' + currentHoldingProfit.toFixed(2);
+            // 持仓市值 - 应用大数字转换
+            const marketValueFmt = Utils.formatLargeNumberWithTooltip(marketValue);
+            this._domCache.marketValue.textContent = marketValueFmt.display;
+            if (marketValueFmt.converted) {
+                this._domCache.marketValue.classList.add('large-number-tooltip');
+                this._domCache.marketValue.setAttribute('data-full-value', marketValueFmt.full);
+            }
 
             const latestReturnRateElement = this._domCache.latestReturnRate;
             latestReturnRateElement.textContent = currentHoldingReturnRate.toFixed(3) + '%';
             latestReturnRateElement.classList.remove('profit', 'loss');
             latestReturnRateElement.classList.add(currentHoldingReturnRate >= 0 ? 'profit' : 'loss');
 
+            // 持有股收益 - 应用大数字转换
             const latestProfitElement = this._domCache.latestProfit;
-            latestProfitElement.textContent = '¥' + currentHoldingProfit.toFixed(2);
+            const latestProfitFmt = Utils.formatLargeNumberWithTooltip(currentHoldingProfit);
+            latestProfitElement.textContent = latestProfitFmt.display;
             latestProfitElement.classList.remove('profit', 'loss');
             latestProfitElement.classList.add(currentHoldingProfit >= 0 ? 'profit' : 'loss');
+            if (latestProfitFmt.converted) {
+                latestProfitElement.classList.add('large-number-tooltip');
+                latestProfitElement.setAttribute('data-full-value', latestProfitFmt.full);
+            }
 
-            // 更新当前持仓周期收益
+            // 更新当前持仓周期收益 - 应用大数字转换
             const cycleProfitElement = this._domCache.cycleProfit;
             if (cycleProfit !== null) {
-                cycleProfitElement.textContent = '¥' + cycleProfit.toFixed(2);
+                const cycleProfitFmt = Utils.formatLargeNumberWithTooltip(cycleProfit);
+                cycleProfitElement.textContent = cycleProfitFmt.display;
                 cycleProfitElement.classList.remove('profit', 'loss');
                 cycleProfitElement.classList.add(cycleProfit >= 0 ? 'profit' : 'loss');
+                if (cycleProfitFmt.converted) {
+                    cycleProfitElement.classList.add('large-number-tooltip');
+                    cycleProfitElement.setAttribute('data-full-value', cycleProfitFmt.full);
+                }
             } else {
                 cycleProfitElement.textContent = '--';
                 cycleProfitElement.classList.remove('profit', 'loss');
@@ -770,40 +790,52 @@ const Detail = {
             }
         }
 
-        // 持仓成本
+        // 持仓成本 - 应用大数字转换
         const holdingCostHeader = document.getElementById('holdingCostHeader');
         if (holdingCostHeader) {
             if (result.currentHolding > 0) {
-                holdingCostHeader.textContent = '¥' + result.currentCost.toFixed(0);
-                // 持仓成本固定显示黑色（中性）
+                const holdingCostFmt = Utils.formatLargeNumberWithTooltip(result.currentCost);
+                holdingCostHeader.textContent = holdingCostFmt.display;
                 holdingCostHeader.className = 'header-quote-value';
+                if (holdingCostFmt.converted) {
+                    holdingCostHeader.classList.add('large-number-tooltip');
+                    holdingCostHeader.setAttribute('data-full-value', holdingCostFmt.full);
+                }
             } else {
                 holdingCostHeader.textContent = '--';
                 holdingCostHeader.className = 'header-quote-value';
             }
         }
 
-        // 持仓市值
+        // 持仓市值 - 应用大数字转换
         const marketValueHeader = document.getElementById('marketValueHeader');
         if (marketValueHeader) {
             if (marketValue > 0) {
-                marketValueHeader.textContent = '¥' + marketValue.toFixed(0);
-                // 市值 > 成本 = 盈利（红色），市值 < 成本 = 亏损（绿色）
+                const marketValueFmt = Utils.formatLargeNumberWithTooltip(marketValue);
+                marketValueHeader.textContent = marketValueFmt.display;
                 marketValueHeader.className = 'header-quote-value ' + (marketValue > result.currentCost ? 'profit' : (marketValue < result.currentCost ? 'loss' : ''));
+                if (marketValueFmt.converted) {
+                    marketValueHeader.classList.add('large-number-tooltip');
+                    marketValueHeader.setAttribute('data-full-value', marketValueFmt.full);
+                }
             } else {
                 marketValueHeader.textContent = '--';
                 marketValueHeader.className = 'header-quote-value';
             }
         }
 
-        // 持有收益
+        // 持有收益 - 应用大数字转换
         const holdingProfitHeader = document.getElementById('holdingProfitHeader');
         if (holdingProfitHeader) {
             if (holdingProfit != null && result.currentHolding > 0) {
-                // 格式：+¥4,448 或 -¥4,448，与收益率格式一致（符号在前）
+                const holdingProfitFmt = Utils.formatLargeNumberWithTooltip(Math.abs(holdingProfit));
                 const sign = holdingProfit >= 0 ? '+' : '-';
-                holdingProfitHeader.textContent = sign + '¥' + Math.abs(holdingProfit).toFixed(0);
+                holdingProfitHeader.textContent = sign + holdingProfitFmt.display;
                 holdingProfitHeader.className = 'header-quote-value ' + (holdingProfit >= 0 ? 'profit' : 'loss');
+                if (holdingProfitFmt.converted) {
+                    holdingProfitHeader.classList.add('large-number-tooltip');
+                    holdingProfitHeader.setAttribute('data-full-value', sign + holdingProfitFmt.full);
+                }
             } else {
                 holdingProfitHeader.textContent = '--';
                 holdingProfitHeader.className = 'header-quote-value';

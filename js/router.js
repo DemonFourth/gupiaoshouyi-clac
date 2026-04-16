@@ -45,6 +45,13 @@ const Router = {
             if (typeof Detail !== 'undefined') {
                 this.showDetail(this.state.currentStockCode, false);  // 切换页面显示
                 Detail.loadStock(this.state.currentStockCode);  // 加载股票数据和显示返回按钮
+                
+                // 延迟重新绑定 tooltip，确保 DOM 完全稳定
+                setTimeout(() => {
+                    if (window.TooltipManager) {
+                        TooltipManager.rebind();
+                    }
+                }, 100);
             }
         } else {
             // 默认显示汇总页面（包括交易记录页面刷新时）

@@ -604,8 +604,11 @@ const TradeRecords = {
         // 总收益
         const totalProfitFmt = Utils.formatLargeNumberWithTooltip(result.totalProfit);
         totalProfitElement.textContent = totalProfitFmt.display;
-        totalProfitElement.title = totalProfitFmt.converted ? totalProfitFmt.full : '';
         totalProfitElement.className = 'tr-stat-value ' + (result.totalProfit >= 0 ? 'profit' : 'loss');
+        if (totalProfitFmt.converted) {
+            totalProfitElement.classList.add('large-number-tooltip');
+            totalProfitElement.setAttribute('data-full-value', totalProfitFmt.full);
+        }
 
         // 交易次数
         countElement.textContent = result.tradeCount;
@@ -613,7 +616,10 @@ const TradeRecords = {
         // 总手续费
         const totalFeeFmt = Utils.formatLargeNumberWithTooltip(result.totalFee);
         totalFeeElement.textContent = totalFeeFmt.display;
-        totalFeeElement.title = totalFeeFmt.converted ? totalFeeFmt.full : '';
+        if (totalFeeFmt.converted) {
+            totalFeeElement.classList.add('large-number-tooltip');
+            totalFeeElement.setAttribute('data-full-value', totalFeeFmt.full);
+        }
     },
 
     /**
