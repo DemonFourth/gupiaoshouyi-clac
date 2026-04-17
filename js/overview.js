@@ -2772,13 +2772,16 @@ const Overview = {
         this.renderStockLists();
         this.renderCharts();
         
-        // 使用多次requestAnimationFrame确保DOM完全渲染
-        requestAnimationFrame(() => {
+        // 只有当滚动位置大于0时才恢复（避免覆盖Router的滚动位置恢复）
+        if (scrollTop > 0) {
+            // 使用多次requestAnimationFrame确保DOM完全渲染
             requestAnimationFrame(() => {
-                // 强制设置滚动位置（不使用smooth，避免动画）
-                window.scrollTo(0, scrollTop);
+                requestAnimationFrame(() => {
+                    // 强制设置滚动位置（不使用smooth，避免动画）
+                    window.scrollTo(0, scrollTop);
+                });
             });
-        });
+        }
     }
 };
 
