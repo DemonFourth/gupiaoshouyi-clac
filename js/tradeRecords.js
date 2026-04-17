@@ -631,7 +631,7 @@ const TradeRecords = {
         const tableBody = this._domCache.tradeRecordsTableBody;
 
         if (!trades || trades.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="9" class="trade-records-empty">暂无交易记录</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" class="trade-records-empty">暂无交易记录</td></tr>';
             return;
         }
 
@@ -639,6 +639,7 @@ const TradeRecords = {
         const fragment = document.createDocumentFragment();
 
         trades.forEach(trade => {
+            // 主行
             const row = document.createElement('tr');
 
             // 交易类型映射
@@ -669,13 +670,60 @@ const TradeRecords = {
                 <td>¥${trade.totalAmount.toFixed(2)}</td>
                 <td>¥${trade.fee.toFixed(2)}</td>
                 <td>${profitHtml}</td>
+                <td>
+                    <button class="btn btn-sm btn-edit-trade-record" data-stock-code="${trade.stockCode}" data-trade-id="${trade.id}" title="编辑">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </button>
+                </td>
             `;
 
             fragment.appendChild(row);
+
+            // 备注行（如果有备注）
+            if (trade.note) {
+                const noteRow = document.createElement('tr');
+                noteRow.className = 'trade-records-note-row';
+                noteRow.innerHTML = `
+                    <td colspan="10">
+                        <div class="trade-records-note-quote">
+                            <span class="quote-icon">💬</span>
+                            <span class="quote-text">${trade.note}</span>
+                        </div>
+                    </td>
+                `;
+                fragment.appendChild(noteRow);
+            }
         });
 
         tableBody.innerHTML = '';
         tableBody.appendChild(fragment);
+
+        // 绑定编辑按钮事件
+        this._bindEditButtons();
+    },
+
+    /**
+     * 绑定编辑按钮事件
+     */
+    _bindEditButtons() {
+        const editButtons = document.querySelectorAll('.btn-edit-trade-record');
+        editButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const stockCode = e.currentTarget.getAttribute('data-stock-code');
+                const tradeId = parseInt(e.currentTarget.getAttribute('data-trade-id'));
+                
+                // 调用TradeManager的编辑方法，并设置当前股票代码
+                if (StockProfitCalculator.TradeManager) {
+                    // 先设置当前股票代码
+                    StockProfitCalculator.TradeManager.setCurrentStock(stockCode);
+                    // 再打开编辑弹窗
+                    StockProfitCalculator.TradeManager.editTrade(tradeId, stockCode);
+                }
+            });
+        });
     },
 
     /**
@@ -900,6 +948,25 @@ const TradeRecords = {
         if (Router) {
             Router.showTradeRecords(this._currentYear, null, startDate, endDate);
         }
+    },
+
+    /**
+     * 刷新交易记录页面（保持当前筛选条件和滚动位置）
+     */
+    async refresh() {
+        // 保存当前滚动位置（使用window.scrollY）
+        const scrollTop = window.scrollY || window.pageYOffset || 0;
+        
+        // 执行筛选刷新
+        this._handleFilterChange();
+        
+        // 使用多次requestAnimationFrame确保DOM完全渲染
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // 强制设置滚动位置（不使用smooth，避免动画）
+                window.scrollTo(0, scrollTop);
+            });
+        });
     },
 
     /**

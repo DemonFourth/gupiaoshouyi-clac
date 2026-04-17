@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>股票收益计算器</title>
-    <link rel="stylesheet" href="css/style.css?v=20260331-sticky4">
+    <link rel="stylesheet" href="css/style.css?v=20260417-skeleton">
 </head>
 <body>
     <!-- 错误提示容器 -->
@@ -98,6 +98,24 @@
             </div>
 
             <div class="header-right-actions">
+                <!-- 主题切换按钮 -->
+                <button type="button" id="themeToggleBtn" class="theme-toggle-btn" title="切换主题">
+                    <svg class="theme-icon-dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon-light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+
                 <!-- 搜索框 -->
                 <div class="search-container">
                     <input type="text" id="stockSearchInput" class="search-input" placeholder="搜索股票代码/名称">
@@ -884,10 +902,14 @@
                                 <input type="text" id="tradeAmountDisplay" placeholder="自动计算" style="background: #f5f5f5;" tabindex="6">
                             </div>
                             <div class="form-group">
+                                <label>备注（可选）</label>
+                                <input type="text" id="tradeNote" placeholder="如：定投买入、短线操作等" maxlength="100" tabindex="7">
+                            </div>
+                            <div class="form-group">
                                 <label>&nbsp;</label>
                                 <div class="form-btn-group">
-                                    <button type="submit" class="btn btn-primary" tabindex="7">确认添加</button>
-                    <button type="button" class="btn" id="cancelAddTradeBtn" tabindex="8">取消</button>
+                                    <button type="submit" class="btn btn-primary" tabindex="8">确认添加</button>
+                    <button type="button" class="btn" id="cancelAddTradeBtn" tabindex="9">取消</button>
                                 </div>
                             </div>
                         </div>
@@ -1149,11 +1171,12 @@
                         <th>金额</th>
                         <th>手续费</th>
                         <th>盈亏</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody id="tradeRecordsTableBody">
                     <tr>
-                        <td colspan="9" class="trade-records-empty">暂无交易记录</td>
+                        <td colspan="10" class="trade-records-empty">暂无交易记录</td>
                     </tr>
                 </tbody>
             </table>
@@ -1471,50 +1494,72 @@
         </div>
     </div>
 
-    <!-- 编辑交易记录弹窗 -->
+    <!-- 添加/编辑交易记录弹窗（共用） -->
     <div id="editModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content trade-modal-content">
             <div class="modal-header">
-                <h2>编辑交易记录</h2>
+                <h2 id="tradeModalTitle">编辑交易记录</h2>
+                <button type="button" class="modal-close-btn" id="closeEditTradeModalBtn" title="关闭">&times;</button>
             </div>
             <input type="hidden" id="editTradeId">
+            <input type="hidden" id="editTradeStockCode">
+            
+            <!-- 股票信息显示 -->
+            <div class="trade-stock-info" id="editTradeStockInfo" style="display: none;">
+                <div class="stock-info-item">
+                    <span class="stock-info-label">股票代码：</span>
+                    <span class="stock-info-value" id="editTradeStockCodeDisplay">--</span>
+                </div>
+                <div class="stock-info-item">
+                    <span class="stock-info-label">股票名称：</span>
+                    <span class="stock-info-value" id="editTradeStockNameDisplay">--</span>
+                </div>
+            </div>
+            
             <div class="form-row">
                 <div class="form-group">
-                    <label>交易日期</label>
+                    <label>📅 交易日期</label>
                     <input type="date" id="editTradeDate" tabindex="1">
                 </div>
                 <div class="form-group">
-                    <label>操作类型</label>
-                                                    <select id="editTradeType" onchange="TradeManager.onEditTypeChange()" tabindex="2">
-                                                        <option value="buy">买入</option>
-                                                        <option value="sell">卖出</option>
-                                                        <option value="dividend">分红</option>
-                                                        <option value="tax">红利税</option>
-                                                    </select>                </div>
+                    <label>📊 操作类型</label>
+                    <select id="editTradeType" onchange="TradeManager.onEditTypeChange()" tabindex="2">
+                        <option value="buy">📈 买入</option>
+                        <option value="sell">📉 卖出</option>
+                        <option value="dividend">💰 分红</option>
+                        <option value="tax">💸 红利税</option>
+                    </select>
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>价格(元)</label>
+                    <label>💵 价格(元)</label>
                     <input type="number" id="editTradePrice" step="0.001" oninput="TradeManager.updateEditAmount()" tabindex="3">
                 </div>
                 <div class="form-group">
-                    <label>数量(股)</label>
-                    <input type="number" id="editTradeAmount" oninput="TradeManager.updateEditAmount()" tabindex="4">
+                    <label>📦 数量(股)</label>
+                    <input type="number" id="editTradeAmount" step="100" min="100" oninput="TradeManager.updateEditAmount()" tabindex="4">
                 </div>
                 <div class="form-group">
-                    <label>手续费(元)</label>
+                    <label>🏷️ 手续费(元)</label>
                     <input type="number" id="editTradeFee" step="0.01" tabindex="5">
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>金额(元)</label>
+                <div class="form-group" style="flex: 1;">
+                    <label>💰 金额(元)</label>
                     <input type="text" id="editTradeAmountDisplay" readonly style="background: #f5f5f5;" tabindex="6">
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>📝 备注（可选）</label>
+                    <textarea id="editTradeNote" maxlength="200" rows="3" placeholder="如：定投买入、短线操作、分红到账等" tabindex="7" style="resize: vertical; min-height: 60px;"></textarea>
+                </div>
+            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="updateTradeBtn" tabindex="7">保存</button>
-                <button type="button" class="btn" id="closeEditTradeModalBtn" tabindex="8">取消</button>
+                <button type="button" class="btn btn-primary" id="updateTradeBtn" tabindex="8">保存</button>
+                <button type="button" class="btn" id="cancelEditTradeBtn" tabindex="9">取消</button>
             </div>
         </div>
     </div>
@@ -1619,6 +1664,7 @@
     <script src="js/formHelper.js?v=20260314" defer></script>
     <script src="js/dataManager.js?v=20260318" defer></script>
     <script src="js/dataService.js?v=20260317b" defer></script>
+    <script src="js/skeleton.js?v=20260417" defer></script>
     <script src="js/fileStorage.js?v=20260314" defer></script>
     <script src="js/calculator.js?v=20260314" defer></script>
     <script src="js/stockSnapshot.js?v=20260317" defer></script>

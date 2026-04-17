@@ -35,6 +35,39 @@ window.App = {
     },
 
     /**
+     * 初始化主题
+     */
+    initTheme() {
+        // 从localStorage读取保存的主题，默认为深色
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        this.applyTheme(savedTheme);
+        console.log(`[App] 主题初始化: ${savedTheme}`);
+    },
+
+    /**
+     * 切换主题
+     */
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.applyTheme(newTheme);
+    },
+
+    /**
+     * 应用主题
+     * @param {string} theme - 'dark' 或 'light'
+     */
+    applyTheme(theme) {
+        // 设置data-theme属性
+        document.documentElement.setAttribute('data-theme', theme);
+
+        // 保存到localStorage
+        localStorage.setItem('theme', theme);
+
+        console.log(`[App] 主题已切换为: ${theme}`);
+    },
+
+    /**
      * 添加点击外部关闭弹窗功能
      */
     setupModalClickOutside() {
@@ -66,6 +99,9 @@ window.App = {
 
         // 加载配置（必须在其他初始化之前）
         Config.load();
+
+        // 初始化主题
+        this.initTheme();
 
         // 初始化文件存储
         FileStorage.init();
@@ -246,6 +282,12 @@ window.App = {
             cancelAddStockBtn.onclick = () => StockManager.closeAddStockModal();
         }
 
+        // 主题切换按钮
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        if (themeToggleBtn) {
+            themeToggleBtn.onclick = () => this.toggleTheme();
+        }
+
         const updateTradeBtn = document.getElementById('updateTradeBtn');
         if (updateTradeBtn) {
             updateTradeBtn.onclick = () => TradeManager.updateTrade();
@@ -254,6 +296,11 @@ window.App = {
         const closeEditTradeModalBtn = document.getElementById('closeEditTradeModalBtn');
         if (closeEditTradeModalBtn) {
             closeEditTradeModalBtn.onclick = () => TradeManager.closeEditModal();
+        }
+
+        const cancelEditTradeBtn = document.getElementById('cancelEditTradeBtn');
+        if (cancelEditTradeBtn) {
+            cancelEditTradeBtn.onclick = () => TradeManager.closeEditModal();
         }
 
         // 悬浮刷新股价按钮事件绑定
@@ -480,7 +527,14 @@ window.App = {
         if (page === 'overview') {
             console.log('[handleRouteChange] 切换到汇总页');
             if (typeof Overview !== 'undefined') {
-                Overview.init();
+                // 判断是否首次加载
+                if (Overview.stocks && Overview.stocks.length > 0) {
+                    // 已有数据，使用平滑刷新
+                    await Overview.refresh();
+                } else {
+                    // 首次加载，使用完整初始化
+                    await Overview.init();
+                }
             }
             // 重新绑定 tooltip
             if (window.TooltipManager) {
@@ -492,12 +546,20 @@ window.App = {
         if (page === 'detail' && stockCode) {
             console.log('[handleRouteChange] 切换到详情页, stockCode:', stockCode);
             if (typeof Detail !== 'undefined') {
-                console.log('[handleRouteChange] 调用 Router.showDetail()');
-                await Router.showDetail(stockCode);  // 先切换页面
-                console.log('[handleRouteChange] Router.showDetail() 完成');
-                console.log('[handleRouteChange] 调用 Detail.loadStock()');
-                await Detail.loadStock(stockCode);  // 再加载股票数据
-                console.log('[handleRouteChange] Detail.loadStock() 完成');
+                // 判断是否首次加载或切换股票
+                if (Detail.currentStockCode === stockCode) {
+                    // 同一只股票，使用平滑刷新（不调用Router.showDetail避免滚动到顶部）
+                    console.log('[handleRouteChange] 同一只股票，使用平滑刷新');
+                    await Detail.refresh();
+                } else {
+                    // 首次加载或切换股票，使用完整加载
+                    console.log('[handleRouteChange] 调用 Router.showDetail()');
+                    await Router.showDetail(stockCode);  // 先切换页面
+                    console.log('[handleRouteChange] Router.showDetail() 完成');
+                    console.log('[handleRouteChange] 调用 Detail.loadStock()');
+                    await Detail.loadStock(stockCode);  // 再加载股票数据
+                    console.log('[handleRouteChange] Detail.loadStock() 完成');
+                }
             }
             // 重新绑定 tooltip
             if (window.TooltipManager) {

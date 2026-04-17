@@ -98,6 +98,45 @@ const DataManager = {
      * 归一化所有股票分组，避免数据状态漂移
      * @param {Object} data
      */
+    normalizeStockGroups(data) {
+        if (!data || !data.stocks) return;
+
+        data.stocks.forEach(stock => {
+            this.normalizeStockGroup(stock);
+        });
+    },
+
+    /**
+     * 归一化交易记录数据
+     * 确保所有交易记录都有note字段（向后兼容）
+     * @param {Object} trade - 交易记录
+     */
+    normalizeTrade(trade) {
+        if (!trade) return trade;
+
+        // 确保note字段存在，默认为空字符串
+        if (trade.note === undefined || trade.note === null) {
+            trade.note = '';
+        }
+
+        return trade;
+    },
+
+    /**
+     * 归一化所有交易记录
+     * @param {Object} data - 完整数据
+     */
+    normalizeAllTrades(data) {
+        if (!data || !data.stocks) return;
+
+        data.stocks.forEach(stock => {
+            if (stock.trades && Array.isArray(stock.trades)) {
+                stock.trades.forEach(trade => {
+                    this.normalizeTrade(trade);
+                });
+            }
+        });
+    },
     normalizeAllGroups(data) {
         if (!data || !Array.isArray(data.stocks)) return;
         data.stocks.forEach(stock => {
@@ -403,6 +442,7 @@ const DataManager = {
             // 数据迁移和验证
             this.migrateData(localData);
             this.normalizeAllGroups(localData);
+            this.normalizeAllTrades(localData); // 归一化交易记录备注字段
             
             // 更新缓存
             this._cache = localData;
@@ -549,6 +589,8 @@ const DataManager = {
         try {
             // 保存边界：确保分组与持仓一致
             this.normalizeAllGroups(data);
+            // 归一化交易记录备注字段
+            this.normalizeAllTrades(data);
 
             // 1. 先保存到 localStorage（立即生效，零延迟）
             this.saveToLocalStorage(data);

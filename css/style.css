@@ -72,10 +72,68 @@
   --card-text-muted: #9397ad;
 }
 
+/* ==================== 浅色主题 ==================== */
+[data-theme="light"] {
+  /* 主色调 - 清新明亮的金融主题 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-hover: rgba(255, 255, 255, 1);
+
+  /* 文字颜色 */
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+
+  /* 盈亏颜色（更鲜艳） */
+  --color-profit: #e53e3e;
+  --color-profit-bg: rgba(229, 62, 62, 0.1);
+  --color-profit-border: rgba(229, 62, 62, 0.3);
+  --color-loss: #38a169;
+  --color-loss-bg: rgba(56, 161, 105, 0.1);
+  --color-loss-border: rgba(56, 161, 105, 0.3);
+
+  /* 边框 */
+  --border-color: rgba(0, 0, 0, 0.12);
+  --border-color-hover: rgba(0, 0, 0, 0.24);
+
+  /* 阴影（更明显的阴影） */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  /* 卡片颜色 - 盈利 */
+  --card-profit-color: #e53e3e;
+  --card-profit-bg: rgba(229, 62, 62, 0.08);
+  --card-profit-border: rgba(229, 62, 62, 0.25);
+  --card-profit-glow: rgba(229, 62, 62, 0.15);
+
+  /* 卡片颜色 - 亏损 */
+  --card-loss-color: #38a169;
+  --card-loss-bg: rgba(56, 161, 105, 0.08);
+  --card-loss-border: rgba(56, 161, 105, 0.25);
+  --card-loss-glow: rgba(56, 161, 105, 0.15);
+
+  /* 卡片边框和分隔 */
+  --card-border: #e2e8f0;
+  --card-divider: #edf2f7;
+
+  /* 卡片文字 */
+  --card-text-title: #1a202c;
+  --card-text-value: #2d3748;
+  --card-text-muted: #a0aec0;
+}
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* 主题切换过渡动画 */
+            transition: background-color 0.3s ease,
+                        color 0.3s ease,
+                        border-color 0.3s ease,
+                        box-shadow 0.3s ease;
         }
 
         /* 确保 html 和 body 的滚动上下文正确，使 sticky 定位生效 */
@@ -88,6 +146,17 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100%;
             padding: 10px 12px;
+        }
+
+        /* 浅色主题的body背景 */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #e0e5ec 0%, #f5f7fa 50%, #c3cfe2 100%);
+        }
+
+        /* 浅色主题下的容器样式增强 */
+        [data-theme="light"] .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
         }
 
         /* 错误提示容器 */
@@ -493,6 +562,71 @@
             color: white;
             transform: rotate(30deg);
         }
+
+        /* 主题切换按钮 */
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: 2px solid rgba(102, 126, 234, 0.5);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-right: 12px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .theme-toggle-btn:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .theme-toggle-btn:active {
+            transform: rotate(180deg) scale(0.95);
+        }
+
+        /* 浅色主题下的按钮样式 */
+        [data-theme="light"] .theme-toggle-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-color: rgba(245, 87, 108, 0.5);
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+        }
+
+        [data-theme="light"] .theme-toggle-btn:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.5);
+        }
+
+        /* 深色主题显示太阳图标，浅色主题显示月亮图标 */
+        [data-theme="dark"] .theme-icon-dark,
+        :not([data-theme]) .theme-icon-dark { display: block; }
+        [data-theme="dark"] .theme-icon-light,
+        :not([data-theme]) .theme-icon-light { display: none; }
+        [data-theme="light"] .theme-icon-dark { display: none; }
+        [data-theme="light"] .theme-icon-light { display: block; }
 
         /* 悬浮添加股票按钮 */
         .add-stock-float {
@@ -8727,5 +8861,789 @@
         justify-content: flex-start;
         flex-wrap: wrap;
     }
+}
+
+/* ==================== 备注功能样式 ==================== */
+
+/* 备注输入框样式 - 与其他输入框保持一致 */
+#tradeNote,
+#editTradeNote {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    background: #fff;
+    color: #333;
+}
+
+#tradeNote:focus,
+#editTradeNote:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#tradeNote::placeholder,
+#editTradeNote::placeholder {
+    color: #999;
+}
+
+/* 浅色主题下的备注输入框 */
+[data-theme="light"] #tradeNote,
+[data-theme="light"] #editTradeNote {
+    background: #fff;
+    color: #2d3748;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] #tradeNote:focus,
+[data-theme="light"] #editTradeNote:focus {
+    border-color: #667eea;
+}
+
+/* 交易记录弹窗样式 */
+.trade-modal-content {
+    max-width: 640px;
+    width: 90%;
+    max-height: 90vh;
+    padding: 0;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.trade-modal-content .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 28px;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.trade-modal-content .modal-header h2 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.trade-modal-content .modal-close-btn {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 28px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.trade-modal-content .modal-close-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.trade-modal-content .form-row {
+    padding: 0 28px;
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+}
+
+.trade-modal-content .form-row:first-of-type {
+    margin-top: 24px;
+}
+
+.trade-modal-content .form-group {
+    flex: 1;
+}
+
+.trade-modal-content .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.trade-modal-content .form-group input,
+.trade-modal-content .form-group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fafafa;
+    color: #333;
+}
+
+.trade-modal-content .form-group input:hover,
+.trade-modal-content .form-group select:hover {
+    border-color: #d0d0d0;
+    background: #fff;
+}
+
+.trade-modal-content .form-group input:focus,
+.trade-modal-content .form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.trade-modal-content .modal-footer {
+    padding: 20px 28px;
+    margin-top: 24px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    background: #fafafa;
+    border-radius: 0 0 16px 16px;
+    position: sticky;
+    bottom: 0;
+}
+
+.trade-modal-content .modal-footer .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.trade-modal-content .modal-footer .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.trade-modal-content .modal-footer .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.trade-modal-content .modal-footer .btn-primary:active {
+    transform: translateY(0);
+}
+
+.trade-modal-content .modal-footer .btn:not(.btn-primary) {
+    background: #fff;
+    color: #666;
+    border: 2px solid #e8e8e8;
+}
+
+.trade-modal-content .modal-footer .btn:not(.btn-primary):hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+/* 股票信息显示样式 */
+.trade-stock-info {
+    display: flex;
+    gap: 24px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    margin-top: 0;
+}
+
+.trade-stock-info .stock-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trade-stock-info .stock-info-label {
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.trade-stock-info .stock-info-value {
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 浅色主题下的股票信息 */
+[data-theme="light"] .trade-stock-info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+[data-theme="light"] .trade-stock-info .stock-info-label {
+    color: #718096;
+}
+
+[data-theme="light"] .trade-stock-info .stock-info-value {
+    color: #2d3748;
+}
+
+/* 交易记录弹窗标签图标样式 */
+.trade-modal-content label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.trade-modal-content select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+[data-theme="light"] .trade-modal-content select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* 数量输入框提示 */
+.trade-modal-content input[type="number"][min="100"] {
+    position: relative;
+}
+
+.trade-modal-content input[type="number"][min="100"]::after {
+    content: "最小100股，每次递增100股";
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    font-size: 11px;
+    color: #999;
+}
+
+/* ==================== 骨架屏样式 ==================== */
+
+/* 骨架屏基础样式 */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 深色主题骨架屏 */
+.skeleton-dark {
+    background: linear-gradient(90deg, #2d3748 25%, #3d4a5c 50%, #2d3748 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* 汇总页骨架屏 */
+.skeleton-overview {
+    padding: 20px;
+}
+
+.skeleton-overview-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.skeleton-stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.skeleton-stat-title {
+    width: 60%;
+    height: 16px;
+    margin-bottom: 12px;
+}
+
+.skeleton-stat-value {
+    width: 80%;
+    height: 28px;
+}
+
+.skeleton-stock-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.skeleton-stock-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.skeleton-stock-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.skeleton-stock-name {
+    width: 40%;
+    height: 20px;
+}
+
+.skeleton-stock-code {
+    width: 25%;
+    height: 20px;
+}
+
+.skeleton-stock-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.skeleton-stock-stat {
+    height: 16px;
+}
+
+/* 详情页骨架屏 */
+.skeleton-detail {
+    padding: 20px;
+}
+
+.skeleton-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.skeleton-detail-title {
+    width: 30%;
+    height: 28px;
+}
+
+.skeleton-detail-info {
+    width: 20%;
+    height: 20px;
+}
+
+.skeleton-section {
+    margin-bottom: 24px;
+}
+
+.skeleton-section-title {
+    width: 20%;
+    height: 24px;
+    margin-bottom: 16px;
+}
+
+.skeleton-table {
+    width: 100%;
+}
+
+.skeleton-table-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.05);
+}
+
+.skeleton-table-cell {
+    height: 16px;
+}
+
+/* 交易记录页骨架屏 */
+.skeleton-trade-records {
+    padding: 20px;
+}
+
+.skeleton-filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.skeleton-filter {
+    width: 150px;
+    height: 36px;
+}
+
+.skeleton-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.skeleton-summary-item {
+    height: 60px;
+}
+
+/* 备注textarea样式 */
+#editTradeNote {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fafafa;
+    color: #333;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 70px;
+    max-height: 150px;
+}
+
+#editTradeNote:hover {
+    border-color: #d0d0d0;
+    background: #fff;
+}
+
+#editTradeNote:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+#editTradeNote::placeholder {
+    color: #999;
+}
+
+/* 响应式设计 - 小屏幕适配 */
+@media (max-height: 800px) {
+    .trade-modal-content {
+        max-height: 85vh;
+    }
+    
+    .trade-modal-content .modal-header {
+        padding: 16px 24px;
+    }
+    
+    .trade-modal-content .form-row {
+        padding: 0 24px;
+        margin-top: 16px;
+    }
+    
+    .trade-modal-content .form-row:first-of-type {
+        margin-top: 20px;
+    }
+    
+    .trade-modal-content .modal-footer {
+        padding: 16px 24px;
+        margin-top: 20px;
+    }
+    
+    #editTradeNote {
+        min-height: 60px;
+        max-height: 120px;
+    }
+}
+
+@media (max-height: 700px) {
+    .trade-modal-content {
+        max-height: 80vh;
+    }
+    
+    .trade-modal-content .modal-header {
+        padding: 14px 20px;
+    }
+    
+    .trade-modal-content .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .trade-modal-content .form-row {
+        padding: 0 20px;
+        margin-top: 14px;
+        gap: 12px;
+    }
+    
+    .trade-modal-content .form-row:first-of-type {
+        margin-top: 16px;
+    }
+    
+    .trade-modal-content .form-group label {
+        margin-bottom: 4px;
+        font-size: 12px;
+    }
+    
+    .trade-modal-content .form-group input,
+    .trade-modal-content .form-group select {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .trade-modal-content .modal-footer {
+        padding: 14px 20px;
+        margin-top: 16px;
+    }
+    
+    .trade-modal-content .modal-footer .btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    #editTradeNote {
+        padding: 8px 12px;
+        min-height: 50px;
+        max-height: 100px;
+        font-size: 13px;
+    }
+}
+
+/* 浅色主题下的弹窗 */
+[data-theme="light"] .trade-modal-content {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .trade-modal-content .form-group input,
+[data-theme="light"] .trade-modal-content .form-group select,
+[data-theme="light"] #editTradeNote {
+    background: #fff;
+    border-color: #e2e8f0;
+}
+
+[data-theme="light"] .trade-modal-content .form-group input:hover,
+[data-theme="light"] .trade-modal-content .form-group select:hover,
+[data-theme="light"] #editTradeNote:hover {
+    border-color: #cbd5e0;
+}
+
+[data-theme="light"] .trade-modal-content .form-group input:focus,
+[data-theme="light"] .trade-modal-content .form-group select:focus,
+[data-theme="light"] #editTradeNote:focus {
+    border-color: #667eea;
+}
+
+[data-theme="light"] .trade-modal-content .modal-footer {
+    background: #f8f9fa;
+}
+
+/* 交易记录页面备注列样式 */
+.trade-records-note {
+    display: inline-block;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #666;
+    font-size: 13px;
+    padding: 4px 8px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 4px;
+    cursor: default;
+}
+
+.trade-records-note:hover {
+    overflow: visible;
+    white-space: normal;
+    word-break: break-all;
+    position: relative;
+    z-index: 10;
+    background: rgba(102, 126, 234, 0.1);
+    max-width: none;
+}
+
+/* 交易记录页面引用行样式 */
+.trade-records-note-row {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.trade-records-note-row td {
+    padding: 0 !important;
+    border-top: none;
+}
+
+.trade-records-note-quote {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 16px 8px 48px;
+    position: relative;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    border-left: 3px solid #667eea;
+    margin: 4px 16px 4px 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    text-align: left;
+}
+
+.trade-records-note-quote .quote-icon {
+    position: absolute;
+    left: 16px;
+    top: 8px;
+    font-size: 16px;
+    opacity: 0.6;
+}
+
+.trade-records-note-quote .quote-text {
+    flex: 1;
+    word-break: break-word;
+    color: #555;
+}
+
+/* 交易记录页面编辑按钮 */
+.btn-edit-trade-record {
+    padding: 6px 10px;
+    border: 1px solid #667eea;
+    border-radius: 6px;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-edit-trade-record:hover {
+    background: #667eea;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* 交易记录页面表格优化 */
+.trade-records-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.trade-records-table thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.trade-records-table tbody tr {
+    transition: background 0.2s;
+}
+
+.trade-records-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.trade-records-table tbody td {
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+    color: #333;
+}
+
+/* 浅色主题下的备注 */
+[data-theme="light"] .trade-records-note {
+    background: rgba(102, 126, 234, 0.08);
+    color: #4a5568;
+}
+
+[data-theme="light"] .trade-records-note:hover {
+    background: rgba(102, 126, 234, 0.15);
+}
+
+[data-theme="light"] .trade-records-note-row {
+    background: rgba(102, 126, 234, 0.03);
+}
+
+[data-theme="light"] .trade-records-note-quote {
+    background: rgba(255, 255, 255, 0.8);
+    border-left-color: #667eea;
+}
+
+[data-theme="light"] .trade-records-note-quote .quote-text {
+    color: #4a5568;
+}
+
+[data-theme="light"] .trade-records-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.03);
+}
+
+[data-theme="light"] .trade-records-table tbody td {
+    border-bottom-color: rgba(102, 126, 234, 0.08);
+}
+
+/* 交易记录备注行样式 */
+.trade-note-row {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.trade-note-row td {
+    padding: 0 !important;
+    border-top: none;
+}
+
+.trade-note-quote {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 16px 8px 48px;
+    position: relative;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    border-left: 3px solid #667eea;
+    margin: 4px 16px 4px 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    text-align: left;
+}
+
+.quote-icon {
+    position: absolute;
+    left: 16px;
+    top: 8px;
+    font-size: 16px;
+    opacity: 0.6;
+}
+
+.quote-text {
+    flex: 1;
+    word-break: break-word;
+    color: #555;
+}
+
+/* 浅色主题下的备注行 */
+[data-theme="light"] .trade-note-row {
+    background: rgba(102, 126, 234, 0.03);
+}
+
+[data-theme="light"] .trade-note-quote {
+    background: rgba(255, 255, 255, 0.8);
+    border-left-color: #667eea;
+}
+
+[data-theme="light"] .quote-text {
+    color: #4a5568;
 }
 

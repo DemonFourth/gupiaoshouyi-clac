@@ -2754,6 +2754,31 @@ const Overview = {
                 this._openFieldSettingsModal(viewType, 'cleared');
             };
         }
+    },
+
+    /**
+     * 平滑刷新（保持滚动位置，无闪烁）
+     */
+    async refresh() {
+        // 保存当前滚动位置
+        const scrollTop = window.scrollY || window.pageYOffset || 0;
+        
+        // 重新加载数据
+        this.stocks = await StockProfitCalculator.DataService.getAllStocks();
+        await this.rebuildSnapshots();
+        
+        // 重新渲染（不触发动画）
+        this.renderSummary();
+        this.renderStockLists();
+        this.renderCharts();
+        
+        // 使用多次requestAnimationFrame确保DOM完全渲染
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // 强制设置滚动位置（不使用smooth，避免动画）
+                window.scrollTo(0, scrollTop);
+            });
+        });
     }
 };
 

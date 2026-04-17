@@ -1122,24 +1122,55 @@ const Detail = {
     },
 
     /**
-     * 切换添加交易表单显示
+     * 切换添加交易表单显示 - 改为打开弹窗
      */
     toggleAddTradeForm() {
-        const container = document.getElementById('addTradeFormContainer');
-        if (container) {
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                const dateInput = document.getElementById('tradeDate');
-                if (dateInput && !dateInput.value) {
-                    dateInput.value = new Date().toISOString().split('T')[0];
-                }
-                // 重置表单状态
-                document.getElementById('tradeType').value = 'buy';
-                this.onTradeTypeChange();
-            } else {
-                container.style.display = 'none';
-                this.resetAddTradeForm();
+        // 使用编辑弹窗进行添加
+        const modal = document.getElementById('editModal');
+        const modalTitle = document.getElementById('tradeModalTitle');
+        const saveBtn = document.getElementById('updateTradeBtn');
+
+        if (modal) {
+            // 设置为添加模式
+            modalTitle.textContent = '添加交易记录';
+            saveBtn.textContent = '添加';
+
+            // 清空编辑ID（表示这是添加模式）
+            const editTradeId = document.getElementById('editTradeId');
+            if (editTradeId) {
+                editTradeId.value = '';
             }
+
+            // 隐藏股票信息（添加模式在股票详情页，已知股票）
+            const stockInfoDiv = document.getElementById('editTradeStockInfo');
+            if (stockInfoDiv) {
+                stockInfoDiv.style.display = 'none';
+            }
+
+            // 设置默认日期
+            const dateInput = document.getElementById('editTradeDate');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
+            // 重置表单
+            document.getElementById('editTradeType').value = 'buy';
+            document.getElementById('editTradePrice').value = '';
+            document.getElementById('editTradeAmount').value = '';
+            document.getElementById('editTradeFee').value = '5';
+            document.getElementById('editTradeAmountDisplay').value = '';
+            const noteInput = document.getElementById('editTradeNote');
+            if (noteInput) {
+                noteInput.value = '';
+            }
+
+            // 触发类型切换
+            if (StockProfitCalculator.TradeManager) {
+                StockProfitCalculator.TradeManager.onEditTypeChange();
+            }
+
+            // 显示弹窗
+            modal.style.display = 'block';
         }
     },
 
@@ -1251,6 +1282,10 @@ const Detail = {
 
         let newTrade;
 
+        // 获取备注
+        const noteInput = document.getElementById('tradeNote');
+        const note = noteInput ? noteInput.value.trim() : '';
+
         if (type === 'dividend' || type === 'tax') {
             // 分红和红利税补缴：只需要金额
             const totalAmount = parseFloat(document.getElementById('tradeAmountDisplay').value);
@@ -1259,7 +1294,7 @@ const Detail = {
                 ErrorHandler.showErrorSimple('请填写正确的金额');
                 return;
             }
-            
+
             // 统一数据结构，使用相同字段
             newTrade = {
                 id: Date.now(),
@@ -1268,7 +1303,8 @@ const Detail = {
                 amount: 0,      // 股数为0
                 price: 0,       // 价格为0
                 fee: 0,         // 手续费为0
-                totalAmount     // 额外字段存储金额
+                totalAmount,    // 额外字段存储金额
+                note            // 新增备注字段
             };
         } else {
             // 买入和卖出：需要价格、数量、手续费
@@ -1280,7 +1316,7 @@ const Detail = {
                 ErrorHandler.showErrorSimple('请填写完整信息');
                 return;
             }
-            
+
             // 统一数据结构，添加 totalAmount 字段
             newTrade = {
                 id: Date.now(),
@@ -1289,7 +1325,8 @@ const Detail = {
                 price,
                 amount,
                 fee,
-                totalAmount: Math.round(price * amount * 100) / 100  // 金额 = 价格 * 数量，保留2位小数
+                totalAmount: Math.round(price * amount * 100) / 100,  // 金额 = 价格 * 数量，保留2位小数
+                note            // 新增备注字段
             };
         }
 
@@ -1334,6 +1371,11 @@ const Detail = {
         this.calcResult = this.snapshot.calcResult;
         await this.updateAll(updatedStock);
         this.toggleAddTradeForm();
+
+        // 清空备注输入框
+        if (noteInput) {
+            noteInput.value = '';
+        }
     },
 
     /**
@@ -2784,6 +2826,27 @@ const Detail = {
             }
         };
         document.addEventListener('keydown', escHandler);
+    },
+
+    /**
+     * 平滑刷新（保持滚动位置，无闪烁）
+     */
+    async refresh() {
+        if (!this.currentStockCode) return;
+        
+        // 保存当前滚动位置
+        const scrollTop = window.scrollY || window.pageYOffset || 0;
+        
+        // 重新加载股票数据
+        await this.loadStock(this.currentStockCode);
+        
+        // 使用多次requestAnimationFrame确保DOM完全渲染
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // 强制设置滚动位置（不使用smooth，避免动画）
+                window.scrollTo(0, scrollTop);
+            });
+        });
     }
 };
 

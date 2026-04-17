@@ -182,6 +182,38 @@ const TradeManager = {
             this._domCache.editTradeAmountDisplay.value = trade.totalAmount || (trade.price * trade.amount);
         }
 
+        // 填充备注
+        const editTradeNote = document.getElementById('editTradeNote');
+        if (editTradeNote) {
+            editTradeNote.value = trade.note || '';
+        }
+
+        // 显示股票信息
+        const stockCodeInput = document.getElementById('editTradeStockCode');
+        const stockInfoDiv = document.getElementById('editTradeStockInfo');
+        const stockCodeDisplay = document.getElementById('editTradeStockCodeDisplay');
+        const stockNameDisplay = document.getElementById('editTradeStockNameDisplay');
+        
+        if (stockCodeInput) {
+            stockCodeInput.value = code;
+        }
+        
+        if (stockInfoDiv && stockCodeDisplay && stockNameDisplay) {
+            stockCodeDisplay.textContent = stock.code;
+            stockNameDisplay.textContent = stock.name;
+            stockInfoDiv.style.display = 'flex';
+        }
+
+        // 设置为编辑模式
+        const modalTitle = document.getElementById('tradeModalTitle');
+        const saveBtn = document.getElementById('updateTradeBtn');
+        if (modalTitle) {
+            modalTitle.textContent = '编辑交易记录';
+        }
+        if (saveBtn) {
+            saveBtn.textContent = '保存';
+        }
+
         // 根据类型设置表单状态
         this.onEditTypeChange();
 
@@ -269,7 +301,6 @@ const TradeManager = {
             return;
         }
 
-        const tradeId = parseInt(this._domCache.editTradeId.value);
         const date = this._domCache.editTradeDate.value;
         const type = this._domCache.editTradeType.value;
 
@@ -280,53 +311,128 @@ const TradeManager = {
             return;
         }
 
-        const trade = stock.trades.find(t => t.id === tradeId);
-        if (!trade) {
-            ErrorHandler.showWarning('交易记录不存在');
-            return;
-        }
+        // 获取备注
+        const editTradeNote = document.getElementById('editTradeNote');
+        const note = editTradeNote ? editTradeNote.value.trim() : '';
 
-        // 更新交易记录
-        if (type === 'dividend' || type === 'tax') {
-            // 分红/红利税：从金额字段获取
-            const totalAmount = parseFloat(this._domCache.editTradeAmountDisplay.value) || 0;
-            if (!totalAmount || totalAmount <= 0) {
-                ErrorHandler.showErrorSimple('请填写正确的金额');
-                return;
+        // 判断是添加还是编辑模式
+        const isAddMode = !this._domCache.editTradeId.value;
+
+        if (isAddMode) {
+            // 添加模式：创建新交易记录
+            let newTrade;
+
+            if (type === 'dividend' || type === 'tax') {
+                const totalAmount = parseFloat(this._domCache.editTradeAmountDisplay.value) || 0;
+                if (!totalAmount || totalAmount <= 0) {
+                    ErrorHandler.showErrorSimple('请填写正确的金额');
+                    return;
+                }
+                newTrade = {
+                    id: Date.now(),
+                    date,
+                    type,
+                    price: 0,
+                    amount: 0,
+                    fee: 0,
+                    totalAmount: Math.round(totalAmount * 100) / 100,
+                    note
+                };
+            } else {
+                const price = parseFloat(this._domCache.editTradePrice.value);
+                const amount = parseInt(this._domCache.editTradeAmount.value);
+                const fee = parseFloat(this._domCache.editTradeFee.value) || 0;
+
+                if (!price || !amount) {
+                    ErrorHandler.showErrorSimple('请填写完整的价格和数量');
+                    return;
+                }
+
+                // 验证数量必须是100的倍数
+                if (amount < 100 || amount % 100 !== 0) {
+                    ErrorHandler.showErrorSimple('数量必须是100的倍数，且最小为100股');
+                    return;
+                }
+
+                newTrade = {
+                    id: Date.now(),
+                    date,
+                    type,
+                    price,
+                    amount,
+                    fee,
+                    totalAmount: Math.round(price * amount * 100) / 100,
+                    note
+                };
             }
-            Object.assign(trade, {
-                date,
-                type,
-                price: 0,
-                amount: 0,
-                fee: 0,
-                totalAmount: Math.round(totalAmount * 100) / 100
-            });
+
+            // 添加到交易记录
+            stock.trades.push(newTrade);
         } else {
-            // 买入/卖出：更新价格、数量、手续费，重新计算金额
-            const price = parseFloat(this._domCache.editTradePrice.value);
-            const amount = parseInt(this._domCache.editTradeAmount.value);
-            const fee = parseFloat(this._domCache.editTradeFee.value) || 0;
-
-            if (!price || !amount) {
-                ErrorHandler.showErrorSimple('请填写完整的价格和数量');
+            // 编辑模式：更新现有交易记录
+            const tradeId = parseInt(this._domCache.editTradeId.value);
+            const trade = stock.trades.find(t => t.id === tradeId);
+            if (!trade) {
+                ErrorHandler.showWarning('交易记录不存在');
                 return;
             }
 
-            Object.assign(trade, {
-                date,
-                type,
-                price,
-                amount,
-                fee,
-                totalAmount: Math.round(price * amount * 100) / 100
-            });
+            if (type === 'dividend' || type === 'tax') {
+                const totalAmount = parseFloat(this._domCache.editTradeAmountDisplay.value) || 0;
+                if (!totalAmount || totalAmount <= 0) {
+                    ErrorHandler.showErrorSimple('请填写正确的金额');
+                    return;
+                }
+                Object.assign(trade, {
+                    date,
+                    type,
+                    price: 0,
+                    amount: 0,
+                    fee: 0,
+                    totalAmount: Math.round(totalAmount * 100) / 100,
+                    note
+                });
+            } else {
+                const price = parseFloat(this._domCache.editTradePrice.value);
+                const amount = parseInt(this._domCache.editTradeAmount.value);
+                const fee = parseFloat(this._domCache.editTradeFee.value) || 0;
+
+                if (!price || !amount) {
+                    ErrorHandler.showErrorSimple('请填写完整的价格和数量');
+                    return;
+                }
+
+                // 验证数量必须是100的倍数
+                if (amount < 100 || amount % 100 !== 0) {
+                    ErrorHandler.showErrorSimple('数量必须是100的倍数，且最小为100股');
+                    return;
+                }
+
+                Object.assign(trade, {
+                    date,
+                    type,
+                    price,
+                    amount,
+                    fee,
+                    totalAmount: Math.round(price * amount * 100) / 100,
+                    note
+                });
+            }
         }
+
         await DataManager.save(data);
 
         this.closeEditModal();
+        
+        // 刷新所有页面
         if (window.App && window.App.updateAll) {
             await window.App.updateAll();
+        }
+        
+        // 如果在交易记录页面，刷新交易记录页面
+        const currentPage = StockProfitCalculator.Router ? StockProfitCalculator.Router.getCurrentPage() : null;
+        if (currentPage === 'tradeRecords' && StockProfitCalculator.TradeRecords) {
+            await StockProfitCalculator.TradeRecords.refresh();
         }
     },
     
@@ -668,6 +774,18 @@ const TradeManager = {
         const { typeDisplay, typeClass } = this._generateTypeDisplay(trade);
         const { priceDisplay, amountDisplay, feeDisplay } = this._generatePriceAmountDisplay(trade, holdingDetailMap);
 
+        // 备注显示 - 改为引用行样式
+        const noteRow = trade.note ? `
+            <tr class="trade-note-row">
+                <td colspan="9">
+                    <div class="trade-note-quote">
+                        <span class="quote-icon">💬</span>
+                        <span class="quote-text">${trade.note}</span>
+                    </div>
+                </td>
+            </tr>
+        ` : '';
+
         return `
             <td>${trade.date}</td>
             <td><span class="badge ${typeClass}">${typeDisplay}</span></td>
@@ -698,9 +816,25 @@ const TradeManager = {
         const fragment = document.createDocumentFragment();
 
         paginatedTrades.forEach(trade => {
+            // 主行
             const row = document.createElement('tr');
             row.innerHTML = this._generateTableRowHTML(trade, result, holdingDetailMap);
             fragment.appendChild(row);
+
+            // 备注行（如果有备注）
+            if (trade.note) {
+                const noteRow = document.createElement('tr');
+                noteRow.className = 'trade-note-row';
+                noteRow.innerHTML = `
+                    <td colspan="9">
+                        <div class="trade-note-quote">
+                            <span class="quote-icon">💬</span>
+                            <span class="quote-text">${trade.note}</span>
+                        </div>
+                    </td>
+                `;
+                fragment.appendChild(noteRow);
+            }
         });
 
         tbody.appendChild(fragment);
