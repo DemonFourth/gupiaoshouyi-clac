@@ -144,7 +144,16 @@
                             </svg>
                         </div>
                         <div class="osv2-hero-content">
-                            <span class="osv2-hero-label">当前持仓总收益</span>
+                            <span class="osv2-hero-label">
+                                当前持仓总收益
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>Σ(每只持仓股票的浮动盈亏)<br>
+                                        <strong>说明：</strong>当前持仓股票的总收益，即持仓总市值 - 持仓总成本
+                                    </span>
+                                </span>
+                            </span>
                             <span class="osv2-hero-value" id="overviewTotalProfit">¥0.00</span>
                         </div>
                     </div>
@@ -155,7 +164,16 @@
                             </svg>
                         </div>
                         <div class="osv2-hero-content">
-                            <span class="osv2-hero-label">当前持仓总收益率</span>
+                            <span class="osv2-hero-label">
+                                当前持仓总收益率
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>持仓总收益 ÷ 持仓总成本 × 100%<br>
+                                        <strong>说明：</strong>当前持仓股票的整体收益率，反映持仓投资效果
+                                    </span>
+                                </span>
+                            </span>
                             <span class="osv2-hero-value" id="overviewTotalReturnRate">0.00%</span>
                         </div>
                     </div>
@@ -169,7 +187,17 @@
                             </svg>
                         </div>
                         <div class="osv2-hero-content">
-                            <span class="osv2-hero-label">本周收益</span>
+                            <span class="osv2-hero-label">
+                                本周收益
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>Σ(每只股票本周收益)<br>
+                                        <strong>说明：</strong>本周一至今的持仓收益变化<br>
+                                        <strong>提示：</strong>点击数据可查看交易记录详情
+                                    </span>
+                                </span>
+                            </span>
                             <span class="osv2-hero-value" id="overviewWeeklyProfit">¥0.00</span>
                         </div>
                     </div>
@@ -183,7 +211,17 @@
                             </svg>
                         </div>
                         <div class="osv2-hero-content">
-                            <span class="osv2-hero-label">本月收益</span>
+                            <span class="osv2-hero-label">
+                                本月收益
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>Σ(每只股票本月收益)<br>
+                                        <strong>说明：</strong>本月1日至今的持仓收益变化<br>
+                                        <strong>提示：</strong>点击数据可查看交易记录详情
+                                    </span>
+                                </span>
+                            </span>
                             <span class="osv2-hero-value" id="overviewMonthlyProfit">¥0.00</span>
                         </div>
                     </div>
@@ -205,7 +243,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">当前持仓总市值</span>
+                                <span class="osv2-stat-label">
+                                    当前持仓总市值
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(持仓股数 × 当前股价)<br>
+                                            <strong>说明：</strong>所有持仓股票按当前股价计算的总市值
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewTotalMarketValue">¥0.00</span>
                             </div>
                         </div>
@@ -219,7 +266,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">当前持仓总成本</span>
+                                <span class="osv2-stat-label">
+                                    当前持仓总成本
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(每只持仓股票的持仓成本)<br>
+                                            <strong>说明：</strong>所有持仓股票的买入成本总和（已扣除卖出）
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewTotalHoldingCost">¥0.00</span>
                             </div>
                         </div>
@@ -232,7 +288,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">持仓股票数</span>
+                                <span class="osv2-stat-label">
+                                    持仓股票数
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>统计持仓数量 > 0 的股票数量<br>
+                                            <strong>说明：</strong>当前持有股票的总只数
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewHoldingCount">0只</span>
                             </div>
                         </div>
@@ -244,7 +309,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">盈利/亏损</span>
+                                <span class="osv2-stat-label">
+                                    盈利/亏损
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>统计持仓收益 > 0 为盈利，< 0 为亏损<br>
+                                            <strong>说明：</strong>当前持仓股票的盈亏分布情况
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value">
                                     <span class="profit" id="overviewProfitCount">盈利0只</span>
                                     <span class="loss" id="overviewLossCount">亏损0只</span>
@@ -269,7 +343,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">全部投入资金</span>
+                                <span class="osv2-stat-label">
+                                    全部投入资金
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(每只股票的总买入成本)<br>
+                                            <strong>说明：</strong>所有股票买入交易的总金额，包含手续费
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewTotalInvestment">¥0.00</span>
                             </div>
                         </div>
@@ -281,7 +364,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">净投入资金</span>
+                                <span class="osv2-stat-label">
+                                    净投入资金
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>全部投入资金 - 总卖出金额<br>
+                                            <strong>说明：</strong>当前实际占用的资金，即持仓成本
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewNetInvestment">¥0.00</span>
                             </div>
                         </div>
@@ -292,7 +384,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">整体收益</span>
+                                <span class="osv2-stat-label">
+                                    整体收益
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(持仓股票浮动盈亏 + 已清仓股票已实现收益)<br>
+                                            <strong>说明：</strong>包含持仓股票的浮动盈亏和已清仓股票的实际收益
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewOverallProfit">¥0.00</span>
                             </div>
                         </div>
@@ -305,7 +406,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">整体收益率</span>
+                                <span class="osv2-stat-label">
+                                    整体收益率
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>整体收益 ÷ 全部投入资金 × 100%<br>
+                                            <strong>说明：</strong>相对于总投入资金的收益率
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewOverallReturnRate">0.00%</span>
                             </div>
                         </div>
@@ -317,7 +427,16 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">总手续费</span>
+                                <span class="osv2-stat-label">
+                                    总手续费
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(每只股票的总手续费)<br>
+                                            <strong>说明：</strong>所有买入和卖出交易产生的手续费总和
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewTotalFee">¥0.00</span>
                             </div>
                         </div>
@@ -330,8 +449,61 @@
                                 </svg>
                             </div>
                             <div class="osv2-stat-content">
-                                <span class="osv2-stat-label">资金周转率</span>
+                                <span class="osv2-stat-label">
+                                    资金周转率
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>总卖出金额 ÷ 全部投入资金 × 100%<br>
+                                            <strong>说明：</strong>反映资金使用效率，数值越高表示资金周转越快
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="osv2-stat-value" id="overviewTurnoverRate">0.00%</span>
+                            </div>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <div class="osv2-stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </div>
+                            <div class="osv2-stat-content">
+                                <span class="osv2-stat-label">
+                                    首笔交易
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>取所有股票中最早的买入交易日期<br>
+                                            <strong>说明：</strong>记录投资开始的时间点
+                                        </span>
+                                    </span>
+                                </span>
+                                <span class="osv2-stat-value" id="overviewFirstRecordDate">--</span>
+                            </div>
+                        </div>
+                        <div class="osv2-stat-item">
+                            <div class="osv2-stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="osv2-stat-content">
+                                <span class="osv2-stat-label">
+                                    投资时长
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>当前日期 - 首笔交易日期<br>
+                                            <strong>说明：</strong>从第一笔交易至今的投资时长，自动转换为年/月/天格式
+                                        </span>
+                                    </span>
+                                </span>
+                                <span class="osv2-stat-value" id="overviewRecordDuration">--</span>
                             </div>
                         </div>
                     </div>
@@ -476,7 +648,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-hero-content">
-                            <div class="rtv2-hero-label">持有股数</div>
+                            <div class="rtv2-hero-label">
+                                持有股数
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算方式：</strong>累计买入股数 - 累计卖出股数<br>
+                                        <strong>说明：</strong>当前持有的股票总数量
+                                    </span>
+                                </span>
+                            </div>
                             <div class="rtv2-hero-value" id="realtimeHolding"><span class="loading">--</span></div>
                         </div>
                     </div>
@@ -489,7 +670,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-hero-content">
-                            <div class="rtv2-hero-label">持有成本</div>
+                            <div class="rtv2-hero-label">
+                                持有成本
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>Σ(买入金额 + 手续费) - Σ(卖出对应成本)<br>
+                                        <strong>说明：</strong>当前持仓的买入成本，采用先进先出法计算
+                                    </span>
+                                </span>
+                            </div>
                             <div class="rtv2-hero-value" id="realtimeCost"><span class="loading">--</span></div>
                         </div>
                     </div>
@@ -502,7 +692,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-hero-content">
-                            <div class="rtv2-hero-label">持有市值</div>
+                            <div class="rtv2-hero-label">
+                                持有市值
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>持有股数 × 当前股价<br>
+                                        <strong>说明：</strong>按当前股价计算的持仓总市值
+                                    </span>
+                                </span>
+                            </div>
                             <div class="rtv2-hero-value" id="marketValue"><span class="loading">--</span></div>
                         </div>
                     </div>
@@ -513,7 +712,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-hero-content">
-                            <div class="rtv2-hero-label">持有股收益</div>
+                            <div class="rtv2-hero-label">
+                                持有股收益
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>持有市值 - 持有成本<br>
+                                        <strong>说明：</strong>当前持仓的浮动盈亏
+                                    </span>
+                                </span>
+                            </div>
                             <div class="rtv2-hero-value" id="latestProfit"><span class="loading">--</span></div>
                         </div>
                     </div>
@@ -524,7 +732,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-hero-content">
-                            <div class="rtv2-hero-label">持有股收益率</div>
+                            <div class="rtv2-hero-label">
+                                持有股收益率
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算公式：</strong>持有股收益 ÷ 持有成本 × 100%<br>
+                                        <strong>说明：</strong>当前持仓的投资回报率
+                                    </span>
+                                </span>
+                            </div>
                             <div class="rtv2-hero-value" id="latestReturnRate"><span class="loading">--</span></div>
                         </div>
                     </div>
@@ -593,7 +810,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-detail-content">
-                            <span class="rtv2-detail-label">持仓开始日期</span>
+                            <span class="rtv2-detail-label">
+                                持仓开始日期
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算方式：</strong>当前持仓周期的首次买入日期<br>
+                                        <strong>说明：</strong>最近一次建仓的时间点
+                                    </span>
+                                </span>
+                            </span>
                             <span class="rtv2-detail-value" id="holdingStartDate"><span class="loading">--</span></span>
                         </div>
                     </div>
@@ -605,7 +831,16 @@
                             </svg>
                         </div>
                         <div class="rtv2-detail-content">
-                            <span class="rtv2-detail-label">持有天数</span>
+                            <span class="rtv2-detail-label">
+                                持有天数
+                                <span class="tooltip-container">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">
+                                        <strong>计算方式：</strong>当前日期 - 持仓开始日期<br>
+                                        <strong>说明：</strong>从建仓至今的天数
+                                    </span>
+                                </span>
+                            </span>
                             <span class="rtv2-detail-value" id="holdingDays"><span class="loading">--</span></span>
                         </div>
                     </div>
@@ -722,7 +957,16 @@
                                 </svg>
                             </div>
                             <div class="flow-content">
-                                <span class="flow-label">总投入成本</span>
+                                <span class="flow-label">
+                                    总投入成本
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(每次买入金额 + 买入手续费)<br>
+                                            <strong>说明：</strong>所有买入交易的总成本，包含手续费
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="flow-value" id="totalCost">¥0.00</span>
                             </div>
                         </div>
@@ -735,7 +979,16 @@
                                 </svg>
                             </div>
                             <div class="flow-content">
-                                <span class="flow-label">总卖出金额</span>
+                                <span class="flow-label">
+                                    总卖出金额
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(每次卖出金额 - 卖出手续费)<br>
+                                            <strong>说明：</strong>所有卖出交易的净收入，已扣除手续费
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="flow-value" id="totalSell">¥0.00</span>
                             </div>
                         </div>
@@ -747,7 +1000,16 @@
                                 </svg>
                             </div>
                             <div class="flow-content">
-                                <span class="flow-label">总手续费</span>
+                                <span class="flow-label">
+                                    总手续费
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算公式：</strong>Σ(买入手续费 + 卖出手续费)<br>
+                                            <strong>说明：</strong>所有交易产生的手续费总和
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="flow-value" id="totalFee">¥0.00</span>
                             </div>
                         </div>
@@ -810,7 +1072,16 @@
                                 </svg>
                             </div>
                             <div class="detail-content">
-                                <span class="detail-label">本周收益</span>
+                                <span class="detail-label">
+                                    本周收益
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>本周一至今的持仓市值变化<br>
+                                            <strong>说明：</strong>反映本周内的投资收益波动情况
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="detail-value" id="weeklyProfit">¥0.00</span>
                             </div>
                         </div>
@@ -824,7 +1095,16 @@
                                 </svg>
                             </div>
                             <div class="detail-content">
-                                <span class="detail-label">本月收益</span>
+                                <span class="detail-label">
+                                    本月收益
+                                    <span class="tooltip-container">
+                                        <span class="tooltip-icon">?</span>
+                                        <span class="tooltip-text">
+                                            <strong>计算方式：</strong>本月1日至今的持仓市值变化<br>
+                                            <strong>说明：</strong>反映本月内的投资收益波动情况
+                                        </span>
+                                    </span>
+                                </span>
                                 <span class="detail-value" id="monthlyProfit">¥0.00</span>
                             </div>
                         </div>

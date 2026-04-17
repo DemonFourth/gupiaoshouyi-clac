@@ -72,6 +72,8 @@ const Overview = {
             overviewOverallReturnRate: document.getElementById('overviewOverallReturnRate'),
             overviewTotalFee: document.getElementById('overviewTotalFee'),
             overviewTurnoverRate: document.getElementById('overviewTurnoverRate'),
+            overviewFirstRecordDate: document.getElementById('overviewFirstRecordDate'),
+            overviewRecordDuration: document.getElementById('overviewRecordDuration'),
 
             // 持仓统计元素
             overviewHoldingCount: document.getElementById('overviewHoldingCount'),
@@ -479,6 +481,9 @@ const Overview = {
         let clearedLossCount = 0;      // 清仓亏损股票数量
         let clearedStockProfits = [];  // 清仓股票收益数据
 
+        // 最早记录时间
+        let earliestRecordDate = null;
+
         this.stocks.forEach(stock => {
             const quote = this.getQuoteInfo(stock.code);
             const snapshot = this.getStockSnapshot(stock);
@@ -486,6 +491,13 @@ const Overview = {
 
             totalWeeklyProfit += snapshot.periodProfit.weeklyProfit;
             totalMonthlyProfit += snapshot.periodProfit.monthlyProfit;
+
+            // 收集最早记录时间
+            if (snapshot.firstBuyDate) {
+                if (!earliestRecordDate || snapshot.firstBuyDate < earliestRecordDate) {
+                    earliestRecordDate = snapshot.firstBuyDate;
+                }
+            }
 
             // 计算历史累计统计
             totalInvestment += summary.totalBuyCost || 0;
@@ -650,6 +662,37 @@ const Overview = {
 
         // 更新UI - 资金周转率
         this._domCache.overviewTurnoverRate.textContent = turnoverRate.toFixed(3) + '%';
+
+        // 更新UI - 最早记录时间和至今多久
+        if (earliestRecordDate) {
+            // 格式化显示最早记录时间
+            const dateObj = new Date(earliestRecordDate);
+            const formattedDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+            this._domCache.overviewFirstRecordDate.textContent = formattedDate;
+
+            // 计算至今多久
+            const now = new Date();
+            const diffTime = Math.abs(now - dateObj);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // 格式化显示时长
+            const years = Math.floor(diffDays / 365);
+            const months = Math.floor((diffDays % 365) / 30);
+            const days = diffDays % 30;
+
+            let durationText = '';
+            if (years > 0) {
+                durationText = `${years}年${months > 0 ? months + '个月' : ''}`;
+            } else if (months > 0) {
+                durationText = `${months}个月${days > 0 ? days + '天' : ''}`;
+            } else {
+                durationText = `${days}天`;
+            }
+            this._domCache.overviewRecordDuration.textContent = durationText;
+        } else {
+            this._domCache.overviewFirstRecordDate.textContent = '--';
+            this._domCache.overviewRecordDuration.textContent = '--';
+        }
 
         // 添加点击事件监听：本周收益
         this._setupProfitClickEvent(weeklyProfitElement, 'week');
