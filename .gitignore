@@ -36,7 +36,26 @@ docs/superpowers/
 
 # 测试配置
 playwright.config.js
+test-screenshot.js
 
 # 临时备份文件
 temp_*.js
 temp_*.css
+
+# CodeArts相关文件（开发工具，部署不需要）
+.arts/
+.codeartsdoer/
+
+# Wrangler本地配置（Cloudflare开发工具）
+.wrangler/
+
+# 开发文档和计划（部署不需要）
+IMPLEMENTATION_PLAN.md
+AGENTS.md
+ARCHIVE.md
+CONTRIBUTING.md
+README-backup-*.md
+readme-2.md
+
+# 用户需求文档（个人使用，部署不需要）
+USER_REQUIREMENTS.md
