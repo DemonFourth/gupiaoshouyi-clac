@@ -843,8 +843,10 @@ const Overview = {
             stock,
             result: snapshot.calcResult,
             totalProfit: snapshot.totalAllProfit,
-            totalReturnRate: snapshot.totalAllReturnRate,  // 添加收益率
+            totalReturnRate: snapshot.totalAllReturnRate,
+            cycleReturnRate: snapshot.cycleReturnRate,  // 当前持仓周期收益率
             firstBuyDate: snapshot.firstBuyDate,
+            currentCycleStartDate: snapshot.holdingInfo?.startDate,  // 当前持仓周期建仓时间
             holdingCost: snapshot.holdingCost,
             holdingInfo: snapshot.holdingInfo,
             quote: snapshot.quote,
@@ -908,9 +910,19 @@ const Overview = {
             case 'profit-asc':  // 收益升序
                 return stockDataList.sort((a, b) => (a.totalProfit || 0) - (b.totalProfit || 0));
             case 'return-desc': // 收益率降序
-                return stockDataList.sort((a, b) => (b.totalReturnRate || 0) - (a.totalReturnRate || 0));
+                // 持仓中：使用当前持仓周期收益率（cycleReturnRate）
+                // 已清仓：使用总收益率（totalReturnRate）
+                return stockDataList.sort((a, b) => {
+                    const aRate = a.cycleReturnRate !== undefined ? a.cycleReturnRate : (a.totalReturnRate || 0);
+                    const bRate = b.cycleReturnRate !== undefined ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    return bRate - aRate;
+                });
             case 'return-asc':  // 收益率升序
-                return stockDataList.sort((a, b) => (a.totalReturnRate || 0) - (b.totalReturnRate || 0));
+                return stockDataList.sort((a, b) => {
+                    const aRate = a.cycleReturnRate !== undefined ? a.cycleReturnRate : (a.totalReturnRate || 0);
+                    const bRate = b.cycleReturnRate !== undefined ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    return aRate - bRate;
+                });
             case 'market-value-desc': // 持仓市值降序
                 return stockDataList.sort((a, b) => (b.snapshot?.marketValue || 0) - (a.snapshot?.marketValue || 0));
             case 'market-value-asc':  // 持仓市值升序
@@ -924,16 +936,22 @@ const Overview = {
             case 'change-asc':  // 当日涨幅升序
                 return stockDataList.sort((a, b) => ((a.snapshot?.quote?.changePercent) ?? Infinity) - ((b.snapshot?.quote?.changePercent) ?? Infinity));
             case 'first-buy-asc':   // 建仓时间升序（早的在前）
+                // 持仓中：使用当前持仓周期建仓时间（currentCycleStartDate）
+                // 已清仓：使用最早建仓时间（firstBuyDate）
                 return stockDataList.sort((a, b) => {
-                    if (!a.firstBuyDate) return 1;
-                    if (!b.firstBuyDate) return -1;
-                    return new Date(a.firstBuyDate) - new Date(b.firstBuyDate);
+                    const aDate = a.currentCycleStartDate || a.firstBuyDate;
+                    const bDate = b.currentCycleStartDate || b.firstBuyDate;
+                    if (!aDate) return 1;
+                    if (!bDate) return -1;
+                    return new Date(aDate) - new Date(bDate);
                 });
             case 'first-buy-desc':  // 建仓时间降序（晚的在前）
                 return stockDataList.sort((a, b) => {
-                    if (!a.firstBuyDate) return 1;
-                    if (!b.firstBuyDate) return -1;
-                    return new Date(b.firstBuyDate) - new Date(a.firstBuyDate);
+                    const aDate = a.currentCycleStartDate || a.firstBuyDate;
+                    const bDate = b.currentCycleStartDate || b.firstBuyDate;
+                    if (!aDate) return 1;
+                    if (!bDate) return -1;
+                    return new Date(bDate) - new Date(aDate);
                 });
             case 'cost-desc':   // 持仓成本降序
                 return stockDataList.sort((a, b) => (b.holdingCost || 0) - (a.holdingCost || 0));
