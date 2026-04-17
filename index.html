@@ -392,8 +392,10 @@
                     <div class="section-header-right">
                         <select id="holdingSortSelect" class="sort-select" onchange="Overview.onSortChange('holding')">
                             <option value="change">当日涨幅</option>
-                            <option value="profit">收益</option>
-                            <option value="return">收益率</option>
+                            <option value="cycle-profit">持仓收益</option>
+                            <option value="total-profit">总收益</option>
+                            <option value="cycle-return">持仓收益率</option>
+                            <option value="total-return">总收益率</option>
                             <option value="market-value">持仓市值</option>
                             <option value="holding-days">持仓天数</option>
                             <option value="first-buy">建仓时间</option>
@@ -427,8 +429,8 @@
                     <div class="section-header-right">
                         <select id="clearedSortSelect" class="sort-select" onchange="Overview.onSortChange('cleared')">
                             <option value="clear-date">清仓日期</option>
-                            <option value="profit">收益</option>
-                            <option value="return">收益率</option>
+                            <option value="total-profit">总收益</option>
+                            <option value="total-return">总收益率</option>
                             <option value="first-buy">建仓时间</option>
                         </select>
                         <div class="sort-direction-group" aria-label="排序方向">

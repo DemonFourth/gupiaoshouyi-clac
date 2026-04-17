@@ -905,26 +905,39 @@ const Overview = {
      */
     sortStocks(stockDataList, sortBy) {
         switch (sortBy) {
-            case 'profit-desc': // 收益降序
-                return stockDataList.sort((a, b) => (b.totalProfit || 0) - (a.totalProfit || 0));
-            case 'profit-asc':  // 收益升序
-                return stockDataList.sort((a, b) => (a.totalProfit || 0) - (b.totalProfit || 0));
-            case 'return-desc': // 收益率降序
-                // 持仓中：使用当前持仓周期收益率（cycleReturnRate）
-                // 已清仓：使用总收益率（totalReturnRate）
+            case 'cycle-profit-desc': // 持仓收益降序
                 return stockDataList.sort((a, b) => {
-                    // 持仓中：cycleReturnRate不为null且不为undefined
-                    // 已清仓：cycleReturnRate为null或undefined
-                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : (a.totalReturnRate || 0);
-                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    // 持仓收益 = 当前持仓周期收益
+                    const aProfit = a.snapshot?.cycleProfit || 0;
+                    const bProfit = b.snapshot?.cycleProfit || 0;
+                    return bProfit - aProfit;
+                });
+            case 'cycle-profit-asc':  // 持仓收益升序
+                return stockDataList.sort((a, b) => {
+                    const aProfit = a.snapshot?.cycleProfit || 0;
+                    const bProfit = b.snapshot?.cycleProfit || 0;
+                    return aProfit - bProfit;
+                });
+            case 'total-profit-desc': // 总收益降序
+                return stockDataList.sort((a, b) => (b.totalProfit || 0) - (a.totalProfit || 0));
+            case 'total-profit-asc':  // 总收益升序
+                return stockDataList.sort((a, b) => (a.totalProfit || 0) - (b.totalProfit || 0));
+            case 'cycle-return-desc': // 持仓收益率降序
+                return stockDataList.sort((a, b) => {
+                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : 0;
+                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : 0;
                     return bRate - aRate;
                 });
-            case 'return-asc':  // 收益率升序
+            case 'cycle-return-asc':  // 持仓收益率升序
                 return stockDataList.sort((a, b) => {
-                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : (a.totalReturnRate || 0);
-                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : 0;
+                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : 0;
                     return aRate - bRate;
                 });
+            case 'total-return-desc': // 总收益率降序
+                return stockDataList.sort((a, b) => (b.totalReturnRate || 0) - (a.totalReturnRate || 0));
+            case 'total-return-asc':  // 总收益率升序
+                return stockDataList.sort((a, b) => (a.totalReturnRate || 0) - (b.totalReturnRate || 0));
             case 'market-value-desc': // 持仓市值降序
                 return stockDataList.sort((a, b) => (b.snapshot?.marketValue || 0) - (a.snapshot?.marketValue || 0));
             case 'market-value-asc':  // 持仓市值升序
