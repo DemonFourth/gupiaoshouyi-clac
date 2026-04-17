@@ -913,14 +913,16 @@ const Overview = {
                 // 持仓中：使用当前持仓周期收益率（cycleReturnRate）
                 // 已清仓：使用总收益率（totalReturnRate）
                 return stockDataList.sort((a, b) => {
-                    const aRate = a.cycleReturnRate !== undefined ? a.cycleReturnRate : (a.totalReturnRate || 0);
-                    const bRate = b.cycleReturnRate !== undefined ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    // 持仓中：cycleReturnRate不为null且不为undefined
+                    // 已清仓：cycleReturnRate为null或undefined
+                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : (a.totalReturnRate || 0);
+                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : (b.totalReturnRate || 0);
                     return bRate - aRate;
                 });
             case 'return-asc':  // 收益率升序
                 return stockDataList.sort((a, b) => {
-                    const aRate = a.cycleReturnRate !== undefined ? a.cycleReturnRate : (a.totalReturnRate || 0);
-                    const bRate = b.cycleReturnRate !== undefined ? b.cycleReturnRate : (b.totalReturnRate || 0);
+                    const aRate = (a.cycleReturnRate != null) ? a.cycleReturnRate : (a.totalReturnRate || 0);
+                    const bRate = (b.cycleReturnRate != null) ? b.cycleReturnRate : (b.totalReturnRate || 0);
                     return aRate - bRate;
                 });
             case 'market-value-desc': // 持仓市值降序
