@@ -1,127 +1,130 @@
         /* ==================== 设计令牌（Design Tokens） ==================== */
+/* Theme Version: 2.9.1 - 2026-04-18 09:43 - Deep Dark Theme Fix */
 :root {
-  /* 主色调 - 深色金融主题 */
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-tertiary: #0f3460;
-  --bg-card: rgba(255, 255, 255, 0.08);
-  --bg-card-hover: rgba(255, 255, 255, 0.12);
-  
+  /* 主色调 - 午夜金融主题 (Midnight Finance) */
+  /* 灵感：高端金融终端、Bloomberg风格、专业交易员界面 */
+  --bg-primary: #0a0e27;           /* 深邃的午夜蓝黑 */
+  --bg-secondary: #141b3d;         /* 稍浅的蓝黑 */
+  --bg-tertiary: #1e2749;          /* 第三层蓝黑 */
+  --bg-card: #1a1f3a;              /* 卡片背景 - 深蓝黑 */
+  --bg-card-hover: #222845;        /* 卡片悬停背景 */
+
   /* 文字颜色 */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.5);
-  
-  /* 盈亏颜色 */
-  --color-profit: #ff6b6b;
-  --color-profit-bg: rgba(233, 69, 96, 0.15);
-  --color-profit-border: rgba(233, 69, 96, 0.3);
-  --color-loss: #2ed573;
-  --color-loss-bg: rgba(46, 213, 115, 0.15);
-  --color-loss-border: rgba(46, 213, 115, 0.3);
-  
+  --text-primary: #e8eaf6;         /* 柔和的白色 */
+  --text-secondary: rgba(232, 234, 246, 0.75);
+  --text-muted: rgba(232, 234, 246, 0.5);
+
+  /* 盈亏颜色 - 使用红色和翡翠绿 */
+  --color-profit: #ef4444;         /* 红色 - 盈利 */
+  --color-profit-bg: rgba(239, 68, 68, 0.15);
+  --color-profit-border: rgba(239, 68, 68, 0.3);
+  --color-loss: #10b981;           /* 翡翠绿 - 亏损 */
+  --color-loss-bg: rgba(16, 185, 129, 0.15);
+  --color-loss-border: rgba(16, 185, 129, 0.3);
+
   /* 边框和分隔 */
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-color-hover: rgba(255, 255, 255, 0.2);
-  
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-hover: rgba(255, 255, 255, 0.15);
+
   /* 阴影 */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
-  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
   /* 圆角 */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  
+
   /* 过渡 */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
-  
+
   /* ==================== 卡片专用变量 ==================== */
   /* 卡片尺寸 */
   --card-padding: 14px;
   --card-radius: 12px;
   --card-gap: 16px;
-  
+
   /* 卡片字体大小 */
   --card-title-size: 15px;
   --card-value-size: 13px;
   --card-profit-size: 28px;
   --card-label-size: 11px;
-  
-  /* 卡片颜色 - 盈利 */
-  --card-profit-color: #e94560;
-  --card-profit-bg: rgba(233, 69, 96, 0.08);
-  --card-profit-border: rgba(233, 69, 96, 0.2);
-  --card-profit-glow: rgba(233, 69, 96, 0.3);
-  
-  /* 卡片颜色 - 亏损 */
-  --card-loss-color: #2ed573;
-  --card-loss-bg: rgba(46, 213, 115, 0.08);
-  --card-loss-border: rgba(46, 213, 115, 0.2);
-  --card-loss-glow: rgba(46, 213, 115, 0.3);
-  
+
+  /* 卡片颜色 - 盈利 (红色) */
+  --card-profit-color: #ef4444;
+  --card-profit-bg: rgba(239, 68, 68, 0.1);
+  --card-profit-border: rgba(239, 68, 68, 0.25);
+  --card-profit-glow: rgba(239, 68, 68, 0.4);
+
+  /* 卡片颜色 - 亏损 (翡翠绿) */
+  --card-loss-color: #10b981;
+  --card-loss-bg: rgba(16, 185, 129, 0.1);
+  --card-loss-border: rgba(16, 185, 129, 0.25);
+  --card-loss-glow: rgba(16, 185, 129, 0.4);
+
   /* 卡片边框和分隔 */
-  --card-border: #e8eaf0;
-  --card-divider: #f0f2f7;
-  
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-divider: rgba(255, 255, 255, 0.05);
+
   /* 卡片文字 */
-  --card-text-title: #1a1d2e;
-  --card-text-value: #2f3b59;
-  --card-text-muted: #9397ad;
+  --card-text-title: #e8eaf6;
+  --card-text-value: #c5c9e0;
+  --card-text-muted: rgba(232, 234, 246, 0.6);
 }
 
 /* ==================== 浅色主题 ==================== */
 [data-theme="light"] {
-  /* 主色调 - 清新明亮的金融主题 */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --bg-card: rgba(255, 255, 255, 0.95);
+  /* 主色调 - 晨曦金融主题 (Dawn Finance) */
+  /* 灵感：现代金融杂志、晨间财经新闻、清新专业 */
+  --bg-primary: #faf8f5;           /* 温暖的米白 */
+  --bg-secondary: #f5f2ed;         /* 稍深的米色 */
+  --bg-tertiary: #ebe7e0;          /* 第三层米色 */
+  --bg-card: rgba(255, 255, 255, 0.98);
   --bg-card-hover: rgba(255, 255, 255, 1);
 
   /* 文字颜色 */
-  --text-primary: #2d3748;
-  --text-secondary: #4a5568;
-  --text-muted: #718096;
+  --text-primary: #1e293b;         /* 深蓝灰 */
+  --text-secondary: #475569;
+  --text-muted: #64748b;
 
-  /* 盈亏颜色（更鲜艳） */
-  --color-profit: #e53e3e;
-  --color-profit-bg: rgba(229, 62, 62, 0.1);
-  --color-profit-border: rgba(229, 62, 62, 0.3);
-  --color-loss: #38a169;
-  --color-loss-bg: rgba(56, 161, 105, 0.1);
-  --color-loss-border: rgba(56, 161, 105, 0.3);
+  /* 盈亏颜色 - 使用珊瑚红和深蓝绿 */
+  --color-profit: #ef4444;         /* 珊瑚红 - 盈利 */
+  --color-profit-bg: rgba(239, 68, 68, 0.12);
+  --color-profit-border: rgba(239, 68, 68, 0.3);
+  --color-loss: #0d9488;           /* 深蓝绿 - 亏损 */
+  --color-loss-bg: rgba(13, 148, 136, 0.12);
+  --color-loss-border: rgba(13, 148, 136, 0.3);
 
   /* 边框 */
-  --border-color: rgba(0, 0, 0, 0.12);
-  --border-color-hover: rgba(0, 0, 0, 0.24);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-color-hover: rgba(0, 0, 0, 0.15);
 
-  /* 阴影（更明显的阴影） */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  /* 阴影（柔和的阴影） */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
 
-  /* 卡片颜色 - 盈利 */
-  --card-profit-color: #e53e3e;
-  --card-profit-bg: rgba(229, 62, 62, 0.08);
-  --card-profit-border: rgba(229, 62, 62, 0.25);
-  --card-profit-glow: rgba(229, 62, 62, 0.15);
+  /* 卡片颜色 - 盈利 (珊瑚红) */
+  --card-profit-color: #ef4444;
+  --card-profit-bg: rgba(239, 68, 68, 0.08);
+  --card-profit-border: rgba(239, 68, 68, 0.2);
+  --card-profit-glow: rgba(239, 68, 68, 0.12);
 
-  /* 卡片颜色 - 亏损 */
-  --card-loss-color: #38a169;
-  --card-loss-bg: rgba(56, 161, 105, 0.08);
-  --card-loss-border: rgba(56, 161, 105, 0.25);
-  --card-loss-glow: rgba(56, 161, 105, 0.15);
+  /* 卡片颜色 - 亏损 (深蓝绿) */
+  --card-loss-color: #0d9488;
+  --card-loss-bg: rgba(13, 148, 136, 0.08);
+  --card-loss-border: rgba(13, 148, 136, 0.2);
+  --card-loss-glow: rgba(13, 148, 136, 0.12);
 
   /* 卡片边框和分隔 */
-  --card-border: #e2e8f0;
-  --card-divider: #edf2f7;
+  --card-border: #e2e0dc;
+  --card-divider: #ebe8e4;
 
   /* 卡片文字 */
-  --card-text-title: #1a202c;
-  --card-text-value: #2d3748;
+  --card-text-title: #1e293b;
+  --card-text-value: #334155;
   --card-text-muted: #a0aec0;
 }
 
@@ -143,19 +146,19 @@
 
         body {
             font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-primary);
             min-height: 100%;
             padding: 10px 12px;
         }
 
         /* 浅色主题的body背景 */
         [data-theme="light"] body {
-            background: linear-gradient(135deg, #e0e5ec 0%, #f5f7fa 50%, #c3cfe2 100%);
+            background: var(--bg-primary);
         }
 
         /* 浅色主题下的容器样式增强 */
         [data-theme="light"] .container {
-            background: rgba(255, 255, 255, 0.85);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
         }
 
@@ -267,9 +270,9 @@
         .container {
             max-width: 1560px;
             margin: 0 auto;
-            background: white;
+            background: var(--bg-primary);
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-lg);
             padding: 24px;
             overflow: visible;  /* 确保 sticky 定位正常工作 */
         }
@@ -281,9 +284,10 @@
             align-items: center;
             margin-bottom: 16px;
             padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--bg-secondary);
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
         /* 只在详情页和交易记录页固定顶部 */
@@ -326,9 +330,9 @@
             min-width: 72px;
             padding: 6px 10px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 8px 18px rgba(17, 17, 26, 0.08);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
         }
 
         /* ==================== 详情页：realtime/summary 恢复 style-2 版布局（去除 grid 凸出感） ==================== */
@@ -336,13 +340,14 @@
         #detailPage .realtime-info {
             margin-bottom: 30px;
             padding: 18px 16px 16px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: var(--bg-card);
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 16px;
             position: relative;
+            border: 1px solid var(--border-color);
         }
 
         #detailPage .realtime-info .realtime-title {
@@ -350,7 +355,7 @@
             top: 8px;
             left: 15px;
             font-size: 12px;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 500;
         }
 
@@ -378,7 +383,7 @@
 
         #detailPage .realtime-info .detail-summary-label {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
             opacity: 1;
             margin-bottom: 5px;
         }
@@ -387,22 +392,25 @@
         #detailPage .realtime-info .realtime-value {
             font-size: 20px;
             font-weight: bold;
+            color: var(--text-primary);
         }
 
         #detailPage .realtime-info .detail-summary-dual-label {
             font-size: 11px;
+            color: var(--text-muted);
         }
 
         #detailPage .realtime-info .detail-summary-dual-value {
             font-size: 16px;
             font-weight: 600;
+            color: var(--text-primary);
         }
 
         #detailPage .summary-info {
             text-align: center;
             margin-bottom: 30px;
             padding: 15px;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            background: var(--bg-card);
             border-radius: 10px;
             display: flex;
             justify-content: center;
@@ -410,6 +418,7 @@
             gap: 30px;
             flex-wrap: wrap;
             position: relative;
+            border: 1px solid var(--border-color);
         }
 
         #detailPage .summary-info .summary-title {
@@ -417,7 +426,7 @@
             top: 8px;
             left: 15px;
             font-size: 12px;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 500;
         }
 
@@ -444,7 +453,7 @@
 
         #detailPage .summary-info .detail-summary-label {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
             opacity: 1;
             margin-bottom: 5px;
         }
@@ -453,11 +462,12 @@
         #detailPage .summary-info .summary-value {
             font-size: 20px;
             font-weight: bold;
+            color: var(--text-primary);
         }
 
         .header-quote-label {
             font-size: 12px;
-            color: #666;
+            color: var(--text-muted);
             margin-bottom: 2px;
             line-height: 1.1;
         }
@@ -467,6 +477,7 @@
             font-weight: bold;
             font-variant-numeric: tabular-nums;
             line-height: 1.1;
+            color: var(--text-primary);
         }
 
         /* 标签列和数值列容器 */
@@ -483,7 +494,7 @@
             min-width: 50px;
             padding: 4px 6px;
             align-items: flex-end;
-            background: rgba(102, 126, 234, 0.08);
+            background: var(--bg-secondary);
         }
 
         .header-quote-value-col {
@@ -787,14 +798,14 @@
 
         h1 {
             text-align: center;
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 10px;
             font-size: 28px;
         }
 
         .stock-info {
             text-align: center;
-            color: #666;
+            color: var(--text-muted);
             margin-bottom: 10px;
             font-size: 16px;
         }
@@ -897,8 +908,8 @@
             gap: 4px;
             padding: 3px;
             border-radius: 8px;
-            background: #f3f5fb;
-            border: 1px solid #dbe2f0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
         }
 
         .sort-direction-btn {
@@ -907,7 +918,7 @@
             border: none;
             border-radius: 6px;
             background: transparent;
-            color: #667085;
+            color: var(--text-muted);
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
@@ -915,12 +926,12 @@
         }
 
         .sort-direction-btn:hover {
-            background: rgba(102, 126, 234, 0.12);
-            color: #4f46e5;
+            background: var(--bg-card-hover);
+            color: var(--color-profit);
         }
 
         .sort-direction-btn.active {
-            background: #667eea;
+            background: var(--color-profit);
             color: white;
             box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
         }
@@ -1004,18 +1015,18 @@
         }
 
         .card {
-            background: white;
-            color: #333;
+            background: var(--bg-card);
+            color: var(--text-primary);
             padding: 15px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 2px solid #e0e0e0;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid var(--border-color);
         }
 
         .card h3 {
             font-size: 12px;
             margin-bottom: 8px;
-            color: #666;
+            color: var(--text-muted);
         }
 
         .card .value {
@@ -1024,25 +1035,25 @@
         }
 
         .card.profit {
-            border-color: #f44336;
+            border-color: var(--color-profit);
         }
 
         .card.profit .value {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .card.loss {
-            border-color: #4caf50;
+            border-color: var(--color-loss);
         }
 
         .card.loss .value {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         /* ==================== Section 区块统一样式 ==================== */
         
         .section {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
             padding: 20px;
@@ -1052,10 +1063,10 @@
         .section h2 {
             margin: 0 0 16px 0;
             padding-bottom: 12px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid var(--border-color);
             font-size: 16px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -1065,7 +1076,7 @@
             content: '';
             width: 4px;
             height: 18px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, var(--color-profit) 0%, var(--color-loss) 100%);
             border-radius: 2px;
         }
 
@@ -1086,6 +1097,7 @@
             border: none;
             font-size: 16px;
             font-weight: 600;
+            color: var(--text-primary);
         }
 
         .profit-loss-stats {
@@ -1099,11 +1111,11 @@
         }
 
         .profit-loss-stats .profit-count {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .profit-loss-stats .loss-count {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .section-header h2::before {
@@ -1136,38 +1148,40 @@
 
         .sort-select {
             padding: 6px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
-            background: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
             cursor: pointer;
             outline: none;
             transition: border-color 0.3s;
         }
 
         .sort-select:hover {
-            border-color: #667eea;
+            border-color: var(--color-profit);
         }
 
         .sort-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+            border-color: var(--color-profit);
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
         }
 
         /* 视图切换按钮 */
         .btn-icon {
             padding: 6px 12px;
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            color: var(--text-primary);
             transition: all 0.3s;
         }
 
         .btn-icon:hover {
-            border-color: #667eea;
-            background: #f5f5f5;
+            border-color: var(--color-profit);
+            background: var(--bg-card-hover);
         }
 
         .view-icon-grid, .view-icon-list {
@@ -1193,7 +1207,7 @@
 
         .stock-card-list:hover {
             transform: none;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.15);
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.15);
         }
 
         .stock-card-list-name {
@@ -1206,7 +1220,7 @@
         .stock-card-list-title {
             font-size: 15px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1214,7 +1228,7 @@
 
         .stock-card-list-code {
             font-size: 12px;
-            color: #999;
+            color: var(--text-muted);
         }
 
         .stock-card-list-item {
@@ -1227,23 +1241,23 @@
 
         .stock-card-list-label {
             font-size: 12px;
-            color: #999;
+            color: var(--text-muted);
             margin-bottom: 2px;
         }
 
         .stock-card-list-value {
             font-size: 14px;
             font-weight: 500;
-            color: #333;
+            color: var(--text-primary);
             white-space: nowrap;
         }
 
         .stock-card-list-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .stock-card-list-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .stock-card-list-actions {
@@ -1254,9 +1268,9 @@
 
         /* 数据统计表格 */
         .stats-table-container {
-            background: white;
+            background: var(--bg-card);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
@@ -1267,28 +1281,28 @@
 
         .stats-table td {
             padding: 12px 20px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
         }
 
         .stats-label {
-            background: #f5f5f5;
-            color: #666;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
             font-weight: 500;
             width: 25%;
         }
 
         .stats-value {
-            color: #333;
+            color: var(--text-primary);
             font-weight: bold;
             width: 25%;
         }
 
         .stats-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .stats-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         /* 图表区域 */
@@ -1303,17 +1317,19 @@
             flex: 1;
             min-width: 400px;
             height: 350px;
-            background: white;
+            background: var(--bg-card);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
         .add-trade-form-container {
-            background: #f5f5f5;
+            background: var(--bg-card);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             animation: slideDown 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         @keyframes slideDown {
@@ -1334,10 +1350,10 @@
         }
 
         .section h2 {
-            color: #333;
+            color: var(--text-primary);
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid var(--color-profit);
         }
 
         .form-row {
@@ -1354,35 +1370,37 @@
 
         .form-group label {
             margin-bottom: 5px;
-            color: #555;
+            color: var(--text-primary);
             font-weight: 500;
         }
 
         .form-group input, .form-group select {
             padding: 10px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 5px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         .form-group select {
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 10px center;
             padding-right: 32px;
-            background-color: #fff;
+            background-color: var(--bg-secondary);
         }
 
         .form-group select:hover {
-            border-color: #667eea;
+            border-color: var(--color-profit);
         }
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--color-profit);
         }
 
         .btn {
@@ -1393,6 +1411,8 @@
             font-size: 14px;
             font-weight: 500;
             transition: all 0.3s;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
 
         /* 股票选择器 */
@@ -1407,29 +1427,30 @@
 
         .stock-select {
             padding: 10px 20px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
             border-radius: 5px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            background: white;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             min-width: 150px;
             transition: all 0.3s;
         }
 
         .stock-select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--color-profit);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--color-profit);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
         }
 
         .btn-danger {
@@ -1443,8 +1464,8 @@
 
         .btn-danger-outline {
             background: transparent;
-            color: #f44336;
-            border: 2px solid #f44336;
+            color: var(--color-profit);
+            border: 2px solid var(--color-profit);
         }
 
         .btn-danger-outline:hover {
@@ -1472,7 +1493,7 @@
         }
 
         .btn-success {
-            background: #4caf50;
+            background: var(--color-loss);
             color: white;
         }
 
@@ -1484,8 +1505,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-sm);
             border-radius: 8px;
             overflow: hidden;
         }
@@ -1493,17 +1514,28 @@
         th, td {
             padding: 12px;
             text-align: center;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--color-profit);
             color: white;
             font-weight: 500;
         }
 
         tr:hover {
-            background: #f5f5f5;
+            background: var(--bg-card-hover);
+        }
+
+        td {
+            color: var(--text-primary);
+        }
+
+        /* 详情页表格表头使用渐变背景 */
+        #detailPage table th {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
         .action-btns {
@@ -1525,10 +1557,11 @@
         }
 
         .chart-box {
-            background: white;
+            background: var(--bg-card);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
         }
 
         .chart-box h3 {
@@ -1543,12 +1576,12 @@
         }
 
         .profit {
-            color: #f44336;
+            color: var(--color-profit);
             font-weight: bold;
         }
 
         .loss {
-            color: #4caf50;
+            color: var(--color-loss);
             font-weight: bold;
         }
 
@@ -2653,7 +2686,7 @@
 
         .badge-holding {
             background: #e8f5e9;
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .badge-partial {
@@ -2671,14 +2704,14 @@
             margin-right: 4px;
         }
 
-        .cycle-1 { background: #e3f2fd; color: #1565c0; }
-        .cycle-2 { background: #f3e5f5; color: #7b1fa2; }
-        .cycle-3 { background: #e8f5e9; color: #2e7d32; }
-        .cycle-4 { background: #fff3e0; color: #e65100; }
-        .cycle-5 { background: #fce4ec; color: #c2185b; }
-        .cycle-6 { background: #e0f7fa; color: #00838f; }
-        .cycle-7 { background: #f9fbe7; color: #9e9d24; }
-        .cycle-8 { background: #efebe9; color: #5d4037; }
+        .cycle-1 { background: rgba(21, 101, 192, 0.2); color: #64b5f6; }
+        .cycle-2 { background: rgba(123, 31, 162, 0.2); color: #ba68c8; }
+        .cycle-3 { background: rgba(46, 125, 50, 0.2); color: #81c784; }
+        .cycle-4 { background: rgba(230, 81, 0, 0.2); color: #ff8a65; }
+        .cycle-5 { background: rgba(194, 24, 91, 0.2); color: #f48fb1; }
+        .cycle-6 { background: rgba(0, 131, 143, 0.2); color: #4dd0e1; }
+        .cycle-7 { background: rgba(158, 157, 36, 0.2); color: #dce775; }
+        .cycle-8 { background: rgba(93, 64, 55, 0.2); color: #bcaaa4; }
 
         .cycle-tag {
             display: inline-block;
@@ -2689,7 +2722,7 @@
         }
 
         .cycle-start {
-            background: #4caf50;
+            background: var(--color-loss);
             color: white;
         }
 
@@ -2699,7 +2732,7 @@
         }
 
         .cycle-end {
-            background: #f44336;
+            background: var(--color-profit);
             color: white;
         }
 
@@ -2709,7 +2742,7 @@
         }
 
         .cycle-dividend {
-            background: #4caf50;
+            background: var(--color-loss);
             color: white;
         }
 
@@ -3240,17 +3273,18 @@
             align-items: center;
             gap: 5px;
             padding: 8px 15px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            color: #666;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
         .back-btn:hover {
-            background: #e0e0e0;
+            background: var(--bg-card-hover);
+            border-color: var(--color-profit);
         }
 
         /* 页面容器 */
@@ -3807,8 +3841,8 @@
 
         /* 股票卡片 */
         .stock-card {
-            background: white;
-            border: 2px solid #e0e0e0;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
@@ -3816,29 +3850,29 @@
         }
 
         .stock-card:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+            border-color: var(--color-profit);
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.2);
             transform: translateY(-3px);
         }
 
         .stock-card-header {
-            background: #f5f5f5;
+            background: var(--bg-secondary);
             padding: 12px;
             display: flex;
             align-items: center;
             gap: 10px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .stock-card-name {
             font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .stock-card-code {
             font-size: 12px;
-            color: #999;
+            color: var(--text-muted);
             flex: 1;
         }
 
@@ -3885,20 +3919,20 @@
 
         .stock-card-section {
             padding: 8px 10px;
-            border: 1px solid #edf0f7;
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            background: #fafbff;
+            background: var(--bg-tertiary);
         }
 
         .stock-card-section-emphasis {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.05));
-            border-color: rgba(102, 126, 234, 0.18);
+            background: var(--bg-card-hover);
+            border-color: var(--border-color-hover);
         }
 
         .stock-card-section-title {
             font-size: 11px;
             font-weight: 800;
-            color: #667eea;
+            color: var(--color-profit);
             letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
@@ -3927,18 +3961,18 @@
             gap: 4px;
             padding: 8px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid rgba(102, 126, 234, 0.08);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             min-width: 0;
         }
 
         .stock-card-metric-item-emphasis {
-            background: rgba(255, 255, 255, 0.92);
-            border-color: rgba(102, 126, 234, 0.14);
+            background: var(--bg-card-hover);
+            border-color: var(--border-color-hover);
         }
 
         .stock-card-metric-label {
-            color: #7a86a8;
+            color: var(--text-muted);
             font-size: 11px;
             line-height: 1.2;
         }
@@ -3946,17 +3980,17 @@
         .stock-card-metric-value {
             font-size: 13px;
             font-weight: 650;
-            color: #2f3b59;
+            color: var(--text-primary);
             word-break: break-word;
             font-variant-numeric: tabular-nums;
         }
 
         .stock-card-metric-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .stock-card-metric-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .stock-card-quote-item {
@@ -3965,13 +3999,13 @@
             gap: 4px;
             padding: 8px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.75);
-            border: 1px solid rgba(102, 126, 234, 0.08);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             min-width: 0;
         }
 
         .stock-card-quote-label {
-            color: #7a86a8;
+            color: var(--text-muted);
             font-size: 11px;
             line-height: 1.2;
         }
@@ -3979,17 +4013,17 @@
         .stock-card-quote-value {
             font-size: 13px;
             font-weight: 650;
-            color: #2f3b59;
+            color: var(--text-primary);
             word-break: break-word;
             font-variant-numeric: tabular-nums;
         }
 
         .stock-card-quote-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .stock-card-quote-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .stock-card-row {
@@ -4009,27 +4043,28 @@
         }
 
         .stock-card-label {
-            color: #666;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
         .stock-card-value {
             font-weight: 500;
             font-size: 14px;
+            color: var(--text-primary);
         }
 
         .stock-card-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .stock-card-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .stock-card-footer {
             padding: 10px 15px;
-            background: #fafafa;
-            border-top: 1px solid #e0e0e0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
         }
 
         .stock-card-yearly {
@@ -4054,11 +4089,11 @@
         }
 
         .yearly-value.profit {
-            color: #f44336;
+            color: var(--color-profit);
         }
 
         .yearly-value.loss {
-            color: #4caf50;
+            color: var(--color-loss);
         }
 
         .yearly-trades {
@@ -4086,10 +4121,10 @@
 
         /* 卡片基础样式增强 */
         .stock-card {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
-            border: 1px solid #e0e0e0;
+            border: 1px solid var(--border-color);
             overflow: hidden;
             transition: all var(--transition-normal);
             cursor: pointer;
@@ -4098,7 +4133,7 @@
         .stock-card:hover {
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
-            border-color: #c0c0c0;
+            border-color: var(--border-color-hover);
         }
 
         /* 盈亏状态边框 */
@@ -4120,9 +4155,9 @@
         /* 空状态提示 */
         .empty-hint {
             text-align: center;
-            color: #999;
+            color: var(--text-muted);
             padding: 30px;
-            background: #f9f9f9;
+            background: var(--bg-secondary);
             border-radius: 8px;
         }
 
@@ -4557,16 +4592,17 @@
 }
 
 .tr-stat-card {
-    background: white;
+    background: var(--bg-card);
     border-radius: 12px;
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .tr-stat-card::before {
@@ -4584,7 +4620,7 @@
 }
 
 .tr-stat-card.tr-stat-profit::before {
-    background: linear-gradient(90deg, #f44336, #ff9800);
+    background: linear-gradient(90deg, var(--color-profit), #ff9800);
 }
 
 .tr-stat-card.tr-stat-count::before {
@@ -4607,7 +4643,7 @@
 
 .tr-stat-profit .tr-stat-icon {
     background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(255, 152, 0, 0.1));
-    color: #f44336;
+    color: var(--color-profit);
 }
 
 .tr-stat-count .tr-stat-icon {
@@ -4642,11 +4678,11 @@
 }
 
 .tr-stat-value.profit {
-    color: #f44336;
+    color: var(--color-profit);
 }
 
 .tr-stat-value.loss {
-    color: #4caf50;
+    color: var(--color-loss);
 }
 
 /* 头部筛选器样式（交易记录页面） */
@@ -4665,22 +4701,22 @@
 
 .header-tr-input {
     padding: 6px 10px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 13px;
-    color: #333;
-    background: #fafafa;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
     width: 130px;
 }
 
 .header-tr-input:focus {
-    border-color: #667eea;
-    background: white;
+    border-color: var(--color-profit);
+    background: var(--bg-card);
     outline: none;
 }
 
 .header-tr-sep {
-    color: #999;
+    color: var(--text-muted);
     font-size: 13px;
 }
 
@@ -4708,24 +4744,24 @@
 
 .header-tr-quick-btn {
     padding: 5px 10px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 12px;
-    color: #666;
-    background: white;
+    color: var(--text-primary);
+    background: var(--bg-card);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .header-tr-quick-btn:hover {
-    border-color: #667eea;
-    color: #667eea;
+    border-color: var(--color-profit);
+    color: var(--color-profit);
 }
 
 .header-tr-quick-btn.active {
-    border-color: #667eea;
+    border-color: var(--color-profit);
     color: white;
-    background: #667eea;
+    background: var(--color-profit);
 }
 
 .header-tr-filter-btn {
@@ -4861,10 +4897,11 @@
 }
 
 .trade-records-table-container {
-    background: white;
+    background: var(--bg-card);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .trade-records-table {
@@ -4873,23 +4910,24 @@
 }
 
 .trade-records-table thead {
-    background: #f5f5f5;
+    background: var(--color-profit);
 }
 
 .trade-records-table th {
     padding: 16px 12px;
     text-align: left;
     font-weight: 600;
-    color: #333;
+    color: white;
     font-size: 14px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .trade-records-table td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
     font-size: 14px;
+    color: var(--text-primary);
 }
 
 .trade-records-table tbody tr:hover {
@@ -4912,11 +4950,11 @@
 }
 
 .trade-records-profit.profit {
-    color: #f44336;
+    color: var(--color-profit);
 }
 
 .trade-records-profit.loss {
-    color: #4caf50;
+    color: var(--color-loss);
 }
 
 .trade-records-type {
@@ -4956,15 +4994,16 @@
     gap: 12px;
     margin-bottom: 20px;
     padding: 16px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .trade-records-chart-selector .chart-selector-label {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .trade-records-chart-selector .chart-selector-item {
@@ -4974,7 +5013,7 @@
     cursor: pointer;
     user-select: none;
     font-size: 14px;
-    color: #555;
+    color: var(--text-primary);
 }
 
 .trade-records-chart-selector .chart-selector-item:hover {
@@ -5014,11 +5053,12 @@
 
 .trade-records-charts .chart-container {
     flex: 1;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
     min-width: 0; /* 防止flex子项溢出 */
+    border: 1px solid var(--border-color);
 }
 
 .trade-records-charts .chart-header {
@@ -5032,14 +5072,15 @@
     margin: 0;
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .trade-records-charts .chart-type-selector {
     padding: 4px 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    background: #fff;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.2s;
@@ -5291,7 +5332,7 @@
 }
 
 #syncDiffModal .btn-secondary {
-    background: #4caf50;
+    background: var(--color-loss);
     color: white;
     border: none;
 }
@@ -5404,7 +5445,7 @@
 
     position: relative;
 
-    background: white;
+    background: var(--bg-card);
 
     border-radius: 12px;
 
@@ -5419,6 +5460,8 @@
     overflow: hidden;
 
     animation: modalFadeIn 0.2s ease-out;
+
+    border: 1px solid var(--border-color);
 
 }
 
@@ -5456,7 +5499,7 @@
 
     padding: 16px 20px;
 
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
 
 }
 
@@ -5468,7 +5511,7 @@
 
     font-size: 16px;
 
-    color: #333;
+    color: var(--text-primary);
 
 }
 
@@ -5486,7 +5529,7 @@
 
     font-size: 24px;
 
-    color: #999;
+    color: var(--text-muted);
 
     cursor: pointer;
 
@@ -5566,7 +5609,7 @@
 
 .header-total-profit .profit-positive {
 
-    color: #f44336;
+    color: var(--color-profit);
 
     font-weight: 600;
 
@@ -5576,7 +5619,7 @@
 
 .header-total-profit .profit-negative {
 
-    color: #4caf50;
+    color: var(--color-loss);
 
     font-weight: 600;
 
@@ -5602,9 +5645,9 @@
 
     border-radius: 8px;
 
-    background: #f8f9fa;
+    background: var(--bg-secondary);
 
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border-color);
 
 }
 
@@ -5612,9 +5655,9 @@
 
 .cycle-item-active {
 
-    background: #e8f5e9;
+    background: rgba(16, 185, 129, 0.1);
 
-    border-color: #c8e6c9;
+    border-color: var(--color-loss);
 
 }
 
@@ -5622,7 +5665,7 @@
 
 .cycle-item-closed {
 
-    background: #f8f9fa;
+    background: var(--bg-secondary);
 
 }
 
@@ -5646,7 +5689,7 @@
 
     font-weight: 600;
 
-    color: #333;
+    color: var(--text-primary);
 
     font-size: 14px;
 
@@ -5672,7 +5715,7 @@
 
 .cycle-item-active .cycle-status {
 
-    background: #4caf50;
+    background: var(--color-loss);
 
 }
 
@@ -5688,7 +5731,7 @@
 
     font-size: 13px;
 
-    color: #666;
+    color: var(--text-muted);
 
 }
 
@@ -5696,7 +5739,7 @@
 
 .cycle-date {
 
-    color: #888;
+    color: var(--text-muted);
 
 }
 
@@ -5726,7 +5769,7 @@
 
     padding-top: 8px;
 
-    border-top: 1px dashed #e0e0e0;
+    border-top: 1px dashed var(--border-color);
 
 }
 
@@ -5758,7 +5801,7 @@
 
     font-size: 11px;
 
-    color: #888;
+    color: var(--text-muted);
 
 }
 
@@ -5770,7 +5813,7 @@
 
     font-weight: 600;
 
-    color: #333;
+    color: var(--text-primary);
 
 }
 
@@ -5788,7 +5831,7 @@
 
     padding-top: 8px;
 
-    border-top: 1px dashed #dee2e6;
+    border-top: 1px dashed var(--border-color);
 
     font-size: 13px;
 
@@ -5798,7 +5841,7 @@
 
 .profit-label {
 
-    color: #888;
+    color: var(--text-muted);
 
 }
 
@@ -5807,6 +5850,7 @@
 .profit-value {
 
     font-weight: 600;
+    color: var(--text-primary);
 
     font-size: 14px;
 
@@ -5816,7 +5860,7 @@
 
 .profit-positive {
 
-    color: #f44336;
+    color: var(--color-profit);
 
 }
 
@@ -5824,7 +5868,7 @@
 
 .profit-negative {
 
-    color: #4caf50;
+    color: var(--color-loss);
 
 }
 
@@ -6817,9 +6861,10 @@
 .cycle-history-section {
     margin: 24px 0;
     padding: 20px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .cycle-history-section-header {
@@ -6828,13 +6873,13 @@
     align-items: center;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .cycle-history-section-header h3 {
     margin: 0;
     font-size: 16px;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
@@ -6865,7 +6910,8 @@
 .cycle-history-total {
     font-size: 14px;
     font-weight: 600;
-    color: #666;
+    color: var(--text-primary);
+    margin-bottom: 12px;
 }
 
 .cycle-history-list {
@@ -6882,7 +6928,7 @@
 .cycle-history-empty {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: var(--text-muted);
 }
 
 /* 折叠状态：箭头向上旋转 */
@@ -6922,17 +6968,18 @@
 .addition-comparison-table {
     margin-top: 20px;
     overflow-x: auto;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 }
 
 /* 加仓对比头部 - 紫色渐变 */
 .ac-section-header {
     padding: 12px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-primary);
     border-radius: 12px 12px 0 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .ac-title-row {
@@ -6945,7 +6992,7 @@
 .ac-section-title {
     font-size: 16px;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .ac-section-toggle {
@@ -6956,18 +7003,18 @@
     height: 24px;
     padding: 0;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(102, 126, 234, 0.2);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .ac-section-toggle:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(102, 126, 234, 0.3);
 }
 
 .ac-section-toggle svg {
-    color: #fff;
+    color: var(--text-primary);
     transition: transform 0.2s ease;
 }
 
@@ -6985,16 +7032,16 @@
 
 /* 轮次分组 */
 .ac-cycle-group {
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    background: #fafafa;
+    background: var(--bg-secondary);
 }
 
 .ac-cycle-header {
     padding: 10px 12px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #e8e8e8;
+    background: rgba(102, 126, 234, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .ac-cycle-title-row {
@@ -7049,10 +7096,10 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
 }
 
 .ac-table thead {
@@ -7063,17 +7110,17 @@
     padding: 12px;
     text-align: center;
     font-weight: 500;
-    color: white;
-    border-bottom: 1px solid #e0e0e0;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
     font-size: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-secondary);
 }
 
 .ac-table td {
     padding: 10px 16px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #303133;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 .ac-table tbody tr:last-child td {
@@ -7081,23 +7128,23 @@
 }
 
 .ac-table tbody tr:hover {
-    background: #f5f7fa;
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .ac-table tbody tr.ac-latest {
-    background: #ecf5ff;
+    background: rgba(33, 150, 243, 0.1);
 }
 
 .ac-table tbody tr.ac-latest:hover {
-    background: #d9ecff;
+    background: rgba(33, 150, 243, 0.15);
 }
 
 .ac-table tbody tr.ac-build {
-    background: #f0f9eb;
+    background: rgba(16, 185, 129, 0.1);
 }
 
 .ac-table tbody tr.ac-build:hover {
-    background: #e1f3d8;
+    background: rgba(16, 185, 129, 0.15);
 }
 
 .ac-build-label {
@@ -7110,11 +7157,11 @@
 }
 
 .ac-table tbody tr.ac-predict {
-    background: #fef0f0;
+    background: rgba(239, 68, 68, 0.1);
 }
 
 .ac-table tbody tr.ac-predict:hover {
-    background: #fde2e2;
+    background: rgba(239, 68, 68, 0.15);
 }
 
 .ac-predict-label {
@@ -7129,12 +7176,14 @@
 .ac-predict-input {
     width: 100px;
     padding: 6px 8px;
-    border: 1px solid #fbc4c4;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 13px;
     text-align: right;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .ac-predict-input:focus {
@@ -7143,7 +7192,7 @@
 }
 
 .ac-predict-input::placeholder {
-    color: #c0c4cc;
+    color: var(--text-muted);
     font-size: 12px;
 }
 
@@ -7217,11 +7266,11 @@
 
 /* 轮次分组 */
 .ac-cycle-group {
-    background: #fff;
+    background: var(--bg-secondary);
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #ebeef5;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .ac-cycle-header {
@@ -7229,8 +7278,8 @@
     align-items: center;
     gap: 8px;
     padding: 10px 14px;
-    background: #f5f7fa;
-    border-bottom: 1px solid #ebeef5;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .ac-cycle-title-row {
@@ -7242,7 +7291,7 @@
 .ac-cycle-title {
     font-size: 14px;
     font-weight: 600;
-    color: #303133;
+    color: var(--text-primary);
 }
 
 .ac-cycle-toggle {
@@ -7254,15 +7303,15 @@
     padding: 0;
     border: none;
     background: transparent;
-    color: #909399;
+    color: var(--text-muted);
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.2s;
 }
 
 .ac-cycle-toggle:hover {
-    background: #e4e7ed;
-    color: #606266;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
 }
 
 .ac-cycle-toggle svg {
@@ -7634,9 +7683,9 @@
 
 /* 卡片主体 */
 .stock-card-v2 {
-    background: #fff;
+    background: var(--bg-card);
     border-radius: var(--card-radius);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     transition: all 0.25s ease;
     cursor: pointer;
@@ -7654,7 +7703,7 @@
 /* 悬浮效果 */
 .stock-card-v2:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    box-shadow: var(--shadow-md);
 }
 
 /* 卡片头部 - 紧凑型 */
@@ -7662,7 +7711,7 @@
     display: flex;
     align-items: center;
     padding: 10px 14px;
-    background: linear-gradient(135deg, #f8f9fc 0%, #eef0fb 100%);
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--card-border);
     gap: 10px;
 }
@@ -7676,13 +7725,13 @@
 .sc-name-clickable,
 .scl-name-clickable {
     cursor: pointer;
-    color: #2563eb;
+    color: var(--color-profit);
     transition: color 0.2s;
 }
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    color: #1d4ed8;
+    color: var(--color-loss);
 }
 
 .sc-code {
@@ -7711,7 +7760,7 @@
 /* 核心收益区 - 视觉焦点 */
 .sc-main {
     padding: 16px 14px;
-    background: #fff;
+    background: var(--bg-card);
     text-align: center;
 }
 
@@ -7735,7 +7784,7 @@
     margin-top: 6px;
     font-size: 14px;
     font-weight: 500;
-    color: #666;
+    color: var(--text-muted);
 }
 
 /* 数据网格区 - 4列布局 */
@@ -7788,10 +7837,10 @@
     border-radius: 4px;
 }
 .sc-col-cycle-link:hover {
-    background: rgba(102, 126, 234, 0.08);
+    background: var(--bg-card-hover);
 }
 .sc-col-cycle-link .sc-col-value {
-    color: #667eea;
+    color: var(--color-profit);
     text-decoration: underline;
     text-decoration-style: dashed;
 }
@@ -7897,7 +7946,7 @@
     align-items: center;
     padding: 12px 16px;
     gap: 12px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: 10px;
     border: 1px solid var(--card-border);
     transition: all 0.2s;
@@ -7907,8 +7956,8 @@
 }
 
 .stock-card-list-v2:hover {
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    border-color: var(--card-profit-color);
+    box-shadow: var(--shadow-sm);
     transform: translateX(4px);
 }
 
@@ -8456,12 +8505,12 @@
 }
 
 .delete-confirm-input.valid {
-    border-color: #4caf50;
+    border-color: var(--color-loss);
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
 }
 
 .delete-confirm-input.invalid {
-    border-color: #f44336;
+    border-color: var(--color-profit);
     box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15);
 }
 
@@ -8474,11 +8523,11 @@
 }
 
 .delete-confirm-hint.error {
-    color: #f44336;
+    color: var(--color-profit);
 }
 
 .delete-confirm-hint.success {
-    color: #4caf50;
+    color: var(--color-loss);
 }
 
 .delete-confirm-footer {
@@ -8589,11 +8638,11 @@
 }
 
 .sp-container {
-    background: linear-gradient(135deg, #e3f2fd 0%, #f5f9ff 100%);
+    background: var(--bg-card);
     border-radius: 12px;
-    border: 1px solid #bbdefb;
+    border: 1px solid var(--border-color);
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+    box-shadow: var(--shadow-sm);
 }
 
 .sp-header {
@@ -8602,15 +8651,15 @@
     align-items: center;
     gap: 8px;
     padding: 12px 16px;
-    background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
-    border-bottom: 1px solid #1e88e5;
+    background: rgba(33, 150, 243, 0.15);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .sp-title {
     margin: 0;
     font-size: 16px;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .sp-toggle-btn {
@@ -8621,18 +8670,18 @@
     height: 24px;
     padding: 0;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(33, 150, 243, 0.2);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .sp-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(33, 150, 243, 0.3);
 }
 
 .sp-toggle-btn svg {
-    color: #fff;
+    color: var(--text-primary);
     transition: transform 0.2s ease;
 }
 
@@ -8656,7 +8705,7 @@
     display: flex;
     gap: 24px;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--bg-secondary);
     border-radius: 8px;
 }
 
@@ -8682,16 +8731,16 @@
 .sp-holding-value {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .sp-holding-cost {
     font-size: 12px;
-    color: #666;
+    color: var(--text-muted);
 }
 
 .sp-after-group {
-    border-left: 1px solid #bbdefb;
+    border-left: 1px solid var(--border-color);
     padding-left: 24px;
 }
 
@@ -8712,18 +8761,18 @@
 
 .sp-input-label {
     font-size: 12px;
-    color: #666;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 .sp-input {
     width: 100px;
     padding: 8px 10px;
-    border: 1px solid #bbdefb;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 14px;
-    color: #333;
-    background: #fff;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
     transition: all 0.2s ease;
 }
 
@@ -8734,7 +8783,7 @@
 }
 
 .sp-input::placeholder {
-    color: #aaa;
+    color: var(--text-muted);
 }
 
 /* 卖出股数组（输入框 + 快捷按钮） */
@@ -8767,7 +8816,7 @@
     font-weight: 500;
     color: #2196f3;
     background: rgba(33, 150, 243, 0.1);
-    border: 1px solid #bbdefb;
+    border: 1px solid rgba(33, 150, 243, 0.3);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -8795,20 +8844,20 @@
 .sp-result-value {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     padding: 8px 10px;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--bg-secondary);
     border-radius: 6px;
     min-width: 70px;
     text-align: center;
 }
 
 .sp-result-value.sp-profit {
-    color: #f44336;
+    color: var(--color-profit);
 }
 
 .sp-result-value.sp-loss {
-    color: #4caf50;
+    color: var(--color-loss);
 }
 
 .sp-result-value.sp-error {
@@ -9559,8 +9608,8 @@
 
 .trade-records-table tbody td {
     padding: 10px 8px;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-    color: #333;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
 }
 
 /* 浅色主题下的备注 */
@@ -9645,5 +9694,138 @@
 
 [data-theme="light"] .quote-text {
     color: #4a5568;
+}
+
+/* ==================== 悬浮主题切换按钮 ==================== */
+.theme-toggle-fab {
+    position: fixed;
+    top: 20px;      /* 右上角 */
+    right: 20px;
+    width: 40px;    /* 缩小尺寸 */
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);  /* 默认使用浅色背景 */
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    opacity: 0;     /* 默认隐藏 */
+    transform: translateY(-10px);  /* 向上偏移 */
+    pointer-events: none;  /* 默认不可点击 */
+}
+
+/* dark主题下使用浅色背景 */
+[data-theme="dark"] .theme-toggle-fab {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* light主题下使用深色背景 */
+[data-theme="light"] .theme-toggle-fab {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 鼠标移动到右上角区域时显示按钮 */
+.theme-toggle-fab-trigger {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 60px;   /* 缩小触发区域 */
+    height: 60px;  /* 缩小触发区域 */
+    z-index: 9998;
+}
+
+.theme-toggle-fab-trigger:hover + .theme-toggle-fab,
+.theme-toggle-fab:hover {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.theme-toggle-fab:hover {
+    transform: scale(1.1) translateY(0);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    border-color: var(--color-profit);
+    background: rgba(255, 255, 255, 1);  /* 悬停时背景更亮 */
+}
+
+/* dark主题下悬停效果 */
+[data-theme="dark"] .theme-toggle-fab:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.5);
+}
+
+/* light主题下悬停效果 */
+[data-theme="light"] .theme-toggle-fab:hover {
+    background: rgba(30, 41, 59, 1);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.5);
+}
+
+.theme-toggle-fab:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle-fab svg {
+    transition: all 0.3s ease;
+}
+
+/* dark主题下，图标使用深色（因为背景是浅色） */
+[data-theme="dark"] .theme-toggle-fab svg {
+    color: #1e293b;  /* 深色 */
+}
+
+/* light主题下，图标使用浅色（因为背景是深色） */
+[data-theme="light"] .theme-toggle-fab svg {
+    color: #e8eaf6;  /* 浅色 */
+}
+
+.theme-toggle-fab:hover svg {
+    color: var(--color-profit) !important;
+    transform: rotate(180deg);  /* 悬停时旋转180度 */
+}
+
+.theme-toggle-fab svg {
+    transition: all 0.3s ease;
+}
+
+/* dark主题下，图标使用深色（因为背景是浅色） */
+[data-theme="dark"] .theme-toggle-fab svg {
+    color: #1e293b !important;  /* 深色 */
+}
+
+/* light主题下，图标使用浅色（因为背景是深色） */
+[data-theme="light"] .theme-toggle-fab svg {
+    color: #e8eaf6 !important;  /* 浅色 */
+}
+
+.theme-toggle-fab .theme-icon-dark {
+    display: none;
+}
+
+.theme-toggle-fab .theme-icon-light {
+    display: block;
+}
+
+/* dark主题：显示月亮图标（theme-icon-light），表示可以切换到light */
+[data-theme="dark"] .theme-toggle-fab .theme-icon-dark {
+    display: none;
+}
+
+[data-theme="dark"] .theme-toggle-fab .theme-icon-light {
+    display: block;
+}
+
+/* light主题：显示太阳图标（theme-icon-dark），表示可以切换到dark */
+[data-theme="light"] .theme-toggle-fab .theme-icon-dark {
+    display: block;
+}
+
+[data-theme="light"] .theme-toggle-fab .theme-icon-light {
+    display: none;
 }
 

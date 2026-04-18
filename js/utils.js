@@ -1413,7 +1413,7 @@ function renderCycleHistoryList(options) {
         `;
     });
 
-    const resultHtml = `<div style="margin-bottom:12px;font-weight:600;">总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span></div>${listHtml}`;
+    const resultHtml = `<div class="cycle-history-total">总收益：<span class="${totalProfitClass}">¥${totalProfitText}</span></div>${listHtml}`;
 
     if (container) {
         container.innerHTML = resultHtml;
