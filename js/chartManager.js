@@ -283,11 +283,24 @@ const ChartManager = {
     update(chartId, option, notMerge = false) {
         try {
             if (this.charts[chartId]) {
-                this.charts[chartId].setOption(option, notMerge);
+                // 注入主题配置
+                const themeAwareOption = this.injectThemeConfig(option);
+                this.charts[chartId].setOption(themeAwareOption, notMerge);
             }
         } catch (error) {
             console.error(`更新图表配置失败 [${chartId}]:`, error);
         }
+    },
+
+    /**
+     * 设置图表配置(自动注入主题)
+     * 这是 setOption 的包装方法,自动注入主题配置
+     * @param {string} chartId - 图表唯一标识
+     * @param {Object} option - ECharts 配置选项
+     * @param {boolean} notMerge - 是否不合并配置，默认为 false
+     */
+    setOption(chartId, option, notMerge = false) {
+        this.update(chartId, option, notMerge);
     },
 
     /**
