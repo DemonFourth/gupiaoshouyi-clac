@@ -1901,7 +1901,8 @@ const Detail = {
                     smooth: true,
                     symbol: 'circle', symbolSize: 6,
                     lineStyle: { color: '#2196F3', width: 2 },
-                    itemStyle: { color: '#2196F3' }
+                    itemStyle: { color: '#2196F3' },
+                    markLine: markLine  // 将最新价标记线移到第一个series
                 },
                 {
                     name: '每股摊薄成本',
@@ -1910,8 +1911,7 @@ const Detail = {
                     smooth: true,
                     symbol: 'triangle', symbolSize: 6,
                     lineStyle: { color: '#9C27B0', width: 2 },
-                    itemStyle: { color: '#9C27B0' },
-                    markLine: markLine
+                    itemStyle: { color: '#9C27B0' }
                 }
             ]
         };

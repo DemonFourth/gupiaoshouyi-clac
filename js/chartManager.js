@@ -246,6 +246,7 @@ const ChartManager = {
                     chart.setOption({
                         textStyle: { color: colors.text },
                         title: { textStyle: { color: colors.text } },
+                        legend: { textStyle: { color: colors.text } },
                         xAxis: {
                             axisLine: { lineStyle: { color: colors.axisLine } },
                             axisLabel: { color: colors.text },
