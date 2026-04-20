@@ -3101,6 +3101,37 @@
   margin-bottom: 12px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.osv2-toplist-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.osv2-toplist-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.osv2-toplist-stat {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.osv2-toplist-stat.profit {
+  background: var(--color-profit-bg);
+  color: var(--color-profit);
+}
+
+.osv2-toplist-stat.loss {
+  background: var(--color-loss-bg);
+  color: var(--color-loss);
 }
 
 .osv2-toplist-title {

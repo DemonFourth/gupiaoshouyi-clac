@@ -727,6 +727,25 @@ const Overview = {
             clearedStatsEl.innerHTML = `<span class="profit-count">盈利${clearedProfitCount}只</span><span class="loss-count">亏损${clearedLossCount}只</span>`;
         }
 
+        // 更新 TOP5 区域的统计数据
+        const holdingProfitCountEl = document.getElementById('holdingProfitCount');
+        const holdingLossCountEl = document.getElementById('holdingLossCount');
+        const clearedProfitCountEl = document.getElementById('clearedProfitCount');
+        const clearedLossCountEl = document.getElementById('clearedLossCount');
+
+        if (holdingProfitCountEl) {
+            holdingProfitCountEl.textContent = '盈利 ' + profitCount + '只';
+        }
+        if (holdingLossCountEl) {
+            holdingLossCountEl.textContent = '亏损 ' + lossCount + '只';
+        }
+        if (clearedProfitCountEl) {
+            clearedProfitCountEl.textContent = '盈利 ' + clearedProfitCount + '只';
+        }
+        if (clearedLossCountEl) {
+            clearedLossCountEl.textContent = '亏损 ' + clearedLossCount + '只';
+        }
+
         // 渲染持仓盈利股票列表
         this.renderProfitLossList('profitStockList', profitStocks, true);
 
