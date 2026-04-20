@@ -10048,3 +10048,42 @@
     background: linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.08) 100%);
 }
 
+/* 浅色主题下的 TOP5 榜单区域 */
+/* 增加层次感和视觉深度 */
+[data-theme="light"] .osv2-toplist-section {
+    background: linear-gradient(135deg, #f5f2ed 0%, #ebe7e0 100%);
+}
+
+[data-theme="light"] .osv2-toplist-group {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .osv2-toplist-group:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 股票数量标签 */
+[data-theme="light"] .osv2-toplist-count {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+/* 列表项 hover 效果 */
+[data-theme="light"] .osv2-toplist-items .profit-loss-item:hover,
+[data-theme="light"] .osv2-toplist-items .top-item:hover {
+    background: rgba(102, 126, 234, 0.06);
+}
+
+/* 盈利列标题 */
+[data-theme="light"] .osv2-toplist-column-header.profit {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.1);
+}
+
+/* 亏损列标题 */
+[data-theme="light"] .osv2-toplist-column-header.loss {
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(13, 148, 136, 0.1) 100%);
+    box-shadow: 0 1px 3px rgba(13, 148, 136, 0.1);
+}
+
