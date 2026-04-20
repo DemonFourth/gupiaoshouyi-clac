@@ -1482,10 +1482,6 @@ const Detail = {
             this._chartInstances.cumulativeProfitChart.dispose();
         }
 
-        // 使用 ChartManager.init()，禁用各自的 resize 监听
-        const myChart = StockProfitCalculator.ChartManager.init('detail-cumulativeProfitChart', chartDom, null, { bindResize: false });
-        this._chartInstances.cumulativeProfitChart = myChart;
-
         const option = {
             title: {
                 text: '累计收益变化趋势',
@@ -1571,7 +1567,9 @@ const Detail = {
             }]
         };
 
-        myChart.setOption(option);
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        const myChart = StockProfitCalculator.ChartManager.init('detail-cumulativeProfitChart', chartDom, option, { bindResize: false });
+        this._chartInstances.cumulativeProfitChart = myChart;
     },
 
     renderProfitTrendChart(timeSeries) {
