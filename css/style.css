@@ -7543,7 +7543,7 @@
 .rtv2-detail-dual-label {
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-muted);
     min-width: 32px;
     text-transform: uppercase;
 }
@@ -7551,25 +7551,25 @@
 .rtv2-detail-dual-value {
     font-size: 16px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--text-primary);
     font-variant-numeric: tabular-nums;
 }
 
 .rtv2-detail-dual-value.profit {
-    color: #ff6b6b;
+    color: var(--color-profit);
 }
 
 .rtv2-detail-dual-value.loss {
-    color: #2ed573;
+    color: var(--color-loss);
 }
 
 /* 盈亏项高亮 */
 .rtv2-detail-item:has(.rtv2-detail-value.profit) {
-    background: rgba(233, 69, 96, 0.05);
+    background: var(--color-profit-bg);
 }
 
 .rtv2-detail-item:has(.rtv2-detail-value.loss) {
-    background: rgba(46, 213, 115, 0.05);
+    background: var(--color-loss-bg);
 }
 
 /* V2 版 tooltip 样式调整 */
