@@ -131,17 +131,20 @@ const Router = {
         this.state.currentPage = 'overview';
         this.state.currentStockCode = null;
 
-        if (saveState) {
-            await this.saveState();
-        }
-
-        // 恢复汇总页的滚动位置
+        // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
         console.log('[showOverview] 准备恢复滚动位置:', savedScrollPosition);
         console.log('[showOverview] scrollPositions:', this.state.scrollPositions);
         if (savedScrollPosition > 0) {
             console.log('[showOverview] 执行滚动恢复到:', savedScrollPosition);
-            window.scrollTo({ top: savedScrollPosition, behavior: 'smooth' });
+            // 立即设置滚动位置（不使用 smooth，避免动画延迟）
+            window.scrollTo(0, savedScrollPosition);
+            // 标记滚动位置已恢复，避免 refresh() 再次恢复
+            this._scrollPositionRestored = true;
+        }
+
+        if (saveState) {
+            await this.saveState();
         }
 
         // 触发页面切换事件

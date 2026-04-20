@@ -2843,6 +2843,21 @@ const Overview = {
 
         console.log('[Overview.refresh] 当前页面:', currentPage, ', 是否汇总页:', isOverviewPage);
 
+        // 检查是否刚从其他页面返回（Router 已恢复滚动位置）
+        const scrollPositionRestored = StockProfitCalculator.Router._scrollPositionRestored;
+        if (scrollPositionRestored) {
+            console.log('[Overview.refresh] Router 已恢复滚动位置，跳过 refresh 的滚动处理');
+            // 清除标记
+            StockProfitCalculator.Router._scrollPositionRestored = false;
+            // 重新加载数据和渲染，但不处理滚动
+            this.stocks = await StockProfitCalculator.DataService.getAllStocks();
+            await this.rebuildSnapshots();
+            this.renderSummary();
+            this.renderStockLists();
+            this.renderCharts();
+            return;
+        }
+
         // 保存当前滚动位置（仅在汇总页时）
         const scrollTop = isOverviewPage ? (window.scrollY || window.pageYOffset || 0) : 0;
         console.log('[Overview.refresh] 保存的滚动位置:', scrollTop, ', 当前实际滚动位置:', window.scrollY);
