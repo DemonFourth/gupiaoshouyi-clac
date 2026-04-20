@@ -721,18 +721,18 @@ const Overview = {
         const lossAmountEl = document.getElementById('overviewLossAmount');
         if (profitAmountEl) {
             const profitAmountFmt = Utils.formatLargeNumberWithTooltip(profitAmount);
-            profitAmountEl.textContent = '¥' + profitAmountFmt.display;
+            profitAmountEl.textContent = profitAmountFmt.display;
             if (profitAmountFmt.converted) {
                 profitAmountEl.classList.add('large-number-tooltip');
-                profitAmountEl.setAttribute('data-full-value', '¥' + profitAmountFmt.full);
+                profitAmountEl.setAttribute('data-full-value', profitAmountFmt.full);
             }
         }
         if (lossAmountEl) {
-            const lossAmountFmt = Utils.formatLargeNumberWithTooltip(Math.abs(lossAmount));
-            lossAmountEl.textContent = '/ ¥' + lossAmountFmt.display;
+            const lossAmountFmt = Utils.formatLargeNumberWithTooltip(lossAmount);
+            lossAmountEl.textContent = '/ ' + lossAmountFmt.display;
             if (lossAmountFmt.converted) {
                 lossAmountEl.classList.add('large-number-tooltip');
-                lossAmountEl.setAttribute('data-full-value', '¥' + lossAmountFmt.full);
+                lossAmountEl.setAttribute('data-full-value', lossAmountFmt.full);
             }
         }
 
