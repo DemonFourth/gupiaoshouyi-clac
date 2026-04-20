@@ -61,11 +61,6 @@ const ChartManager = {
                 textStyle: {
                     color: textColor
                 },
-                title: {
-                    textStyle: {
-                        color: textColor
-                    }
-                },
                 xAxis: {
                     axisLine: { lineStyle: { color: axisLineColor } },
                     axisLabel: { color: textColor },
