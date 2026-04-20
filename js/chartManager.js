@@ -112,27 +112,30 @@ const ChartManager = {
 
     /**
      * 深度合并对象
-     * @param {Object} target - 目标对象
-     * @param {Object} source - 源对象
+     * @param {Object} target - 目标对象（主题配置）
+     * @param {Object} source - 源对象（用户配置）
      * @returns {Object} 合并后的对象
      */
     mergeDeep(target, source) {
         const output = Object.assign({}, target);
-        
+
         if (this.isObject(target) && this.isObject(source)) {
             Object.keys(source).forEach(key => {
                 if (this.isObject(source[key])) {
                     if (!(key in target)) {
+                        // 目标中不存在该键，直接使用源对象的值
                         Object.assign(output, { [key]: source[key] });
                     } else {
+                        // 递归合并，确保主题配置的基础属性（如 color）不被覆盖
                         output[key] = this.mergeDeep(target[key], source[key]);
                     }
                 } else {
+                    // 源对象的值不是对象，直接覆盖
                     Object.assign(output, { [key]: source[key] });
                 }
             });
         }
-        
+
         return output;
     },
 
@@ -219,7 +222,25 @@ const ChartManager = {
         }
 
         // 深度合并用户配置和主题配置
-        return this.mergeDeep(themeConfig, option);
+        const merged = this.mergeDeep(themeConfig, option);
+
+        // 特殊处理：如果 title 是数组，需要为每个 title 项注入 textStyle.color
+        if (Array.isArray(merged.title)) {
+            merged.title = merged.title.map(titleItem => {
+                if (titleItem && typeof titleItem === 'object') {
+                    return {
+                        ...titleItem,
+                        textStyle: {
+                            color: colors.text,
+                            ...(titleItem.textStyle || {})
+                        }
+                    };
+                }
+                return titleItem;
+            });
+        }
+
+        return merged;
     },
 
     /**
@@ -266,6 +287,24 @@ const ChartManager = {
                     // 只在图表已有legend时才更新颜色
                     if (hasLegend) {
                         updateConfig.legend = { textStyle: { color: colors.text } };
+                    }
+
+                    // 特殊处理：如果当前图表的 title 是数组，需要为每个 title 项设置 textStyle.color
+                    if (currentOption.title && Array.isArray(currentOption.title) && currentOption.title.length > 0) {
+                        updateConfig.title = currentOption.title.map(titleItem => {
+                            if (titleItem && typeof titleItem === 'object') {
+                                // 先展开原有的 textStyle（排除 color），然后设置新的 color
+                                const { color: _, ...restTextStyle } = titleItem.textStyle || {};
+                                return {
+                                    ...titleItem,
+                                    textStyle: {
+                                        ...restTextStyle,
+                                        color: colors.text
+                                    }
+                                };
+                            }
+                            return titleItem;
+                        });
                     }
 
                     chart.setOption(updateConfig);
