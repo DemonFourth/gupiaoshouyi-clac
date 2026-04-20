@@ -1399,10 +1399,6 @@ const Detail = {
         const chartDom = this._domCache.holdingTrendChart;
         if (!chartDom) return;
 
-        // Get current theme text color
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-
         // 启用统一的 resize 管理
         this._initChartResizeManager();
 
@@ -1419,7 +1415,7 @@ const Detail = {
             title: {
                 text: '持仓数量变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1432,6 +1428,7 @@ const Detail = {
             grid: {
                 left: '3%',
                 right: '4%',
+                top: 60,
                 bottom: '25%',
                 containLabel: true
             },
@@ -1482,10 +1479,6 @@ const Detail = {
         const chartDom = this._domCache.cumulativeProfitChart;
         if (!chartDom) return;
 
-        // Get current theme text color
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-
         // 销毁旧实例
         if (this._chartInstances.cumulativeProfitChart) {
             this._chartInstances.cumulativeProfitChart.dispose();
@@ -1499,7 +1492,7 @@ const Detail = {
             title: {
                 text: '累计收益变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1514,6 +1507,7 @@ const Detail = {
             grid: {
                 left: '3%',
                 right: '4%',
+                top: 60,
                 bottom: '25%',
                 containLabel: true
             },
@@ -1590,6 +1584,8 @@ const Detail = {
         // Get current theme text color
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
         const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
         // 销毁旧实例
         if (this._chartInstances.profitTrendChart) {
@@ -1626,6 +1622,7 @@ const Detail = {
             grid: {
                 left: '3%',
                 right: '4%',
+                top: 60,
                 bottom: '25%',
                 containLabel: true
             },
@@ -1633,18 +1630,24 @@ const Detail = {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
+                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                }
+                },
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } }
             },
             yAxis: {
                 type: 'value',
                 name: '收益(元)',
-                axisLabel: { formatter: '¥{value}' }
+                nameTextStyle: { color: textColor },
+                axisLabel: { formatter: '¥{value}', color: textColor },
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } }
             },
             series: [{
                 name: '单笔收益',
@@ -1687,6 +1690,8 @@ const Detail = {
         // Get current theme text color
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
         const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
         // 销毁旧实例
         if (this._chartInstances.returnRateTrendChart) {
@@ -1716,6 +1721,7 @@ const Detail = {
             grid: {
                 left: '3%',
                 right: '4%',
+                top: 60,
                 bottom: '25%',
                 containLabel: true
             },
@@ -1723,18 +1729,24 @@ const Detail = {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
+                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                }
+                },
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } }
             },
             yAxis: {
                 type: 'value',
                 name: '收益率(%)',
-                axisLabel: { formatter: '{value}%' }
+                nameTextStyle: { color: textColor },
+                axisLabel: { formatter: '{value}%', color: textColor },
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } }
             },
             series: [{
                 name: '累计收益率',
@@ -1777,6 +1789,8 @@ const Detail = {
         // Get current theme text color
         const theme = document.documentElement.getAttribute('data-theme') || 'dark';
         const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
         const chartDom = this._domCache.perShareCostTrendChart;
         if (!chartDom) return;
@@ -1946,15 +1960,16 @@ const Detail = {
                         return value.substring(5);
                     }
                 },
-                axisLine: { lineStyle: { color: textColor } }
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } }
             },
             yAxis: {
                 type: 'value',
                 name: '成本(元/股)',
                 nameTextStyle: { color: textColor },
                 axisLabel: { formatter: '¥{value}', color: textColor },
-                axisLine: { lineStyle: { color: textColor } },
-                splitLine: { lineStyle: { color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' } },
+                axisLine: { lineStyle: { color: axisLineColor } },
+                splitLine: { lineStyle: { color: splitLineColor } },
                 min: function() { return axisMin; },
                 max: function() { return axisMax; }
             },
