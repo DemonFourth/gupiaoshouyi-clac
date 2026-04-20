@@ -1581,12 +1581,6 @@ const Detail = {
         const chartDom = this._domCache.profitTrendChart;
         if (!chartDom) return;
 
-        // Get current theme text color
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-
         // 销毁旧实例
         if (this._chartInstances.profitTrendChart) {
             this._chartInstances.profitTrendChart.dispose();
@@ -1604,7 +1598,7 @@ const Detail = {
             title: {
                 text: '单笔交易收益',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1630,24 +1624,18 @@ const Detail = {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
-                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } }
+                }
             },
             yAxis: {
                 type: 'value',
                 name: '收益(元)',
-                nameTextStyle: { color: textColor },
-                axisLabel: { formatter: '¥{value}', color: textColor },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } }
+                axisLabel: { formatter: '¥{value}' }
             },
             series: [{
                 name: '单笔收益',
@@ -1687,12 +1675,6 @@ const Detail = {
         const chartDom = this._domCache.returnRateTrendChart;
         if (!chartDom) return;
 
-        // Get current theme text color
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-
         // 销毁旧实例
         if (this._chartInstances.returnRateTrendChart) {
             this._chartInstances.returnRateTrendChart.dispose();
@@ -1706,7 +1688,7 @@ const Detail = {
             title: {
                 text: '累计收益率变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1729,24 +1711,18 @@ const Detail = {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
-                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } }
+                }
             },
             yAxis: {
                 type: 'value',
                 name: '收益率(%)',
-                nameTextStyle: { color: textColor },
-                axisLabel: { formatter: '{value}%', color: textColor },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } }
+                axisLabel: { formatter: '{value}%' }
             },
             series: [{
                 name: '累计收益率',
@@ -1785,12 +1761,6 @@ const Detail = {
     renderPerShareCostTrendChart(timeSeries) {
         this._ensureDOMCache();
         const Utils = StockProfitCalculator.Utils;
-
-        // Get current theme text color
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-        const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-        const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
         const chartDom = this._domCache.perShareCostTrendChart;
         if (!chartDom) return;
@@ -1865,7 +1835,7 @@ const Detail = {
             {
                 text: '每股成本趋势（持仓 vs 摊薄）',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             }
         ];
 
@@ -1897,7 +1867,6 @@ const Detail = {
                 top: 6,
                 textStyle: {
                     fontSize: 11,
-                    color: textColor,
                     lineHeight: 18,
                     fontWeight: 'normal',
                     rich: {
@@ -1905,9 +1874,7 @@ const Detail = {
                         neg: { color: '#4caf50', fontWeight: 'bold' }
                     }
                 },
-                backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                 padding: [8, 10],
-                borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : '#ddd',
                 borderWidth: 1
             });
         }
@@ -1952,24 +1919,18 @@ const Detail = {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
-                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } }
+                }
             },
             yAxis: {
                 type: 'value',
                 name: '成本(元/股)',
-                nameTextStyle: { color: textColor },
-                axisLabel: { formatter: '¥{value}', color: textColor },
-                axisLine: { lineStyle: { color: axisLineColor } },
-                splitLine: { lineStyle: { color: splitLineColor } },
+                axisLabel: { formatter: '¥{value}' },
                 min: function() { return axisMin; },
                 max: function() { return axisMax; }
             },
