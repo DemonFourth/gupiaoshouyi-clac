@@ -2000,8 +2000,6 @@ const Overview = {
         if (this.monthlyChart) {
             this.monthlyChart.dispose();
         }
-        // 使用 ChartManager.init()，禁用各自的 resize 监听
-        this.monthlyChart = StockProfitCalculator.ChartManager.init('overview-monthlyProfitChart', chartDom, null, { bindResize: false });
 
         // 统计指定年份的月度收益
         // 12个月的数据
@@ -2009,15 +2007,11 @@ const Overview = {
         const monthlyData = this.yearlyMonthlyData[year] || {};
         const profits = months.map(m => monthlyData[m] || 0);
 
-        // 获取当前主题的文字颜色
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-
         const option = {
             title: {
                 text: `${year}年月度收益趋势`,
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -2072,6 +2066,9 @@ const Overview = {
                 }
             }]
         };
+
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        this.monthlyChart = StockProfitCalculator.ChartManager.init('overview-monthlyProfitChart', chartDom, option, { bindResize: false });
 
         this.monthlyChart.setOption(option);
 
