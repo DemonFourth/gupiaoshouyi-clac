@@ -2841,8 +2841,11 @@ const Overview = {
         const currentPage = StockProfitCalculator.Router.getCurrentPage();
         const isOverviewPage = currentPage === 'overview';
 
+        console.log('[Overview.refresh] 当前页面:', currentPage, ', 是否汇总页:', isOverviewPage);
+
         // 保存当前滚动位置（仅在汇总页时）
         const scrollTop = isOverviewPage ? (window.scrollY || window.pageYOffset || 0) : 0;
+        console.log('[Overview.refresh] 保存的滚动位置:', scrollTop, ', 当前实际滚动位置:', window.scrollY);
 
         // 重新加载数据
         this.stocks = await StockProfitCalculator.DataService.getAllStocks();
@@ -2855,13 +2858,17 @@ const Overview = {
 
         // 只有在汇总页面且滚动位置大于0时才恢复（避免覆盖Router的滚动位置恢复）
         if (isOverviewPage && scrollTop > 0) {
+            console.log('[Overview.refresh] 准备恢复滚动位置到:', scrollTop);
             // 使用多次requestAnimationFrame确保DOM完全渲染
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     // 强制设置滚动位置（不使用smooth，避免动画）
                     window.scrollTo(0, scrollTop);
+                    console.log('[Overview.refresh] 已恢复滚动位置到:', scrollTop);
                 });
             });
+        } else {
+            console.log('[Overview.refresh] 跳过滚动位置恢复 (isOverviewPage:', isOverviewPage, ', scrollTop:', scrollTop, ')');
         }
     }
 };

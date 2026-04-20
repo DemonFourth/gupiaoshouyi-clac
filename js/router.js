@@ -137,7 +137,10 @@ const Router = {
 
         // 恢复汇总页的滚动位置
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
+        console.log('[showOverview] 准备恢复滚动位置:', savedScrollPosition);
+        console.log('[showOverview] scrollPositions:', this.state.scrollPositions);
         if (savedScrollPosition > 0) {
+            console.log('[showOverview] 执行滚动恢复到:', savedScrollPosition);
             window.scrollTo({ top: savedScrollPosition, behavior: 'smooth' });
         }
 
