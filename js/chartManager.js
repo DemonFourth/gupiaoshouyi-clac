@@ -206,13 +206,17 @@ const ChartManager = {
                         color: colors.splitLine
                     }
                 }
-            },
-            legend: {
+            }
+        };
+
+        // 只在用户已定义 legend 时才注入颜色
+        if (option.legend) {
+            themeConfig.legend = {
                 textStyle: {
                     color: colors.text
                 }
-            }
-        };
+            };
+        }
 
         // 深度合并用户配置和主题配置
         return this.mergeDeep(themeConfig, option);
@@ -225,16 +229,23 @@ const ChartManager = {
         try {
             const chartIds = Object.keys(this.charts);
             console.log(`[ChartManager] 刷新 ${chartIds.length} 个图表的主题配置`);
-            
+
+            if (chartIds.length === 0) {
+                console.log('[ChartManager] 没有图表需要刷新');
+                return;
+            }
+
             chartIds.forEach(chartId => {
                 const chart = this.charts[chartId];
                 if (chart) {
+                    console.log(`[ChartManager] 刷新图表: ${chartId}`);
+
                     // 获取当前配置
                     const currentOption = chart.getOption();
-                    
+
                     // 重新注入主题配置
                     const themeAwareOption = this.injectThemeConfig(currentOption);
-                    
+
                     // 更新图表 (使用 notMerge=true 完全替换)
                     chart.setOption(themeAwareOption, true);
                 }
