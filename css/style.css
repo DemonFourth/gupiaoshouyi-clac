@@ -276,7 +276,7 @@
             height: 3px;
             width: 100%;
             background: rgba(0, 0, 0, 0.3);
-            transform-origin: left;
+            transform-origin: right;
             animation: progressShrink var(--duration, 5000ms) linear forwards;
         }
 
