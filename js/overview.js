@@ -716,14 +716,24 @@ const Overview = {
         this._domCache.overviewProfitCount.textContent = '盈利' + profitCount + '只';
         this._domCache.overviewLossCount.textContent = '亏损' + lossCount + '只';
 
-        // 更新UI - 盈利金额/亏损金额
+        // 更新UI - 盈利金额/亏损金额（应用大数字转换）
         const profitAmountEl = document.getElementById('overviewProfitAmount');
         const lossAmountEl = document.getElementById('overviewLossAmount');
         if (profitAmountEl) {
-            profitAmountEl.textContent = '¥' + profitAmount.toFixed(2);
+            const profitAmountFmt = Utils.formatLargeNumberWithTooltip(profitAmount);
+            profitAmountEl.textContent = '¥' + profitAmountFmt.display;
+            if (profitAmountFmt.converted) {
+                profitAmountEl.classList.add('large-number-tooltip');
+                profitAmountEl.setAttribute('data-full-value', '¥' + profitAmountFmt.full);
+            }
         }
         if (lossAmountEl) {
-            lossAmountEl.textContent = '/ ¥' + lossAmount.toFixed(2);
+            const lossAmountFmt = Utils.formatLargeNumberWithTooltip(Math.abs(lossAmount));
+            lossAmountEl.textContent = '/ ¥' + lossAmountFmt.display;
+            if (lossAmountFmt.converted) {
+                lossAmountEl.classList.add('large-number-tooltip');
+                lossAmountEl.setAttribute('data-full-value', '¥' + lossAmountFmt.full);
+            }
         }
 
         // 更新UI - 清仓股票统计数据
