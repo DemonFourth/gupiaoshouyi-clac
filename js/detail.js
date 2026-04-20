@@ -1399,6 +1399,10 @@ const Detail = {
         const chartDom = this._domCache.holdingTrendChart;
         if (!chartDom) return;
 
+        // Get current theme text color
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+
         // 启用统一的 resize 管理
         this._initChartResizeManager();
 
@@ -1415,7 +1419,7 @@ const Detail = {
             title: {
                 text: '持仓数量变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' }
+                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1478,6 +1482,10 @@ const Detail = {
         const chartDom = this._domCache.cumulativeProfitChart;
         if (!chartDom) return;
 
+        // Get current theme text color
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+
         // 销毁旧实例
         if (this._chartInstances.cumulativeProfitChart) {
             this._chartInstances.cumulativeProfitChart.dispose();
@@ -1491,7 +1499,7 @@ const Detail = {
             title: {
                 text: '累计收益变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' }
+                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1579,6 +1587,10 @@ const Detail = {
         const chartDom = this._domCache.profitTrendChart;
         if (!chartDom) return;
 
+        // Get current theme text color
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+
         // 销毁旧实例
         if (this._chartInstances.profitTrendChart) {
             this._chartInstances.profitTrendChart.dispose();
@@ -1596,7 +1608,7 @@ const Detail = {
             title: {
                 text: '单笔交易收益',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' }
+                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1672,6 +1684,10 @@ const Detail = {
         const chartDom = this._domCache.returnRateTrendChart;
         if (!chartDom) return;
 
+        // Get current theme text color
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+
         // 销毁旧实例
         if (this._chartInstances.returnRateTrendChart) {
             this._chartInstances.returnRateTrendChart.dispose();
@@ -1685,7 +1701,7 @@ const Detail = {
             title: {
                 text: '累计收益率变化趋势',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' }
+                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
             },
             tooltip: {
                 trigger: 'axis',
@@ -1757,6 +1773,10 @@ const Detail = {
     renderPerShareCostTrendChart(timeSeries) {
         this._ensureDOMCache();
         const Utils = StockProfitCalculator.Utils;
+
+        // Get current theme text color
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
 
         const chartDom = this._domCache.perShareCostTrendChart;
         if (!chartDom) return;
@@ -1831,7 +1851,7 @@ const Detail = {
             {
                 text: '每股成本趋势（持仓 vs 摊薄）',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' }
+                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
             }
         ];
 
@@ -1863,7 +1883,7 @@ const Detail = {
                 top: 6,
                 textStyle: {
                     fontSize: 11,
-                    color: '#333',
+                    color: textColor,
                     lineHeight: 18,
                     fontWeight: 'normal',
                     rich: {
@@ -1871,9 +1891,9 @@ const Detail = {
                         neg: { color: '#4caf50', fontWeight: 'bold' }
                     }
                 },
-                backgroundColor: 'rgba(0,0,0,0.03)',
+                backgroundColor: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                 padding: [8, 10],
-                borderColor: '#ddd',
+                borderColor: theme === 'dark' ? 'rgba(255,255,255,0.1)' : '#ddd',
                 borderWidth: 1
             });
         }

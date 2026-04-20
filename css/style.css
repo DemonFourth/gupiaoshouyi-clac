@@ -4390,7 +4390,7 @@
             align-items: center;
             padding: 16px 20px;
             margin-top: 16px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: var(--bg-secondary);
             border-radius: 10px;
             flex-wrap: wrap;
             gap: 12px;
@@ -4402,7 +4402,7 @@
         }
 
         .pagination-text {
-            color: #555;
+            color: var(--text-primary);
             font-size: 14px;
             font-weight: 500;
         }
@@ -4415,9 +4415,9 @@
 
         .pagination-btn {
             padding: 8px 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
@@ -4428,13 +4428,14 @@
 
         .pagination-btn:hover:not(.disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.2);
         }
 
         .pagination-btn.disabled {
-            background: #ccc;
+            background: var(--bg-secondary);
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.5;
             transform: none;
         }
 
@@ -4443,26 +4444,26 @@
             align-items: center;
             gap: 6px;
             padding: 8px 12px;
-            background: white;
+            background: var(--bg-card);
             border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
             min-width: 80px;
             justify-content: center;
         }
 
         .pagination-current {
-            color: #667eea;
+            color: var(--text-primary);
             font-size: 16px;
             font-weight: 700;
         }
 
         .pagination-separator {
-            color: #999;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
         .pagination-total {
-            color: #555;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
