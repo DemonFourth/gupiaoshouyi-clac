@@ -9669,7 +9669,7 @@
 
 /* 交易记录备注行样式 */
 .trade-note-row {
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(102, 126, 234, 0.08);
 }
 
 .trade-note-row td {
@@ -9683,11 +9683,11 @@
     padding: 8px 16px 8px 48px;
     position: relative;
     font-size: 13px;
-    color: #666;
+    color: var(--text-secondary);
     line-height: 1.5;
     border-left: 3px solid #667eea;
     margin: 4px 16px 4px 16px;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--bg-card);
     border-radius: 4px;
     text-align: left;
 }
@@ -9703,7 +9703,7 @@
 .quote-text {
     flex: 1;
     word-break: break-word;
-    color: #555;
+    color: var(--text-secondary);
 }
 
 /* 浅色主题下的备注行 */
@@ -9712,12 +9712,12 @@
 }
 
 [data-theme="light"] .trade-note-quote {
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-card);
     border-left-color: #667eea;
 }
 
 [data-theme="light"] .quote-text {
-    color: #4a5568;
+    color: var(--text-secondary);
 }
 
 /* ==================== 悬浮主题切换按钮 ==================== */
