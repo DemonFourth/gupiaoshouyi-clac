@@ -334,12 +334,22 @@ const ErrorHandler = {
         closeBtn.className = 'alert-close';
         closeBtn.innerHTML = '&times;';
         closeBtn.onclick = () => {
+            if (progressBar) progressBar.style.animationPlayState = 'paused';
             alertDiv.style.animation = 'fadeOut 0.3s ease-out';
             alertDiv.addEventListener('animationend', () => {
                 alertDiv.remove();
             }, { once: true });
         };
         alertDiv.appendChild(closeBtn);
+
+        // 添加倒计时进度条
+        let progressBar = null;
+        if (duration > 0) {
+            progressBar = document.createElement('div');
+            progressBar.className = 'alert-progress';
+            progressBar.style.setProperty('--duration', `${duration}ms`);
+            alertDiv.appendChild(progressBar);
+        }
 
         // 添加到容器
         container.appendChild(alertDiv);

@@ -176,6 +176,7 @@
 
         /* 错误提示框 */
         .alert {
+            position: relative;
             display: flex;
             align-items: center;
             padding: 16px 20px;
@@ -265,6 +266,28 @@
 
         .alert-close:hover {
             opacity: 1;
+        }
+
+        /* 倒计时进度条 */
+        .alert-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: currentColor;
+            opacity: 0.3;
+            transform-origin: left;
+            animation: progressShrink var(--duration, 5000ms) linear forwards;
+        }
+
+        @keyframes progressShrink {
+            from {
+                transform: scaleX(1);
+            }
+            to {
+                transform: scaleX(0);
+            }
         }
 
         .container {
