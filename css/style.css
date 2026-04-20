@@ -9928,3 +9928,101 @@
     color: var(--color-loss);
 }
 
+/* Light主题：汇总信息V2内部元素样式 */
+[data-theme="light"] .hero-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .hero-card-value {
+    color: var(--text-primary);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .hero-card-value.profit,
+[data-theme="light"] .hero-card-value.summary-value.profit {
+    color: var(--color-profit);
+}
+
+[data-theme="light"] .hero-card-value.loss,
+[data-theme="light"] .hero-card-value.summary-value.loss {
+    color: var(--color-loss);
+}
+
+[data-theme="light"] .section-label {
+    color: var(--text-muted);
+}
+
+[data-theme="light"] .section-label::after {
+    background: var(--border-color);
+}
+
+[data-theme="light"] .flow-item {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: var(--border-color);
+}
+
+[data-theme="light"] .flow-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: var(--border-color-hover);
+}
+
+[data-theme="light"] .flow-icon {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .flow-label {
+    color: var(--text-muted);
+}
+
+[data-theme="light"] .flow-value {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .detail-item {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: var(--border-color);
+}
+
+[data-theme="light"] .detail-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: var(--border-color-hover);
+}
+
+[data-theme="light"] .detail-icon {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .detail-label {
+    color: var(--text-muted);
+}
+
+[data-theme="light"] .detail-value {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .detail-value.profit {
+    color: var(--color-profit);
+}
+
+[data-theme="light"] .detail-value.loss {
+    color: var(--color-loss);
+}
+
+[data-theme="light"] .summary-info-v2 .tooltip-icon {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .summary-info-v2 .tooltip-text {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+[data-theme="light"] .summary-info-v2 .tooltip-text strong {
+    color: var(--color-profit);
+}
+
