@@ -242,11 +242,14 @@ const ChartManager = {
                 if (chart) {
                     console.log(`[ChartManager] 刷新图表: ${chartId}`);
 
-                    // 直接设置样式,而不是重新注入整个配置
-                    chart.setOption({
+                    // 获取当前配置,检查是否有legend
+                    const currentOption = chart.getOption();
+                    const hasLegend = currentOption.legend && currentOption.legend.length > 0;
+
+                    // 构建更新配置
+                    const updateConfig = {
                         textStyle: { color: colors.text },
                         title: { textStyle: { color: colors.text } },
-                        legend: { textStyle: { color: colors.text } },
                         xAxis: {
                             axisLine: { lineStyle: { color: colors.axisLine } },
                             axisLabel: { color: colors.text },
@@ -258,7 +261,14 @@ const ChartManager = {
                             axisLabel: { color: colors.text },
                             splitLine: { lineStyle: { color: colors.splitLine } }
                         }
-                    });
+                    };
+
+                    // 只在图表已有legend时才更新颜色
+                    if (hasLegend) {
+                        updateConfig.legend = { textStyle: { color: colors.text } };
+                    }
+
+                    chart.setOption(updateConfig);
                 }
             });
         } catch (error) {
