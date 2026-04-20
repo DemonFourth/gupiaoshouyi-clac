@@ -158,9 +158,10 @@ const ChartManager = {
      */
     injectThemeConfig(option) {
         if (!option) return option;
-        
+
         const colors = this.getThemeColors();
-        
+        console.log(`[ChartManager] 注入主题配置: theme=${this.currentTheme}, textColor=${colors.text}`);
+
         // 构建主题配置模板
         const themeConfig = {
             textStyle: {
@@ -210,7 +211,7 @@ const ChartManager = {
                 }
             }
         };
-        
+
         // 深度合并用户配置和主题配置
         return this.mergeDeep(themeConfig, option);
     },
