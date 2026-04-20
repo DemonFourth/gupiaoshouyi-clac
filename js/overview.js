@@ -1913,15 +1913,11 @@ const Overview = {
         const years = Object.keys(this.yearlyProfitData).sort();
         const profits = years.map(y => this.yearlyProfitData[y]);
 
-        // 获取当前主题的文字颜色
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-
         const option = {
             title: {
                 text: '年度收益统计',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold', color: textColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
