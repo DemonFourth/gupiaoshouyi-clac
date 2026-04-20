@@ -1661,7 +1661,9 @@ const Detail = {
             }]
         };
 
-        myChart.setOption(option);
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        const myChart = StockProfitCalculator.ChartManager.init('detail-profitTrendChart', chartDom, option, { bindResize: false });
+        this._chartInstances.profitTrendChart = myChart;
     },
 
     renderReturnRateTrendChart(timeSeries) {
@@ -1746,7 +1748,9 @@ const Detail = {
             }]
         };
 
-        myChart.setOption(option);
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        const myChart = StockProfitCalculator.ChartManager.init('detail-returnRateTrendChart', chartDom, option, { bindResize: false });
+        this._chartInstances.returnRateTrendChart = myChart;
     },
 
     // 新增：每股成本趋势图（每股持仓成本 vs 每股摊薄成本，并标注最新价）
@@ -1951,7 +1955,9 @@ const Detail = {
 
         // 不再添加“最新价”常量线序列，避免视觉重叠，仅保留橙色 markLine
 
-        myChart.setOption(option);
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        const myChart = StockProfitCalculator.ChartManager.init('detail-perShareCostTrendChart', chartDom, option, { bindResize: false });
+        this._chartInstances.perShareCostTrendChart = myChart;
 
         // 在横坐标区域外侧（画布最右侧）绘制“最新价 x.xx”标签，纵向对齐到橙色虚线
         const updateOutsideLatestLabel = () => {
