@@ -160,17 +160,18 @@ const Router = {
      */
     async showDetail(stockCode, saveState = true) {
         console.log('[showDetail] 开始执行, stockCode:', stockCode, ', saveState:', saveState);
-        console.log('[showDetail] 当前页面状态:', this.state.currentPage);
+        console.log('[showDetail] 当前页面状态:', this.state.currentPage, ', 当前股票:', this.state.currentStockCode);
         
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
-        // 只有当前页面是汇总页时，才保存滚动位置
-        if (this.state.currentPage === 'overview') {
+        // 只有当前页面是汇总页，且不是同一只股票时，才保存滚动位置
+        // 避免重复进入同一只股票时覆盖汇总页的滚动位置
+        if (this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode) {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
             console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
         } else {
-            console.log('[showDetail] 当前页面不是汇总页（' + this.state.currentPage + '），跳过保存滚动位置');
+            console.log('[showDetail] 跳过保存滚动位置（当前页面:', this.state.currentPage, ', 是否同一股票:', this.state.currentStockCode === stockCode, '）');
         }
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
