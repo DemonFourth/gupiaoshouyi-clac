@@ -1907,8 +1907,6 @@ const Overview = {
         if (this.yearlyChart) {
             this.yearlyChart.dispose();
         }
-        // 使用 ChartManager.init()，禁用各自的 resize 监听
-        this.yearlyChart = StockProfitCalculator.ChartManager.init('overview-yearlyProfitChart', chartDom, null, { bindResize: false });
 
         const years = Object.keys(this.yearlyProfitData).sort();
         const profits = years.map(y => this.yearlyProfitData[y]);
@@ -1947,7 +1945,7 @@ const Overview = {
                 type: 'bar',
                 data: profits.map((p, index) => ({
                     value: p,
-                    itemStyle: { 
+                    itemStyle: {
                         color: p >= 0 ? '#f44336' : '#4caf50',
                         // 高亮选中的年份
                         opacity: years[index] === this.selectedYear ? 1 : 0.6,
@@ -1963,7 +1961,8 @@ const Overview = {
             }]
         };
 
-        this.yearlyChart.setOption(option);
+        // 使用 ChartManager.init()，禁用各自的 resize 监听
+        this.yearlyChart = StockProfitCalculator.ChartManager.init('overview-yearlyProfitChart', chartDom, option, { bindResize: false });
 
         // 保存图表实例到统一管理
         this._chartInstances.yearlyChart = this.yearlyChart;
