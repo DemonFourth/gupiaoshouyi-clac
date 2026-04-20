@@ -271,16 +271,21 @@
                             </div>
                             <div class="osv2-stat-content">
                                 <span class="osv2-stat-label">
-                                    持仓股票数
+                                    盈利金额/亏损金额
                                     <span class="tooltip-container">
                                         <span class="tooltip-icon">?</span>
                                         <span class="tooltip-text">
-                                            <strong>计算方式：</strong>统计持仓数量 > 0 的股票数量<br>
-                                            <strong>说明：</strong>当前持有股票的总只数
+                                            <strong>计算公式：</strong><br>
+                                            盈利金额 = Σ(盈利股票的浮动盈亏)<br>
+                                            亏损金额 = Σ(亏损股票的浮动盈亏)<br>
+                                            <strong>说明：</strong>分别统计盈利和亏损股票的金额总和
                                         </span>
                                     </span>
                                 </span>
-                                <span class="osv2-stat-value" id="overviewHoldingCount">0只</span>
+                                <span class="osv2-stat-value">
+                                    <span class="profit" id="overviewProfitAmount">¥0.00</span>
+                                    <span class="loss" id="overviewLossAmount">/ ¥0.00</span>
+                                </span>
                             </div>
                         </div>
                         <div class="osv2-stat-item">

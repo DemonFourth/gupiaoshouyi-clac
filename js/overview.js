@@ -577,6 +577,12 @@ const Overview = {
             .sort((a, b) => a.profit - b.profit)
             .slice(0, 5);
 
+        // 计算盈利金额和亏损金额
+        const profitAmount = stockProfits.filter(sp => sp.profit > 0)
+            .reduce((sum, sp) => sum + sp.profit, 0);
+        const lossAmount = stockProfits.filter(sp => sp.profit < 0)
+            .reduce((sum, sp) => sum + sp.profit, 0);
+
         // 分离清仓盈利和亏损股票
         const clearedProfitStocks = clearedStockProfits.filter(sp => sp.profit > 0)
             .sort((a, b) => b.profit - a.profit)
@@ -707,6 +713,16 @@ const Overview = {
         }
         this._domCache.overviewProfitCount.textContent = '盈利' + profitCount + '只';
         this._domCache.overviewLossCount.textContent = '亏损' + lossCount + '只';
+
+        // 更新UI - 盈利金额/亏损金额
+        const profitAmountEl = document.getElementById('overviewProfitAmount');
+        const lossAmountEl = document.getElementById('overviewLossAmount');
+        if (profitAmountEl) {
+            profitAmountEl.textContent = '¥' + profitAmount.toFixed(2);
+        }
+        if (lossAmountEl) {
+            lossAmountEl.textContent = '/ ¥' + lossAmount.toFixed(2);
+        }
 
         // 更新UI - 清仓股票统计数据
         this._domCache.overviewClearedCount.textContent = clearedCount + '只';
