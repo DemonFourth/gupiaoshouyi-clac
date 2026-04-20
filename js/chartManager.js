@@ -70,9 +70,12 @@ const ChartManager = {
             const chart = echarts.init(chartDom);
             this.charts[chartId] = chart;
 
+            // 注入主题配置
+            const themeAwareOption = option ? this.injectThemeConfig(option) : null;
+
             // 只有当 option 存在时才设置配置
-            if (option != null) {
-                this.charts[chartId].setOption(option);
+            if (themeAwareOption != null) {
+                this.charts[chartId].setOption(themeAwareOption);
             }
 
             // 添加窗口大小变化监听（如果启用）
@@ -103,6 +106,153 @@ const ChartManager = {
         } catch (error) {
             console.error(`销毁图表失败 [${chartId}]:`, error);
         }
+    },
+
+    /**
+     * 深度合并对象
+     * @param {Object} target - 目标对象
+     * @param {Object} source - 源对象
+     * @returns {Object} 合并后的对象
+     */
+    mergeDeep(target, source) {
+        const output = Object.assign({}, target);
+        
+        if (this.isObject(target) && this.isObject(source)) {
+            Object.keys(source).forEach(key => {
+                if (this.isObject(source[key])) {
+                    if (!(key in target)) {
+                        Object.assign(output, { [key]: source[key] });
+                    } else {
+                        output[key] = this.mergeDeep(target[key], source[key]);
+                    }
+                } else {
+                    Object.assign(output, { [key]: source[key] });
+                }
+            });
+        }
+        
+        return output;
+    },
+
+    /**
+     * 判断是否为对象
+     * @param {any} item - 待判断的值
+     * @returns {boolean}
+     */
+    isObject(item) {
+        return (item && typeof item === 'object' && !Array.isArray(item));
+    },
+
+    /**
+     * 获取当前主题颜色配置
+     * @returns {Object} 主题颜色配置
+     */
+    getThemeColors() {
+        return this.themeColors[this.currentTheme] || this.themeColors.dark;
+    },
+
+    /**
+     * 注入主题配置到图表option
+     * @param {Object} option - ECharts配置选项
+     * @returns {Object} 注入主题后的配置
+     */
+    injectThemeConfig(option) {
+        if (!option) return option;
+        
+        const colors = this.getThemeColors();
+        
+        // 构建主题配置模板
+        const themeConfig = {
+            textStyle: {
+                color: colors.text
+            },
+            title: {
+                textStyle: {
+                    color: colors.text
+                }
+            },
+            xAxis: {
+                axisLine: {
+                    lineStyle: {
+                        color: colors.axisLine
+                    }
+                },
+                axisLabel: {
+                    color: colors.text
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: colors.splitLine
+                    }
+                }
+            },
+            yAxis: {
+                nameTextStyle: {
+                    color: colors.text
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: colors.axisLine
+                    }
+                },
+                axisLabel: {
+                    color: colors.text
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: colors.splitLine
+                    }
+                }
+            },
+            legend: {
+                textStyle: {
+                    color: colors.text
+                }
+            }
+        };
+        
+        // 深度合并用户配置和主题配置
+        return this.mergeDeep(themeConfig, option);
+    },
+
+    /**
+     * 刷新所有图表的主题配置
+     */
+    refreshAllCharts() {
+        try {
+            const chartIds = Object.keys(this.charts);
+            console.log(`[ChartManager] 刷新 ${chartIds.length} 个图表的主题配置`);
+            
+            chartIds.forEach(chartId => {
+                const chart = this.charts[chartId];
+                if (chart) {
+                    // 获取当前配置
+                    const currentOption = chart.getOption();
+                    
+                    // 重新注入主题配置
+                    const themeAwareOption = this.injectThemeConfig(currentOption);
+                    
+                    // 更新图表 (使用 notMerge=true 完全替换)
+                    chart.setOption(themeAwareOption, true);
+                }
+            });
+        } catch (error) {
+            console.error('刷新图表主题失败:', error);
+        }
+    },
+
+    /**
+     * 处理主题切换
+     * @param {string} newTheme - 新主题 'dark' | 'light'
+     */
+    onThemeChange(newTheme) {
+        console.log(`[ChartManager] 主题切换: ${this.currentTheme} -> ${newTheme}`);
+        
+        // 更新当前主题
+        this.currentTheme = newTheme;
+        
+        // 刷新所有图表
+        this.refreshAllCharts();
     },
 
     /**
