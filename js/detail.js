@@ -1855,20 +1855,29 @@ const Detail = {
                 titleLines.push(`对比摊薄: {${dpsKey}|${dpsDiffStr}}`);
             }
 
+            // 获取当前主题颜色
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+            const bgColor = theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)';
+            const borderColor = theme === 'dark' ? 'rgba(255,255,255,0.1)' : '#ddd';
+
             titles.push({
                 text: titleLines.join('\n'),
-                right: 10,
-                top: 50,  // 向下移动,避免遮挡图表标题
+                left: 'center',
+                bottom: 5,  // 移动到X轴下方
                 textStyle: {
                     fontSize: 11,
                     lineHeight: 18,
                     fontWeight: 'normal',
+                    color: textColor,  // 添加主题颜色
                     rich: {
                         pos: { color: '#f44336', fontWeight: 'bold' },
                         neg: { color: '#4caf50', fontWeight: 'bold' }
                     }
                 },
+                backgroundColor: bgColor,
                 padding: [8, 10],
+                borderColor: borderColor,
                 borderWidth: 1
             });
         }
@@ -1907,7 +1916,7 @@ const Detail = {
             },
             dataZoom: this.getDataZoomConfig(0),
             grid: {
-                left: '3%', right: '4%', bottom: '25%', top: hasLatest || latestPriceComparison ? 80 : 60, containLabel: true
+                left: '3%', right: '4%', bottom: hasLatest || latestPriceComparison ? '18%' : '3%', top: 60, containLabel: true
             },
             xAxis: {
                 type: 'category',
