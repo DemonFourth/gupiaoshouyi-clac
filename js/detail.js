@@ -1836,7 +1836,7 @@ const Detail = {
         const option = {
             title: titles,
             legend: {
-                data: ['每股持仓成本', '每股摊薄成本'],
+                data: hasLatest ? ['每股持仓成本', '每股摊薄成本', '最新价'] : ['每股持仓成本', '每股摊薄成本'],
                 top: 30,
                 textStyle: { fontSize: 12 }
             },
@@ -1901,8 +1901,7 @@ const Detail = {
                     smooth: true,
                     symbol: 'circle', symbolSize: 6,
                     lineStyle: { color: '#2196F3', width: 2 },
-                    itemStyle: { color: '#2196F3' },
-                    markLine: markLine  // 将最新价标记线移到第一个series
+                    itemStyle: { color: '#2196F3' }
                 },
                 {
                     name: '每股摊薄成本',
@@ -1912,7 +1911,16 @@ const Detail = {
                     symbol: 'triangle', symbolSize: 6,
                     lineStyle: { color: '#9C27B0', width: 2 },
                     itemStyle: { color: '#9C27B0' }
-                }
+                },
+                // 最新价标记线作为独立series
+                ...(hasLatest ? [{
+                    name: '最新价',
+                    type: 'line',
+                    data: [],  // 空数据,只显示markLine
+                    markLine: markLine,
+                    symbol: 'none',  // 不显示数据点
+                    lineStyle: { width: 0 }  // 不显示线条
+                }] : [])
             ]
         };
 
