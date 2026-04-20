@@ -235,19 +235,29 @@ const ChartManager = {
                 return;
             }
 
+            const colors = this.getThemeColors();
+
             chartIds.forEach(chartId => {
                 const chart = this.charts[chartId];
                 if (chart) {
                     console.log(`[ChartManager] 刷新图表: ${chartId}`);
 
-                    // 获取当前配置
-                    const currentOption = chart.getOption();
-
-                    // 重新注入主题配置
-                    const themeAwareOption = this.injectThemeConfig(currentOption);
-
-                    // 更新图表 (使用 notMerge=true 完全替换)
-                    chart.setOption(themeAwareOption, true);
+                    // 直接设置样式,而不是重新注入整个配置
+                    chart.setOption({
+                        textStyle: { color: colors.text },
+                        title: { textStyle: { color: colors.text } },
+                        xAxis: {
+                            axisLine: { lineStyle: { color: colors.axisLine } },
+                            axisLabel: { color: colors.text },
+                            splitLine: { lineStyle: { color: colors.splitLine } }
+                        },
+                        yAxis: {
+                            nameTextStyle: { color: colors.text },
+                            axisLine: { lineStyle: { color: colors.axisLine } },
+                            axisLabel: { color: colors.text },
+                            splitLine: { lineStyle: { color: colors.splitLine } }
+                        }
+                    });
                 }
             });
         } catch (error) {
