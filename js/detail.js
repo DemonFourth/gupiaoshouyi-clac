@@ -1858,7 +1858,7 @@ const Detail = {
             titles.push({
                 text: titleLines.join('\n'),
                 right: 10,
-                top: 6,
+                top: 50,  // 向下移动,避免遮挡图表标题
                 textStyle: {
                     fontSize: 11,
                     lineHeight: 18,
