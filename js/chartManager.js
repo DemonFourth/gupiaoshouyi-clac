@@ -692,8 +692,10 @@ StockProfitCalculator.ChartManager = ChartManager;
 // 初始化时读取当前主题
 Object.defineProperty(ChartManager, '_init', {
     value: function() {
-        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        // 从 localStorage 读取主题,因为 DOM 可能还没准备好
+        const theme = localStorage.getItem('theme') || 'dark';
         this.currentTheme = theme;
+        console.log(`[ChartManager] 初始化主题: ${theme}`);
     },
     writable: false,
     configurable: false
@@ -701,6 +703,15 @@ Object.defineProperty(ChartManager, '_init', {
 
 // 执行初始化
 ChartManager._init();
+
+// DOM 准备好后再次检查主题
+document.addEventListener('DOMContentLoaded', () => {
+    const domTheme = document.documentElement.getAttribute('data-theme');
+    if (domTheme && domTheme !== ChartManager.currentTheme) {
+        console.log(`[ChartManager] DOM主题更新: ${ChartManager.currentTheme} -> ${domTheme}`);
+        ChartManager.currentTheme = domTheme;
+    }
+});
 
 // 页面卸载时自动销毁所有图表
 window.addEventListener('beforeunload', () => {
