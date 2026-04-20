@@ -160,6 +160,7 @@ const Router = {
      */
     async showDetail(stockCode, saveState = true) {
         console.log('[showDetail] 开始执行, stockCode:', stockCode, ', saveState:', saveState);
+        console.log('[showDetail] 当前页面状态:', this.state.currentPage);
         
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
@@ -169,7 +170,7 @@ const Router = {
             this.state.scrollPositions.overview = scrollPosition;
             console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
         } else {
-            console.log('[showDetail] 当前页面不是汇总页，跳过保存滚动位置');
+            console.log('[showDetail] 当前页面不是汇总页（' + this.state.currentPage + '），跳过保存滚动位置');
         }
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
