@@ -2837,20 +2837,24 @@ const Overview = {
      * 平滑刷新（保持滚动位置，无闪烁）
      */
     async refresh() {
-        // 保存当前滚动位置
-        const scrollTop = window.scrollY || window.pageYOffset || 0;
-        
+        // 只有在汇总页面时才保存和恢复滚动位置
+        const currentPage = StockProfitCalculator.Router.getCurrentPage();
+        const isOverviewPage = currentPage === 'overview';
+
+        // 保存当前滚动位置（仅在汇总页时）
+        const scrollTop = isOverviewPage ? (window.scrollY || window.pageYOffset || 0) : 0;
+
         // 重新加载数据
         this.stocks = await StockProfitCalculator.DataService.getAllStocks();
         await this.rebuildSnapshots();
-        
+
         // 重新渲染（不触发动画）
         this.renderSummary();
         this.renderStockLists();
         this.renderCharts();
-        
-        // 只有当滚动位置大于0时才恢复（避免覆盖Router的滚动位置恢复）
-        if (scrollTop > 0) {
+
+        // 只有在汇总页面且滚动位置大于0时才恢复（避免覆盖Router的滚动位置恢复）
+        if (isOverviewPage && scrollTop > 0) {
             // 使用多次requestAnimationFrame确保DOM完全渲染
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
