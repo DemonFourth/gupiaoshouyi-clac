@@ -65,6 +65,9 @@ window.App = {
         localStorage.setItem('theme', theme);
 
         console.log(`[App] 主题已切换为: ${theme}`);
+
+        // 通知 ChartManager 更新所有图表
+        StockProfitCalculator.ChartManager.onThemeChange(theme);
     },
 
     /**
@@ -548,8 +551,10 @@ window.App = {
             if (typeof Detail !== 'undefined') {
                 // 判断是否首次加载或切换股票
                 if (Detail.currentStockCode === stockCode) {
-                    // 同一只股票，使用平滑刷新（不调用Router.showDetail避免滚动到顶部）
+                    // 同一只股票，使用平滑刷新
                     console.log('[handleRouteChange] 同一只股票，使用平滑刷新');
+                    // 确保页面视图已切换
+                    await Router.showDetail(stockCode, false);  // 不保存状态，避免重复保存
                     await Detail.refresh();
                 } else {
                     // 首次加载或切换股票，使用完整加载
