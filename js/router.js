@@ -129,7 +129,8 @@ const Router = {
         }
 
         this.state.currentPage = 'overview';
-        this.state.currentStockCode = null;
+        // 注意：不清空 currentStockCode，用于判断是否重复进入同一股票
+        // this.state.currentStockCode = null;
 
         // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
