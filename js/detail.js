@@ -1835,6 +1835,11 @@ const Detail = {
 
         const option = {
             title: titles,
+            legend: {
+                data: ['每股持仓成本', '每股摊薄成本'],
+                top: 30,
+                textStyle: { fontSize: 12 }
+            },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {

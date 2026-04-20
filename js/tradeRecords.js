@@ -1285,6 +1285,11 @@ const TradeRecords = {
         }
         
         const option = {
+            legend: {
+                data: ['累计收益'],
+                top: 10,
+                textStyle: { fontSize: 12 }
+            },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
