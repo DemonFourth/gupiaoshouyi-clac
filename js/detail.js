@@ -1932,12 +1932,18 @@ const Detail = {
             },
             dataZoom: this.getDataZoomConfig(0),
             grid: {
-                left: '3%', right: '4%', bottom: '25%', top: hasLatest || latestPriceComparison ? 80 : 60, containLabel: true
+                left: '3%', right: '4%', bottom: '25%', top: hasLatest || latestPriceComparison ? 100 : 80, containLabel: true
+            },
+            legend: {
+                data: ['每股持仓成本', '每股摊薄成本'],
+                top: 30,
+                textStyle: { color: textColor }
             },
             xAxis: {
                 type: 'category',
                 data: timeSeries.dates,
                 axisLabel: {
+                    color: textColor,
                     rotate: 45,
                     interval: this.calculateLabelInterval(timeSeries.dates.length),
                     formatter: function(value) {
@@ -1949,7 +1955,8 @@ const Detail = {
             yAxis: {
                 type: 'value',
                 name: '成本(元/股)',
-                axisLabel: { formatter: '¥{value}' },
+                nameTextStyle: { color: textColor },
+                axisLabel: { formatter: '¥{value}', color: textColor },
                 min: function() { return axisMin; },
                 max: function() { return axisMax; }
             },
