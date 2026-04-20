@@ -4708,6 +4708,28 @@
     color: var(--color-loss);
 }
 
+/* Dark 主题下的交易记录统计卡片样式 */
+[data-theme="dark"] .tr-stat-label {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .tr-stat-value {
+    color: var(--text-primary);
+}
+
+/* Dark 主题下的图标背景优化 */
+[data-theme="dark"] .tr-stat-profit .tr-stat-icon {
+    background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(255, 152, 0, 0.2));
+}
+
+[data-theme="dark"] .tr-stat-count .tr-stat-icon {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(3, 169, 244, 0.2));
+}
+
+[data-theme="dark"] .tr-stat-fee .tr-stat-icon {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 193, 7, 0.2));
+}
+
 /* 头部筛选器样式（交易记录页面） */
 .header-tr-filters {
     display: flex;
