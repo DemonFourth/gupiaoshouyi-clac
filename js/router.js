@@ -163,10 +163,14 @@ const Router = {
         
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
-        // 保存当前页面（汇总页）的滚动位置
-        const scrollPosition = window.scrollY || window.pageYOffset || 0;
-        this.state.scrollPositions.overview = scrollPosition;
-        console.log('[showDetail] 保存滚动位置:', scrollPosition);
+        // 只有当前页面是汇总页时，才保存滚动位置
+        if (this.state.currentPage === 'overview') {
+            const scrollPosition = window.scrollY || window.pageYOffset || 0;
+            this.state.scrollPositions.overview = scrollPosition;
+            console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
+        } else {
+            console.log('[showDetail] 当前页面不是汇总页，跳过保存滚动位置');
+        }
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-detail');
