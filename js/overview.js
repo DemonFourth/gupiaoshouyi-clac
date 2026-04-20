@@ -707,7 +707,9 @@ const Overview = {
         this._setupProfitClickEvent(monthlyProfitElement, 'month');
 
         // 更新UI - 持仓股票统计数据
-        this._domCache.overviewHoldingCount.textContent = holdingCount + '只';
+        if (this._domCache.overviewHoldingCount) {
+            this._domCache.overviewHoldingCount.textContent = holdingCount + '只';
+        }
         if (this._domCache.overviewHoldingCount2) {
             this._domCache.overviewHoldingCount2.textContent = holdingCount + '只';
         }
