@@ -1919,7 +1919,8 @@ const Detail = {
                     data: [],  // 空数据,只显示markLine
                     markLine: markLine,
                     symbol: 'none',  // 不显示数据点
-                    lineStyle: { width: 0 }  // 不显示线条
+                    lineStyle: { width: 0 },  // 不显示线条
+                    itemStyle: { color: '#FF5722' }  // 橙色,与markLine颜色一致
                 }] : [])
             ]
         };
