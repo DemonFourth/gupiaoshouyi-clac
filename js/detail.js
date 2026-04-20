@@ -1932,12 +1932,7 @@ const Detail = {
             },
             dataZoom: this.getDataZoomConfig(0),
             grid: {
-                left: '3%', right: '4%', bottom: '25%', top: hasLatest || latestPriceComparison ? 100 : 80, containLabel: true
-            },
-            legend: {
-                data: ['每股持仓成本', '每股摊薄成本'],
-                top: 30,
-                textStyle: { color: textColor }
+                left: '3%', right: '4%', bottom: '25%', top: hasLatest || latestPriceComparison ? 80 : 60, containLabel: true
             },
             xAxis: {
                 type: 'category',
@@ -1950,13 +1945,16 @@ const Detail = {
                         // 只显示月-日，年份太长
                         return value.substring(5);
                     }
-                }
+                },
+                axisLine: { lineStyle: { color: textColor } }
             },
             yAxis: {
                 type: 'value',
                 name: '成本(元/股)',
                 nameTextStyle: { color: textColor },
                 axisLabel: { formatter: '¥{value}', color: textColor },
+                axisLine: { lineStyle: { color: textColor } },
+                splitLine: { lineStyle: { color: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' } },
                 min: function() { return axisMin; },
                 max: function() { return axisMax; }
             },
