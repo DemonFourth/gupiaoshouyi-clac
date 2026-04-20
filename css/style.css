@@ -2775,7 +2775,7 @@
 
         .sell-records {
             font-size: 11px;
-            color: #666;
+            color: var(--text-secondary);
             text-align: left;
             padding: 5px;
         }
@@ -2783,7 +2783,7 @@
         .sell-record-item {
             margin: 3px 0;
             padding: 3px 5px;
-            background: #f9f9f9;
+            background: var(--bg-card);
             border-radius: 3px;
         }
 
