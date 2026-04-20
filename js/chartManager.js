@@ -11,6 +11,28 @@ const ChartManager = {
     charts: {},
 
     /**
+     * 当前主题
+     * @type {string} 'dark' | 'light'
+     */
+    currentTheme: 'dark',
+
+    /**
+     * 主题颜色配置
+     */
+    themeColors: {
+        dark: {
+            text: '#e8eaf6',
+            axisLine: 'rgba(255, 255, 255, 0.1)',
+            splitLine: 'rgba(255, 255, 255, 0.05)'
+        },
+        light: {
+            text: '#1e293b',
+            axisLine: 'rgba(0, 0, 0, 0.1)',
+            splitLine: 'rgba(0, 0, 0, 0.05)'
+        }
+    },
+
+    /**
      * 统一的 resize 事件管理器
      */
     _resizeManager: {
@@ -44,43 +66,15 @@ const ChartManager = {
             // 先销毁已存在的实例，防止内存泄漏
             this.dispose(chartId);
 
-            // Get current theme
-            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-            
-            // Create chart with theme-aware default options
+            // Create chart instance
             const chart = echarts.init(chartDom);
             this.charts[chartId] = chart;
-            
-            // Set default theme options
-            const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
-            const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-            
-            // Apply default theme configuration
-            chart.setOption({
-                textStyle: {
-                    color: textColor
-                },
-                xAxis: {
-                    axisLine: { lineStyle: { color: axisLineColor } },
-                    axisLabel: { color: textColor },
-                    splitLine: { lineStyle: { color: splitLineColor } }
-                },
-                yAxis: {
-                    axisLine: { lineStyle: { color: axisLineColor } },
-                    axisLabel: { color: textColor },
-                    splitLine: { lineStyle: { color: splitLineColor } }
-                },
-                legend: {
-                    textStyle: { color: textColor }
-                }
-            });
-            
+
             // 只有当 option 存在时才设置配置
             if (option != null) {
                 this.charts[chartId].setOption(option);
             }
-            
+
             // 添加窗口大小变化监听（如果启用）
             if (options.bindResize !== false) {
                 this._bindResize(chartId);
@@ -544,6 +538,19 @@ const ChartManager = {
 
 // 挂载到命名空间
 StockProfitCalculator.ChartManager = ChartManager;
+
+// 初始化时读取当前主题
+Object.defineProperty(ChartManager, '_init', {
+    value: function() {
+        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+        this.currentTheme = theme;
+    },
+    writable: false,
+    configurable: false
+});
+
+// 执行初始化
+ChartManager._init();
 
 // 页面卸载时自动销毁所有图表
 window.addEventListener('beforeunload', () => {
