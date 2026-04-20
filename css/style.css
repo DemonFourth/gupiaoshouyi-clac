@@ -10026,3 +10026,25 @@
     color: var(--color-profit);
 }
 
+/* 浅色主题下的汇总信息V2 hero区域 */
+/* 使用温暖的米色背景，呼应晨曦金融主题 */
+[data-theme="light"] .osv2-hero-section {
+    background: linear-gradient(135deg, #f5f2ed 0%, #ebe7e0 100%);
+}
+
+/* 浅色主题下的汇总信息V2 hero区域图标 */
+/* 使用温暖的米色渐变，呼应晨曦金融主题 */
+[data-theme="light"] .osv2-hero-icon {
+    background: linear-gradient(135deg, #ebe7e0 0%, #e2e0dc 100%);
+}
+
+/* 盈利状态：淡珊瑚红渐变 */
+[data-theme="light"] .osv2-hero-card:has(.osv2-hero-value.profit) .osv2-hero-icon {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(239, 68, 68, 0.08) 100%);
+}
+
+/* 亏损状态：淡深蓝绿渐变 */
+[data-theme="light"] .osv2-hero-card:has(.osv2-hero-value.loss) .osv2-hero-icon {
+    background: linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(13, 148, 136, 0.08) 100%);
+}
+
