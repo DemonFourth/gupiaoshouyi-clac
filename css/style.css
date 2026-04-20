@@ -9855,47 +9855,47 @@
 
 /* ==================== Light主题：汇总信息V2样式 ==================== */
 [data-theme="light"] .summary-info-v2 {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 50%, #dde4ed 100%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    box-shadow: var(--shadow-lg);
 }
 
 [data-theme="light"] .summary-header-v2 {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border-color);
 }
 
 [data-theme="light"] .summary-title-v2 {
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 [data-theme="light"] .summary-title-v2::before {
-    background: linear-gradient(180deg, #e94560 0%, #ff6b6b 100%);
+    background: linear-gradient(180deg, var(--color-profit) 0%, #ff6b6b 100%);
 }
 
 [data-theme="light"] .summary-hero-section {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="light"] .summary-hero-card {
-    background: linear-gradient(135deg, rgba(233, 69, 96, 0.12) 0%, rgba(255, 107, 107, 0.06) 100%);
-    border-color: rgba(233, 69, 96, 0.25);
+    background: linear-gradient(135deg, var(--color-profit-bg) 0%, rgba(255, 107, 107, 0.04) 100%);
+    border-color: var(--color-profit-border);
 }
 
 [data-theme="light"] .summary-hero-icon {
-    background: rgba(0, 0, 0, 0.08);
-    color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-secondary);
 }
 
 [data-theme="light"] .summary-hero-card.loss {
-    background: linear-gradient(135deg, rgba(46, 213, 115, 0.12) 0%, rgba(39, 174, 96, 0.06) 100%);
-    border-color: rgba(46, 213, 115, 0.25);
+    background: linear-gradient(135deg, var(--color-loss-bg) 0%, rgba(39, 174, 96, 0.04) 100%);
+    border-color: var(--color-loss-border);
 }
 
 [data-theme="light"] .summary-section {
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 1px solid var(--border-color);
 }
 
 [data-theme="light"] .summary-section-title {
-    color: #475569;
+    color: var(--text-secondary);
 }
 
 [data-theme="light"] .summary-section-title::before {
@@ -9903,28 +9903,28 @@
 }
 
 [data-theme="light"] .summary-item-v2 {
-    background: rgba(255, 255, 255, 0.6);
-    border-color: rgba(0, 0, 0, 0.08);
+    background: var(--bg-card);
+    border-color: var(--border-color);
 }
 
 [data-theme="light"] .summary-item-v2:hover {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.12);
+    background: var(--bg-card-hover);
+    border-color: var(--border-color-hover);
 }
 
 [data-theme="light"] .summary-label-v2 {
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 [data-theme="light"] .summary-value-v2 {
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 [data-theme="light"] .summary-value-v2.profit {
-    color: #dc2626;
+    color: var(--color-profit);
 }
 
 [data-theme="light"] .summary-value-v2.loss {
-    color: #16a34a;
+    color: var(--color-loss);
 }
 
