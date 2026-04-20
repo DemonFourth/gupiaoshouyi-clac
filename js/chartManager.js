@@ -63,6 +63,8 @@ const ChartManager = {
      */
     init(chartId, chartDom, option, options = {}) {
         try {
+            console.log(`[ChartManager.init] 创建图表: ${chartId}, option=${option ? '有' : '无'}`);
+
             // 先销毁已存在的实例，防止内存泄漏
             this.dispose(chartId);
 
