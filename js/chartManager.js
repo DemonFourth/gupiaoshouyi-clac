@@ -44,18 +44,47 @@ const ChartManager = {
             // 先销毁已存在的实例，防止内存泄漏
             this.dispose(chartId);
 
-            // 创建新实例
-                    this.charts[chartId] = echarts.init(chartDom);
+            // Get current theme
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
             
-                    // 只有当 option 存在时才设置配置
-                    if (option != null) {
-                        this.charts[chartId].setOption(option);
-                    }
+            // Create chart with theme-aware default options
+            const chart = echarts.init(chartDom);
+            this.charts[chartId] = chart;
             
-                    // 添加窗口大小变化监听（如果启用）
-                    if (options.bindResize !== false) {
-                        this._bindResize(chartId);
-                    }
+            // Set default theme options
+            const textColor = theme === 'dark' ? '#e8eaf6' : '#1e293b';
+            const axisLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const splitLineColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            
+            // Apply default theme configuration
+            chart.setOption({
+                textStyle: {
+                    color: textColor
+                },
+                xAxis: {
+                    axisLine: { lineStyle: { color: axisLineColor } },
+                    axisLabel: { color: textColor },
+                    splitLine: { lineStyle: { color: splitLineColor } }
+                },
+                yAxis: {
+                    axisLine: { lineStyle: { color: axisLineColor } },
+                    axisLabel: { color: textColor },
+                    splitLine: { lineStyle: { color: splitLineColor } }
+                },
+                legend: {
+                    textStyle: { color: textColor }
+                }
+            });
+            
+            // 只有当 option 存在时才设置配置
+            if (option != null) {
+                this.charts[chartId].setOption(option);
+            }
+            
+            // 添加窗口大小变化监听（如果启用）
+            if (options.bindResize !== false) {
+                this._bindResize(chartId);
+            }
             return this.charts[chartId];
         } catch (error) {
             console.error(`初始化图表失败 [${chartId}]:`, error);
