@@ -237,6 +237,11 @@ const Router = {
         this.state.currentPage = 'detail';
         this.state.currentStockCode = stockCode;
 
+        // 清除详情页的滚动位置记录，确保每次进入都从顶部开始
+        if (this.state.scrollPositions) {
+            delete this.state.scrollPositions.detail;
+        }
+
         if (saveState) {
             await this.saveState();
         }
