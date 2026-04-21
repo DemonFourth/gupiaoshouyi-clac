@@ -155,15 +155,24 @@ const Router = {
      */
     async showDetail(stockCode, saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
-        
+
         // 只有当前页面是汇总页，且不是同一只股票时，才保存滚动位置
         // 避免重复进入同一只股票时覆盖汇总页的滚动位置
-        if (this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode) {
+        const shouldSaveScroll = this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode;
+        console.log('[showDetail] 检查是否保存滚动位置:', {
+            currentPage: this.state.currentPage,
+            currentStockCode: this.state.currentStockCode,
+            newStockCode: stockCode,
+            shouldSaveScroll: shouldSaveScroll,
+            currentScrollY: window.scrollY || window.pageYOffset || 0
+        });
+
+        if (shouldSaveScroll) {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
             console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
         }
-        
+
         console.log('[showDetail] 进入详情页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
