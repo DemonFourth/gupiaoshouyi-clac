@@ -137,10 +137,7 @@ const Router = {
 
         // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
-        console.log('[showOverview] 准备恢复滚动位置:', savedScrollPosition);
-        console.log('[showOverview] scrollPositions:', this.state.scrollPositions);
         if (savedScrollPosition > 0) {
-            console.log('[showOverview] 执行滚动恢复到:', savedScrollPosition);
             // 立即设置滚动位置（不使用 smooth，避免动画延迟）
             window.scrollTo(0, savedScrollPosition);
             // 标记滚动位置已恢复，避免 refresh() 再次恢复
@@ -163,9 +160,6 @@ const Router = {
      * @param {boolean} saveState - 是否保存状态
      */
     async showDetail(stockCode, saveState = true) {
-        console.log('[showDetail] 开始执行, stockCode:', stockCode, ', saveState:', saveState);
-        console.log('[showDetail] 当前页面状态:', this.state.currentPage, ', 当前股票:', this.state.currentStockCode);
-        
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
         
         // 只有当前页面是汇总页，且不是同一只股票时，才保存滚动位置
@@ -173,9 +167,6 @@ const Router = {
         if (this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode) {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
-            console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
-        } else {
-            console.log('[showDetail] 跳过保存滚动位置（当前页面:', this.state.currentPage, ', 是否同一股票:', this.state.currentStockCode === stockCode, '）');
         }
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
