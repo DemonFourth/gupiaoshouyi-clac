@@ -517,21 +517,6 @@ const Config = {
     },
 
     /**
-     * 重置配置为默认值
-     * @param {string} path - 配置路径（可选）
-     */
-    reset(path = null) {
-        if (path) {
-            // 重置指定路径的配置
-            // 注意：这需要实现默认配置的深拷贝和恢复
-            console.warn('重置指定配置路径的功能待实现');
-        } else {
-            // 重置所有配置（需要重新加载默认配置）
-            console.warn('重置所有配置的功能待实现');
-        }
-    },
-
-    /**
      * 验证配置
      * @returns {Object} 验证结果 {valid: boolean, errors: Array}
      */
@@ -560,34 +545,6 @@ const Config = {
             valid: errors.length === 0,
             errors: errors
         };
-    },
-
-    /**
-     * 导出配置
-     * @returns {Object} 配置对象的深拷贝
-     */
-    export() {
-        return JSON.parse(JSON.stringify(this));
-    },
-
-    /**
-     * 导入配置
-     * @param {Object} config - 配置对象
-     * @returns {boolean} 是否导入成功
-     */
-    import(config) {
-        if (!config || typeof config !== 'object') {
-            return false;
-        }
-
-        try {
-            // 使用深度合并来正确处理嵌套对象
-            this._deepMerge(this, config);
-            return true;
-        } catch (error) {
-            console.error('导入配置失败:', error);
-            return false;
-        }
     },
 
     /**
@@ -705,18 +662,6 @@ const Config = {
         this.save();
     },
 
-    /**
-     * 获取配置信息
-     * @returns {Object} 配置信息
-     */
-    getInfo() {
-        return {
-            version: this.app.version,
-            name: this.app.name,
-            storageKey: this.storage.localStorageKey,
-            lastModified: new Date().toISOString()
-        };
-    }
 };
 
 // 挂载到命名空间
