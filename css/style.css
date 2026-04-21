@@ -7825,18 +7825,12 @@
 .scl-name-clickable {
     cursor: pointer;
     color: var(--text-primary);
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-    position: relative;
+    transition: color 0.2s ease;
 }
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    color: var(--color-interactive);
-    /* 精致的三层发光：内层高光 + 中层主发光 + 外层柔和扩散 */
-    text-shadow:
-        0 0 4px var(--color-interactive-light),   /* 内层高光 */
-        0 0 12px var(--color-interactive-glow),   /* 中层主发光 */
-        0 0 24px var(--color-interactive-glow);   /* 外层柔和扩散 */
+    color: var(--color-interactive);  /* 悬浮时变蓝紫色 */
 }
 
 .sc-code {
