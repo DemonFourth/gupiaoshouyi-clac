@@ -135,13 +135,17 @@ const Router = {
         // 注意：不清空 currentStockCode，用于判断是否重复进入同一股票
         // this.state.currentStockCode = null;
 
+        console.log('[showOverview] 返回汇总页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
+
         // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
+        console.log('[showOverview] 准备恢复的滚动位置:', savedScrollPosition);
         if (savedScrollPosition > 0) {
             // 立即设置滚动位置（不使用 smooth，避免动画延迟）
             window.scrollTo(0, savedScrollPosition);
             // 标记滚动位置已恢复，避免 refresh() 再次恢复
             this._scrollPositionRestored = true;
+            console.log('[showOverview] 已恢复滚动位置到:', savedScrollPosition);
         }
 
         if (saveState) {
@@ -167,7 +171,10 @@ const Router = {
         if (this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode) {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
+            console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
         }
+        
+        console.log('[showDetail] 进入详情页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-detail');
@@ -248,7 +255,9 @@ const Router = {
         }
 
         // 滚动到页面顶部
+        console.log('[showDetail] 滚动到顶部前，当前位置:', window.scrollY || window.pageYOffset || 0);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        console.log('[showDetail] 已滚动到顶部');
 
         // 注意：不调用 onPageChange，因为 handleRouteChange 已经是路由变化的主要处理函数
         // 避免无限循环：handleRouteChange → showDetail → onPageChange → emit → handleRouteChange
