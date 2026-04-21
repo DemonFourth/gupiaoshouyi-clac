@@ -256,8 +256,9 @@ const Router = {
 
         // 滚动到页面顶部
         console.log('[showDetail] 滚动到顶部前，当前位置:', window.scrollY || window.pageYOffset || 0);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        console.log('[showDetail] 已滚动到顶部');
+        // 使用同步滚动（不使用 smooth），确保立即生效
+        window.scrollTo(0, 0);
+        console.log('[showDetail] 已滚动到顶部，当前位置:', window.scrollY || window.pageYOffset || 0);
 
         // 注意：不调用 onPageChange，因为 handleRouteChange 已经是路由变化的主要处理函数
         // 避免无限循环：handleRouteChange → showDetail → onPageChange → emit → handleRouteChange
