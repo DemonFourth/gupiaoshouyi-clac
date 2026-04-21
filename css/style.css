@@ -7802,14 +7802,13 @@
 .sc-name-clickable,
 .scl-name-clickable {
     cursor: pointer;
-    color: var(--text-primary);  /* 默认使用正常文字颜色 */
-    transition: color 0.2s, transform 0.2s;
+    color: var(--text-primary);
+    transition: opacity 0.2s;
 }
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    color: var(--primary-color);  /* 悬浮时变主题色（蓝紫色） */
-    transform: translateX(2px);   /* 轻微右移，增强交互感 */
+    opacity: 0.7;  /* 悬浮时降低透明度，增强交互感 */
 }
 
 .sc-code {
