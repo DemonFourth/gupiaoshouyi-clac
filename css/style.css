@@ -10335,9 +10335,24 @@
 
 [data-theme="dark"] .form-group input,
 [data-theme="dark"] .form-group select {
-    background: var(--bg-secondary);
+    background: var(--bg-secondary) !important;
     border-color: var(--border-color);
     color: var(--text-primary);
+}
+
+/* 添加交易记录表单内所有输入框 - Dark 主题强制覆盖 */
+[data-theme="dark"] .add-trade-form-container input[type="text"],
+[data-theme="dark"] .add-trade-form-container input[type="number"],
+[data-theme="dark"] .add-trade-form-container input[type="date"],
+[data-theme="dark"] .add-trade-form-container select {
+    background: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .add-trade-form-container input[readonly] {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-muted) !important;
 }
 
 [data-theme="dark"] .form-group input::placeholder {
