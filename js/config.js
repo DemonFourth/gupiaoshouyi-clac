@@ -571,6 +571,36 @@ const Config = {
     },
 
     /**
+     * 导出配置（内部使用）
+     * @returns {Object} 配置对象的深拷贝
+     * @private
+     */
+    export() {
+        return JSON.parse(JSON.stringify(this));
+    },
+
+    /**
+     * 导入配置（内部使用）
+     * @param {Object} config - 配置对象
+     * @returns {boolean} 是否导入成功
+     * @private
+     */
+    import(config) {
+        if (!config || typeof config !== 'object') {
+            return false;
+        }
+
+        try {
+            // 使用深度合并来正确处理嵌套对象
+            this._deepMerge(this, config);
+            return true;
+        } catch (error) {
+            console.error('导入配置失败:', error);
+            return false;
+        }
+    },
+
+    /**
      * 保存配置到 localStorage
      * @returns {boolean} 是否保存成功
      */
