@@ -260,15 +260,17 @@ const Router = {
     UI_STATE_KEY: 'stockProfitCalculator_uiState',
 
     /**
-     * 保存 UI 状态到 localStorage（不保存到 D1）
-     * D1 只保存 stocks 交易数据
+     * 保存 UI 状态到 localStorage
+     * 注意：滚动位置不保存到 localStorage，只在会话内（内存）保存
+     * 刷新后滚动位置重置，但 currentStockCode 保留以便恢复到详情页
      */
     saveUIState() {
         try {
             const uiState = {
                 currentPage: this.state.currentPage,
                 currentStockCode: this.state.currentStockCode,
-                scrollPositions: this.state.scrollPositions,
+                // 滚动位置不保存到 localStorage，只在会话内保存
+                // scrollPositions: this.state.scrollPositions,
                 currentYear: this.state.currentYear,
                 currentMonth: this.state.currentMonth,
                 startDate: this.state.startDate ? this.state.startDate.toISOString() : null,
@@ -282,6 +284,7 @@ const Router = {
 
     /**
      * 从 localStorage 加载 UI 状态
+     * 注意：滚动位置不从 localStorage 加载，由会话内逻辑管理
      */
     loadUIState() {
         try {
@@ -294,9 +297,10 @@ const Router = {
                 if (uiState.currentStockCode) {
                     this.state.currentStockCode = uiState.currentStockCode;
                 }
-                if (uiState.scrollPositions) {
-                    this.state.scrollPositions = uiState.scrollPositions;
-                }
+                // 滚动位置不从 localStorage 加载
+                // if (uiState.scrollPositions) {
+                //     this.state.scrollPositions = uiState.scrollPositions;
+                // }
                 if (uiState.currentYear) {
                     this.state.currentYear = uiState.currentYear;
                 }
@@ -316,11 +320,12 @@ const Router = {
     },
 
     /**
-     * 保存状态（已简化，不再保存到 D1）
-     * D1 只保存 stocks 交易数据，UI 状态保存到 localStorage
+     * 保存状态
+     * - 滚动位置：只在会话内保存（内存），不持久化
+     * - currentStockCode：保存到 localStorage，刷新后恢复
      */
     async saveState() {
-        // 只保存 UI 状态到 localStorage
+        // 保存 UI 状态到 localStorage（不含滚动位置）
         this.saveUIState();
     },
 
