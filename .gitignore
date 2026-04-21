@@ -41,6 +41,7 @@ test-screenshot.js
 # 临时备份文件
 temp_*.js
 temp_*.css
+*.bak
 
 # CodeArts相关文件（开发工具，部署不需要）
 .arts/
