@@ -130,12 +130,17 @@ const Router = {
         // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
         console.log('[showOverview] 准备恢复的滚动位置:', savedScrollPosition);
+
+        // 始终设置滚动位置：
+        // - 如果有保存的位置，恢复到该位置
+        // - 如果没有保存的位置（刷新后），滚动到顶部
+        window.scrollTo(0, savedScrollPosition);
         if (savedScrollPosition > 0) {
-            // 立即设置滚动位置（不使用 smooth，避免动画延迟）
-            window.scrollTo(0, savedScrollPosition);
             // 标记滚动位置已恢复，避免 refresh() 再次恢复
             this._scrollPositionRestored = true;
             console.log('[showOverview] 已恢复滚动位置到:', savedScrollPosition);
+        } else {
+            console.log('[showOverview] 无保存的滚动位置，滚动到顶部');
         }
 
         if (saveState) {
