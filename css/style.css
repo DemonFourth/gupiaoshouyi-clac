@@ -7803,12 +7803,13 @@
 .scl-name-clickable {
     cursor: pointer;
     color: var(--text-primary);  /* 默认使用正常文字颜色 */
-    transition: color 0.2s;
+    transition: color 0.2s, transform 0.2s;
 }
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    color: var(--color-profit);  /* 悬浮时变红色（盈利色） */
+    color: var(--primary-color);  /* 悬浮时变主题色（蓝紫色） */
+    transform: translateX(2px);   /* 轻微右移，增强交互感 */
 }
 
 .sc-code {
