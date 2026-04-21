@@ -22,6 +22,10 @@
   --color-loss-bg: rgba(16, 185, 129, 0.15);
   --color-loss-border: rgba(16, 185, 129, 0.3);
 
+  /* 金色传说 - 高亮交互色 */
+  --color-gold: #ffd700;           /* 金色 */
+  --color-gold-glow: rgba(255, 215, 0, 0.6);  /* 金色发光 */
+
   /* 边框和分隔 */
   --border-color: rgba(255, 255, 255, 0.08);
   --border-color-hover: rgba(255, 255, 255, 0.15);
@@ -96,6 +100,10 @@
   --color-loss: #0d9488;           /* 深蓝绿 - 亏损 */
   --color-loss-bg: rgba(13, 148, 136, 0.12);
   --color-loss-border: rgba(13, 148, 136, 0.3);
+
+  /* 金色传说 - 高亮交互色 */
+  --color-gold: #d4a500;           /* 深金色（light主题下更柔和） */
+  --color-gold-glow: rgba(212, 165, 0, 0.5);  /* 金色发光 */
 
   /* 边框 */
   --border-color: rgba(0, 0, 0, 0.08);
@@ -7803,12 +7811,13 @@
 .scl-name-clickable {
     cursor: pointer;
     color: var(--text-primary);
-    transition: opacity 0.2s;
+    transition: color 0.3s, text-shadow 0.3s;
 }
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    opacity: 0.7;  /* 悬浮时降低透明度，增强交互感 */
+    color: var(--color-gold);
+    text-shadow: 0 0 8px var(--color-gold-glow), 0 0 16px var(--color-gold-glow);
 }
 
 .sc-code {
