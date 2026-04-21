@@ -679,33 +679,6 @@ const ChartManager = {
     },
 
     /**
-     * 导出图表为图片
-     * @param {string} chartId - 图表唯一标识
-     * @param {string} filename - 文件名（不含扩展名）
-     * @param {string} type - 图片类型 'png' 或 'jpeg'
-     */
-    exportImage(chartId, filename = 'chart', type = 'png') {
-        try {
-            if (this.charts[chartId]) {
-                const url = this.charts[chartId].getDataURL({
-                    type: type,
-                    pixelRatio: 2,
-                    backgroundColor: '#fff'
-                });
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${filename}.${type}`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
-        } catch (error) {
-            console.error(`导出图表图片失败 [${chartId}]:`, error);
-        }
-    },
-
-    /**
      * 绑定窗口大小变化监听
      * @private
      * @param {string} chartId - 图表唯一标识
@@ -731,45 +704,6 @@ const ChartManager = {
             window.removeEventListener('resize', this.charts[chartId]._resizeHandler);
             delete this.charts[chartId]._resizeHandler;
         }
-    },
-
-    /**
-     * 批量初始化图表
-     * @param {Array.<{id: string, dom: HTMLElement, option: Object}>} chartConfigs - 图表配置数组
-     * @returns {Object.<string, echarts.ECharts>} 图表实例对象
-     */
-    initBatch(chartConfigs) {
-        const charts = {};
-        chartConfigs.forEach(config => {
-            const chart = this.init(config.id, config.dom, config.option);
-            if (chart) {
-                charts[config.id] = chart;
-            }
-        });
-        return charts;
-    },
-
-    /**
-     * 延迟初始化图表（用于DOM未就绪的情况）
-     * @param {string} chartId - 图表唯一标识
-     * @param {string} domSelector - DOM 选择器
-     * @param {Object} option - ECharts 配置选项
-     * @param {number} delay - 延迟时间（毫秒）
-     * @returns {Promise<echarts.ECharts|null>} 图表实例或 null
-     */
-    async initDelayed(chartId, domSelector, option, delay = 100) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const dom = document.querySelector(domSelector);
-                if (dom) {
-                    const chart = this.init(chartId, dom, option);
-                    resolve(chart);
-                } else {
-                    console.error(`找不到图表容器 [${domSelector}]`);
-                    resolve(null);
-                }
-            }, delay);
-        });
     }
 };
 
