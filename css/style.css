@@ -10177,3 +10177,167 @@
     box-shadow: 0 1px 3px rgba(13, 148, 136, 0.1);
 }
 
+/* ==================== Dark 主题弹窗适配 ==================== */
+
+/* 添加股票弹窗 - Dark 主题 */
+[data-theme="dark"] .add-stock-modal {
+    background: var(--bg-card);
+}
+
+[data-theme="dark"] .add-stock-body {
+    background: var(--bg-card);
+}
+
+[data-theme="dark"] .add-stock-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .add-stock-label svg {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .add-stock-input {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .add-stock-input:focus {
+    border-color: var(--color-interactive);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+[data-theme="dark"] .add-stock-input::placeholder {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .add-stock-radio-label {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .add-stock-radio input:checked + .add-stock-radio-label {
+    border-color: var(--color-interactive);
+    background: rgba(129, 140, 248, 0.15);
+    color: var(--color-interactive);
+}
+
+[data-theme="dark"] .add-stock-radio:hover .add-stock-radio-label {
+    border-color: var(--border-color-hover);
+}
+
+[data-theme="dark"] .add-stock-exists-tip {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .exists-tip-text {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .exists-tip-link {
+    color: var(--color-interactive);
+}
+
+[data-theme="dark"] .add-stock-footer {
+    background: var(--bg-tertiary);
+    border-top-color: var(--border-color);
+}
+
+/* 添加交易记录表单 - Dark 主题 */
+[data-theme="dark"] .add-trade-form-container {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus {
+    border-color: var(--color-interactive);
+    box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+}
+
+[data-theme="dark"] .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .form-group input[readonly] {
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+/* 删除确认弹窗 - Dark 主题 */
+[data-theme="dark"] .delete-confirm-modal {
+    background: var(--bg-card);
+}
+
+[data-theme="dark"] .delete-confirm-body {
+    background: var(--bg-card);
+}
+
+[data-theme="dark"] .delete-stock-info {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .delete-stock-row {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .delete-stock-label {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .delete-stock-value {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .delete-confirm-actions {
+    background: var(--bg-tertiary);
+    border-top-color: var(--border-color);
+}
+
+/* Light 主题弹窗适配（确保一致性） */
+[data-theme="light"] .add-stock-modal {
+    background: #ffffff;
+}
+
+[data-theme="light"] .add-stock-body {
+    background: #ffffff;
+}
+
+[data-theme="light"] .add-stock-footer {
+    background: #fafafa;
+    border-top-color: #e0e0e0;
+}
+
+[data-theme="light"] .add-stock-input {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #333;
+}
+
+[data-theme="light"] .add-stock-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+[data-theme="light"] .add-stock-label {
+    color: #555;
+}
+
