@@ -156,9 +156,10 @@ const Router = {
     async showDetail(stockCode, saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
 
-        // 只有当前页面是汇总页，且不是同一只股票时，才保存滚动位置
-        // 避免重复进入同一只股票时覆盖汇总页的滚动位置
-        const shouldSaveScroll = this.state.currentPage === 'overview' && this.state.currentStockCode !== stockCode;
+        // 保存滚动位置的条件：
+        // 1. 当前页面是汇总页（用户从汇总页点击进入）
+        // 2. 不判断 currentStockCode，因为刷新后 currentStockCode 可能已加载但 currentPage 是 overview
+        const shouldSaveScroll = this.state.currentPage === 'overview';
         console.log('[showDetail] 检查是否保存滚动位置:', {
             currentPage: this.state.currentPage,
             currentStockCode: this.state.currentStockCode,
