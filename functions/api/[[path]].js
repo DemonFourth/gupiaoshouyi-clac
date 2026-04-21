@@ -121,51 +121,37 @@ async function handleDataRequest(request, env, corsHeaders) {
 }
 
 /**
- * 获取所有数据
+ * 获取所有数据（只返回 stocks 交易数据）
  */
 async function getData(env, corsHeaders) {
     try {
-        // 查询所有数据（包含 last_updated 字段）
-        const results = await env.D1.prepare(
-            'SELECT key, value, last_updated FROM app_data ORDER BY key'
-        ).all();
+        // 查询 stocks 数据（包含 last_updated 字段）
+        const result = await env.D1.prepare(
+            "SELECT value, last_updated FROM app_data WHERE key = 'stocks'"
+        ).first();
 
-        if (!results.results || results.results.length === 0) {
+        if (!result) {
             // 数据库为空，返回空数据
             return jsonResponse({
                 stocks: [],
-                currentStockCode: null,
                 version: '1.0.0',
                 last_updated: null
             }, 200, corsHeaders);
         }
 
-        // 解析数据
-        const dataMap = {};
-        let latestUpdateTime = null;
+        // 解析并返回 stocks 数据
+        let stocks = [];
+        try {
+            stocks = JSON.parse(result.value);
+        } catch (error) {
+            console.error('Failed to parse stocks data:', error);
+            stocks = [];
+        }
 
-        results.results.forEach(row => {
-            try {
-                if (row.key === 'stocks') {
-                    dataMap[row.key] = JSON.parse(row.value);
-                    // 记录 stocks 的更新时间
-                    if (row.last_updated) {
-                        latestUpdateTime = row.last_updated;
-                    }
-                } else {
-                    dataMap[row.key] = row.value;
-                }
-            } catch (error) {
-                console.error(`Failed to parse data for key ${row.key}:`, error);
-            }
-        });
-
-        // 返回完整数据，使用数据库中实际存储的时间戳
         return jsonResponse({
-            stocks: dataMap.stocks || [],
-            currentStockCode: dataMap.currentStockCode || null,
+            stocks: stocks,
             version: '1.0.0',
-            last_updated: latestUpdateTime
+            last_updated: result.last_updated
         }, 200, corsHeaders);
     } catch (error) {
         console.error('Failed to get data:', error);
@@ -174,11 +160,12 @@ async function getData(env, corsHeaders) {
 }
 
 /**
- * 保存所有数据
+ * 保存所有数据（只保存 stocks 交易数据）
+ * UI 状态（currentStockCode 等）保存在 localStorage，不保存到 D1
  */
 async function saveData(env, data, corsHeaders) {
     try {
-        const { stocks, currentStockCode } = data;
+        const { stocks } = data;
 
         if (!stocks || !Array.isArray(stocks)) {
             return jsonResponse({ error: 'Invalid data: stocks is required' }, 400, corsHeaders);
@@ -187,17 +174,10 @@ async function saveData(env, data, corsHeaders) {
         // 添加时间戳
         const last_updated = new Date().toISOString();
 
-        // 保存股票数据
+        // 只保存股票数据到 D1
         await env.D1.prepare(
             'INSERT OR REPLACE INTO app_data (key, value, last_updated) VALUES (?, ?, ?)'
         ).bind('stocks', JSON.stringify(stocks), last_updated).run();
-
-        // 保存当前股票代码
-        if (currentStockCode) {
-            await env.D1.prepare(
-                'INSERT OR REPLACE INTO app_data (key, value, last_updated) VALUES (?, ?, ?)'
-            ).bind('currentStockCode', currentStockCode, last_updated).run();
-        }
 
         return jsonResponse({
             success: true,

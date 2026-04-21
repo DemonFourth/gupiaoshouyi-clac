@@ -298,7 +298,6 @@ const DataManager = {
 
         const result = {
             stocks: [...(d1Data.stocks || [])],
-            currentStockCode: d1Data.currentStockCode,
             lastModified: new Date().toISOString(),
             version: d1Data.version || '1.0.0'
         };

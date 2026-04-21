@@ -24,23 +24,13 @@ const Router = {
      * 初始化路由
      */
     async init() {
-        // 从 D1 数据库恢复页面状态
+        // 从 localStorage 恢复 UI 状态
         await this.loadState();
-
-        console.log('[Router.init] 准备显示页面:');
-        console.log('  currentPage:', this.state.currentPage);
-        console.log('  currentYear:', this.state.currentYear);
-        console.log('  currentMonth:', this.state.currentMonth);
-        console.log('  startDate:', this.state.startDate);
-        console.log('  endDate:', this.state.endDate);
 
         // 清除保存的滚动位置（刷新页面时不再恢复滚动位置）
         this.state.scrollPositions = {
             overview: 0
         };
-        
-        // 清除 currentStockCode，避免影响滚动位置保存的判断
-        this.state.currentStockCode = null;
 
         // 根据状态显示对应页面
         if (this.state.currentPage === 'detail' && this.state.currentStockCode) {
@@ -48,7 +38,7 @@ const Router = {
             if (typeof Detail !== 'undefined') {
                 this.showDetail(this.state.currentStockCode, false);  // 切换页面显示
                 Detail.loadStock(this.state.currentStockCode);  // 加载股票数据和显示返回按钮
-                
+
                 // 延迟重新绑定 tooltip，确保 DOM 完全稳定
                 setTimeout(() => {
                     if (window.TooltipManager) {
@@ -266,53 +256,87 @@ const Router = {
         if (window.Perf) window.Perf.end(perfToken, { saveState, stockCode });
     },
 
+    // localStorage 键名（用于保存 UI 状态）
+    UI_STATE_KEY: 'stockProfitCalculator_uiState',
+
     /**
-     * 保存状态到 D1 数据库
+     * 保存 UI 状态到 localStorage（不保存到 D1）
+     * D1 只保存 stocks 交易数据
      */
-    async saveState() {
+    saveUIState() {
         try {
-            const DataManager = StockProfitCalculator.DataManager;
-            const data = await DataManager.load();
-            if (data) {
-                data.lastPage = this.state.currentPage;
-                data.lastViewedStock = this.state.currentStockCode;
-                // 保存滚动位置
-                if (this.state.scrollPositions) {
-                    data.scrollPositions = this.state.scrollPositions;
-                }
-                // 保存交易记录相关状态
-                if (this.state.currentYear) {
-                    data.currentYear = this.state.currentYear;
-                }
-                if (this.state.currentMonth !== null) {
-                    data.currentMonth = this.state.currentMonth;
-                }
-                if (this.state.startDate) {
-                    data.startDate = this.state.startDate;
-                }
-                if (this.state.endDate) {
-                    data.endDate = this.state.endDate;
-                }
-                
-                // 添加调试日志
-                console.log('[Router.saveState] 保存状态到 D1 数据库:');
-                console.log('  currentPage:', data.lastPage);
-                console.log('  currentYear:', data.currentYear);
-                console.log('  currentMonth:', data.currentMonth);
-                console.log('  startDate:', data.startDate);
-                console.log('  endDate:', data.endDate);
-                
-                await DataManager.save(data);
-            }
+            const uiState = {
+                currentPage: this.state.currentPage,
+                currentStockCode: this.state.currentStockCode,
+                scrollPositions: this.state.scrollPositions,
+                currentYear: this.state.currentYear,
+                currentMonth: this.state.currentMonth,
+                startDate: this.state.startDate ? this.state.startDate.toISOString() : null,
+                endDate: this.state.endDate ? this.state.endDate.toISOString() : null
+            };
+            localStorage.setItem(this.UI_STATE_KEY, JSON.stringify(uiState));
         } catch (e) {
-            console.error('保存页面状态失败:', e);
+            console.error('保存 UI 状态失败:', e);
         }
     },
 
     /**
-     * 从 D1 数据库加载状态
+     * 从 localStorage 加载 UI 状态
+     */
+    loadUIState() {
+        try {
+            const saved = localStorage.getItem(this.UI_STATE_KEY);
+            if (saved) {
+                const uiState = JSON.parse(saved);
+                if (uiState.currentPage) {
+                    this.state.currentPage = uiState.currentPage;
+                }
+                if (uiState.currentStockCode) {
+                    this.state.currentStockCode = uiState.currentStockCode;
+                }
+                if (uiState.scrollPositions) {
+                    this.state.scrollPositions = uiState.scrollPositions;
+                }
+                if (uiState.currentYear) {
+                    this.state.currentYear = uiState.currentYear;
+                }
+                if (uiState.currentMonth !== null && uiState.currentMonth !== undefined) {
+                    this.state.currentMonth = uiState.currentMonth;
+                }
+                if (uiState.startDate) {
+                    this.state.startDate = new Date(uiState.startDate);
+                }
+                if (uiState.endDate) {
+                    this.state.endDate = new Date(uiState.endDate);
+                }
+            }
+        } catch (e) {
+            console.error('加载 UI 状态失败:', e);
+        }
+    },
+
+    /**
+     * 保存状态（已简化，不再保存到 D1）
+     * D1 只保存 stocks 交易数据，UI 状态保存到 localStorage
+     */
+    async saveState() {
+        // 只保存 UI 状态到 localStorage
+        this.saveUIState();
+    },
+
+    /**
+     * 加载状态（从 localStorage 加载 UI 状态）
      */
     async loadState() {
+        // 从 localStorage 加载 UI 状态
+        this.loadUIState();
+    },
+
+    /**
+     * 旧方法：从 D1 加载状态（已废弃，保留用于兼容）
+     * @deprecated
+     */
+    async _loadStateFromD1() {
         try {
             const DataManager = StockProfitCalculator.DataManager;
             const data = await DataManager.load();
@@ -345,14 +369,6 @@ const Router = {
                     // 将字符串转换为 Date 对象
                     this.state.endDate = new Date(data.endDate);
                 }
-                
-                // 添加调试日志
-                console.log('[Router.loadState] 从 D1 数据库加载状态:');
-                console.log('  currentPage:', this.state.currentPage);
-                console.log('  currentYear:', this.state.currentYear);
-                console.log('  currentMonth:', this.state.currentMonth);
-                console.log('  startDate:', this.state.startDate);
-                console.log('  endDate:', this.state.endDate);
             }
         } catch (e) {
             console.error('加载页面状态失败:', e);
