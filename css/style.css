@@ -3081,7 +3081,7 @@
 /* TOP5榜单区 */
 .osv2-toplist-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
   padding: 20px 24px;
   border-top: 1px solid var(--border-color);
