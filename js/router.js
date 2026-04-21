@@ -24,13 +24,8 @@ const Router = {
      * 初始化路由
      */
     async init() {
-        // 从 localStorage 恢复 UI 状态
+        // 从 localStorage 恢复 UI 状态（包括滚动位置）
         await this.loadState();
-
-        // 清除保存的滚动位置（刷新页面时不再恢复滚动位置）
-        this.state.scrollPositions = {
-            overview: 0
-        };
 
         // 根据状态显示对应页面
         if (this.state.currentPage === 'detail' && this.state.currentStockCode) {
@@ -276,16 +271,14 @@ const Router = {
 
     /**
      * 保存 UI 状态到 localStorage
-     * 注意：滚动位置不保存到 localStorage，只在会话内（内存）保存
-     * 刷新后滚动位置重置，但 currentStockCode 保留以便恢复到详情页
+     * 包括滚动位置，刷新后可以恢复
      */
     saveUIState() {
         try {
             const uiState = {
                 currentPage: this.state.currentPage,
                 currentStockCode: this.state.currentStockCode,
-                // 滚动位置不保存到 localStorage，只在会话内保存
-                // scrollPositions: this.state.scrollPositions,
+                scrollPositions: this.state.scrollPositions,  // 保存滚动位置
                 currentYear: this.state.currentYear,
                 currentMonth: this.state.currentMonth,
                 startDate: this.state.startDate ? this.state.startDate.toISOString() : null,
@@ -299,7 +292,7 @@ const Router = {
 
     /**
      * 从 localStorage 加载 UI 状态
-     * 注意：滚动位置不从 localStorage 加载，由会话内逻辑管理
+     * 包括滚动位置
      */
     loadUIState() {
         try {
@@ -312,10 +305,9 @@ const Router = {
                 if (uiState.currentStockCode) {
                     this.state.currentStockCode = uiState.currentStockCode;
                 }
-                // 滚动位置不从 localStorage 加载
-                // if (uiState.scrollPositions) {
-                //     this.state.scrollPositions = uiState.scrollPositions;
-                // }
+                if (uiState.scrollPositions) {
+                    this.state.scrollPositions = uiState.scrollPositions;
+                }
                 if (uiState.currentYear) {
                     this.state.currentYear = uiState.currentYear;
                 }
@@ -336,11 +328,10 @@ const Router = {
 
     /**
      * 保存状态
-     * - 滚动位置：只在会话内保存（内存），不持久化
-     * - currentStockCode：保存到 localStorage，刷新后恢复
+     * 包括滚动位置，刷新后可以恢复
      */
     async saveState() {
-        // 保存 UI 状态到 localStorage（不含滚动位置）
+        // 保存 UI 状态到 localStorage（含滚动位置）
         this.saveUIState();
     },
 
