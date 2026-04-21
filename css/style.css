@@ -9597,6 +9597,84 @@
     background: #f8f9fa;
 }
 
+/* Dark 主题下的交易记录弹窗 */
+[data-theme="dark"] .trade-modal-content {
+    background: var(--bg-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group input,
+[data-theme="dark"] .trade-modal-content .form-group select,
+[data-theme="dark"] #editTradeNote {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group input::placeholder,
+[data-theme="dark"] #editTradeNote::placeholder {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group input:hover,
+[data-theme="dark"] .trade-modal-content .form-group select:hover,
+[data-theme="dark"] #editTradeNote:hover {
+    border-color: var(--border-color-hover);
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group input:focus,
+[data-theme="dark"] .trade-modal-content .form-group select:focus,
+[data-theme="dark"] #editTradeNote:focus {
+    border-color: var(--color-interactive);
+    background: var(--bg-tertiary);
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
+}
+
+[data-theme="dark"] .trade-modal-content .form-group input[readonly] {
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .trade-modal-content select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .trade-modal-content .modal-footer {
+    background: var(--bg-tertiary);
+    border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .trade-modal-content .modal-footer .btn:not(.btn-primary) {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .trade-modal-content .modal-footer .btn:not(.btn-primary):hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+/* Dark 主题下的股票信息显示 */
+[data-theme="dark"] .trade-stock-info {
+    background: rgba(129, 140, 248, 0.1);
+    border-bottom-color: rgba(129, 140, 248, 0.2);
+}
+
+[data-theme="dark"] .trade-stock-info .stock-info-label {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .trade-stock-info .stock-info-value {
+    color: var(--text-primary);
+}
+
 /* 交易记录页面备注列样式 */
 .trade-records-note {
     display: inline-block;
