@@ -158,11 +158,14 @@ const Router = {
 
         // 保存滚动位置的条件：
         // 1. 当前页面是汇总页（用户从汇总页点击进入）
-        // 2. 不判断 currentStockCode，因为刷新后 currentStockCode 可能已加载但 currentPage 是 overview
-        const shouldSaveScroll = this.state.currentPage === 'overview';
+        // 2. 详情页容器不可见（确保当前显示的是汇总页）
+        const detailPage = document.getElementById('detailPage');
+        const isDetailPageVisible = detailPage && detailPage.style.display !== 'none';
+        const shouldSaveScroll = this.state.currentPage === 'overview' && !isDetailPageVisible;
+
         console.log('[showDetail] 检查是否保存滚动位置:', {
             currentPage: this.state.currentPage,
-            currentStockCode: this.state.currentStockCode,
+            isDetailPageVisible: isDetailPageVisible,
             newStockCode: stockCode,
             shouldSaveScroll: shouldSaveScroll,
             currentScrollY: window.scrollY || window.pageYOffset || 0
