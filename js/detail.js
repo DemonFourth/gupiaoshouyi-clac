@@ -431,17 +431,12 @@ const Detail = {
         if (ErrorHandler && ErrorHandler.showInfo) {
             ErrorHandler.showInfo('该股票暂无交易记录，请添加第一笔交易');
         }
-        
-        // 自动打开添加交易表单
+
+        // 自动打开添加交易弹窗（替代旧的表单）
         setTimeout(() => {
-            const container = document.getElementById('addTradeFormContainer');
-            if (container) {
-                container.style.display = 'block';
-                // 预填充日期
-                const dateInput = document.getElementById('tradeDate');
-                if (dateInput && !dateInput.value) {
-                    dateInput.value = new Date().toISOString().split('T')[0];
-                }
+            const addBtn = document.getElementById('toggleAddTradeBtn');
+            if (addBtn) {
+                addBtn.click();  // 模拟点击按钮，打开弹窗
             }
         }, 500);
     },
