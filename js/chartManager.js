@@ -63,7 +63,7 @@ const ChartManager = {
      */
     init(chartId, chartDom, option, options = {}) {
         try {
-            console.log(`[ChartManager.init] 创建图表: ${chartId}, option=${option ? '有' : '无'}`);
+            // console.log(`[ChartManager.init] 创建图表: ${chartId}, option=${option ? '有' : '无'}`);
 
             // 先销毁已存在的实例，防止内存泄漏
             this.dispose(chartId);
@@ -165,7 +165,7 @@ const ChartManager = {
         if (!option) return option;
 
         const colors = this.getThemeColors();
-        console.log(`[ChartManager] 注入主题配置: theme=${this.currentTheme}, textColor=${colors.text}`);
+        // console.log(`[ChartManager] 注入主题配置: theme=${this.currentTheme}, textColor=${colors.text}`);
 
         // 构建主题配置模板
         const themeConfig = {
@@ -249,10 +249,10 @@ const ChartManager = {
     refreshAllCharts() {
         try {
             const chartIds = Object.keys(this.charts);
-            console.log(`[ChartManager] 刷新 ${chartIds.length} 个图表的主题配置`);
+            // console.log(`[ChartManager] 刷新 ${chartIds.length} 个图表的主题配置`);
 
             if (chartIds.length === 0) {
-                console.log('[ChartManager] 没有图表需要刷新');
+                // console.log('[ChartManager] 没有图表需要刷新');
                 return;
             }
 
@@ -261,7 +261,7 @@ const ChartManager = {
             chartIds.forEach(chartId => {
                 const chart = this.charts[chartId];
                 if (chart) {
-                    console.log(`[ChartManager] 刷新图表: ${chartId}`);
+                    // console.log(`[ChartManager] 刷新图表: ${chartId}`);
 
                     // 获取当前配置,检查是否有legend
                     const currentOption = chart.getOption();
@@ -320,7 +320,7 @@ const ChartManager = {
      * @param {string} newTheme - 新主题 'dark' | 'light'
      */
     onThemeChange(newTheme) {
-        console.log(`[ChartManager] 主题切换: ${this.currentTheme} -> ${newTheme}`);
+        // console.log(`[ChartManager] 主题切换: ${this.currentTheme} -> ${newTheme}`);
         
         // 更新当前主题
         this.currentTheme = newTheme;
@@ -782,7 +782,7 @@ Object.defineProperty(ChartManager, '_init', {
         // 从 localStorage 读取主题,因为 DOM 可能还没准备好
         const theme = localStorage.getItem('theme') || 'dark';
         this.currentTheme = theme;
-        console.log(`[ChartManager] 初始化主题: ${theme}`);
+        // console.log(`[ChartManager] 初始化主题: ${theme}`);
     },
     writable: false,
     configurable: false
@@ -795,7 +795,7 @@ ChartManager._init();
 document.addEventListener('DOMContentLoaded', () => {
     const domTheme = document.documentElement.getAttribute('data-theme');
     if (domTheme && domTheme !== ChartManager.currentTheme) {
-        console.log(`[ChartManager] DOM主题更新: ${ChartManager.currentTheme} -> ${domTheme}`);
+        // console.log(`[ChartManager] DOM主题更新: ${ChartManager.currentTheme} -> ${domTheme}`);
         ChartManager.currentTheme = domTheme;
     }
 });
