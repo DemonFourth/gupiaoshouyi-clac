@@ -550,6 +550,7 @@ window.App = {
             console.log('[handleRouteChange] 切换到详情页, stockCode:', stockCode);
             if (typeof Detail !== 'undefined') {
                 // 判断是否首次加载或切换股票
+                console.log('[handleRouteChange] Detail.currentStockCode:', Detail.currentStockCode, ', 是否相同:', Detail.currentStockCode === stockCode);
                 if (Detail.currentStockCode === stockCode) {
                     // 同一只股票，使用平滑刷新
                     console.log('[handleRouteChange] 同一只股票，使用平滑刷新');
