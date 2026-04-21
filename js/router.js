@@ -38,6 +38,9 @@ const Router = {
         this.state.scrollPositions = {
             overview: 0
         };
+        
+        // 清除 currentStockCode，避免影响滚动位置保存的判断
+        this.state.currentStockCode = null;
 
         // 根据状态显示对应页面
         if (this.state.currentPage === 'detail' && this.state.currentStockCode) {
