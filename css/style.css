@@ -1781,13 +1781,14 @@
         }
 
         .modal-content {
-            background-color: white;
+            background-color: var(--bg-card);
             margin: 0 auto;
             padding: 0;
             border-radius: 10px;
             width: 90%;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             animation: slideIn 0.3s;
+            border: 1px solid var(--border-color);
         }
 
         @keyframes fadeIn {
@@ -1807,7 +1808,7 @@
 
         .modal-header h2 {
             margin: 0;
-            color: #333;
+            color: var(--text-primary);
         }
 
         .modal-footer {
@@ -1817,8 +1818,8 @@
             justify-content: flex-end;
             flex-shrink: 0;
             padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            background: white;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-card);
         }
 
         /* ==================== 添加股票弹窗 ==================== */
@@ -1995,13 +1996,13 @@
             background: none;
             border: none;
             font-size: 28px;
-            color: #999;
+            color: var(--text-muted);
             cursor: pointer;
             transition: color 0.3s;
         }
 
         .modal-close-btn:hover {
-            color: #333;
+            color: var(--text-primary);
         }
 
         /* ==================== 设置弹窗（新设计） ==================== */
@@ -2020,7 +2021,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 20px 28px 16px;
-            border-bottom: 1px solid #eeeff6;
+            border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
             position: relative;
         }
@@ -2050,7 +2051,7 @@
         .modal-header h2 {
             font-size: 18px;
             font-weight: 600;
-            color: #1a1d2e;
+            color: var(--text-primary);
             margin: 0;
             letter-spacing: -0.01em;
         }
@@ -5645,9 +5646,9 @@
 
 .cycle-history-modal-close:hover {
 
-    background: #f0f0f0;
+    background: var(--bg-secondary);
 
-    color: #666;
+    color: var(--text-primary);
 
 }
 
@@ -5675,13 +5676,13 @@
 
     font-size: 14px;
 
-    color: #666;
+    color: var(--text-muted);
 
     margin-bottom: 16px;
 
     padding-bottom: 12px;
 
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
 
 }
 
@@ -5689,7 +5690,7 @@
 
 .header-stock-name {
 
-    color: #333;
+    color: var(--text-primary);
 
 }
 
@@ -5699,7 +5700,7 @@
 
     font-size: 13px;
 
-    color: #888;
+    color: var(--text-muted);
 
 }
 
@@ -5803,7 +5804,7 @@
 
     border-radius: 10px;
 
-    background: #667eea;
+    background: var(--color-interactive);
 
     color: white;
 
@@ -5845,7 +5846,7 @@
 
 .cycle-days {
 
-    color: #667eea;
+    color: var(--color-interactive);
 
     font-weight: 500;
 
@@ -6995,14 +6996,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #666;
+    color: var(--text-muted);
     transition: transform 0.2s ease;
     border-radius: 4px;
 }
 
 .cycle-history-collapse-btn:hover {
-    color: #333;
-    background: #f0f0f0;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
 }
 
 .cycle-history-total {
