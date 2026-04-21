@@ -704,72 +704,6 @@ const DataManager = {
     },
 
     /**
-     * 导出数据为JSON文件
-     */
-    async exportToFile() {
-        const data = await this.load();
-        if (!data || data.stocks.length === 0) {
-            if (window.StockProfitCalculator && window.StockProfitCalculator.ErrorHandler) {
-                window.StockProfitCalculator.ErrorHandler.showWarning('没有数据可导出');
-            }
-            return;
-        }
-
-        const dataStr = JSON.stringify(data, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `股票收益数据_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        if (window.StockProfitCalculator && window.StockProfitCalculator.ErrorHandler) {
-            window.StockProfitCalculator.ErrorHandler.showSuccess('数据导出成功！');
-        }
-    },
-
-    /**
-     * 从JSON文件导入数据
-     */
-    importFromFile(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = async (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-
-                    if (this.validateData(data)) {
-                        // 迁移数据：为旧数据添加 totalAmount 字段
-                        this.migrateData(data);
-
-                        // 保存新数据
-                        if (await this.save(data)) {
-                            resolve({ success: true, message: '数据导入成功！' });
-                        } else {
-                            reject(new Error('保存数据失败'));
-                        }
-                    } else {
-                        reject(new Error('数据格式不正确'));
-                    }
-                } catch (error) {
-                    reject(new Error('解析文件失败: ' + error.message));
-                }
-            };
-
-            reader.onerror = () => {
-                reject(new Error('读取文件失败'));
-            };
-
-            reader.readAsText(file);
-        });
-    },
-
-    /**
      * 数据迁移：为旧数据添加 totalAmount 字段
      */
     migrateData(data) {
@@ -795,13 +729,6 @@ const DataManager = {
                 }
             });
         });
-    },
-
-    /**
-     * 获取当前股票
-     */
-    getCurrentStock(data) {
-        return data.stocks.find(s => s.code === data.currentStockCode);
     },
 
     /**
@@ -860,94 +787,6 @@ const DataManager = {
         return { success: true, message: '更新成功' };
     },
 
-    /**
-     * 切换当前股票
-     */
-    async switchStock(data, stockCode) {
-        const stock = data.stocks.find(s => s.code === stockCode);
-        if (!stock) {
-            return { success: false, message: '股票不存在' };
-        }
-
-        data.currentStockCode = stockCode;
-        await this.save(data);
-        return { success: true, message: '切换成功' };
-    },
-
-    /**
-     * 添加交易记录
-     */
-    async addTrade(data, trade) {
-        const stock = this.getCurrentStock(data);
-        if (!stock) {
-            return { success: false, message: '未找到当前股票' };
-        }
-
-        // 生成新ID
-        const maxId = stock.trades.reduce((max, t) => Math.max(max, t.id), 0);
-        trade.id = maxId + 1;
-
-        stock.trades.push(trade);
-        await this.save(data);
-
-        return { success: true, message: '添加成功', trade };
-    },
-
-    /**
-     * 更新交易记录
-     */
-    async updateTrade(data, tradeId, updates) {
-        const stock = this.getCurrentStock(data);
-        if (!stock) {
-            return { success: false, message: '未找到当前股票' };
-        }
-
-        const trade = stock.trades.find(t => t.id === tradeId);
-        if (!trade) {
-            return { success: false, message: '交易记录不存在' };
-        }
-
-        Object.assign(trade, updates);
-        await this.save(data);
-        return { success: true, message: '更新成功' };
-    },
-
-    /**
-     * 删除交易记录
-     */
-    async deleteTrade(data, tradeId) {
-        const stock = this.getCurrentStock(data);
-        if (!stock) {
-            return { success: false, message: '未找到当前股票' };
-        }
-
-        const index = stock.trades.findIndex(t => t.id === tradeId);
-        if (index === -1) {
-            return { success: false, message: '交易记录不存在' };
-        }
-
-        stock.trades.splice(index, 1);
-        await this.save(data);
-        return { success: true, message: '删除成功' };
-    },
-
-    /**
-     * 按分组获取股票列表
-     */
-    getStocksByGroup(data, group) {
-        return data.stocks.filter(s => s.group === group);
-    },
-
-    /**
-     * 搜索股票
-     */
-    searchStocks(data, keyword) {
-        const lowerKeyword = keyword.toLowerCase();
-        return data.stocks.filter(s =>
-            s.code.toLowerCase().includes(lowerKeyword) ||
-            s.name.toLowerCase().includes(lowerKeyword)
-        );
-    }
 };
 
 // 挂载到命名空间
