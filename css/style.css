@@ -28,6 +28,11 @@
   --color-gold-dark: #b8860b;      /* 暗金色（阴影） */
   --color-gold-glow: rgba(255, 215, 0, 0.4);  /* 金色发光 */
 
+  /* 交互高亮色 - 蓝紫色系 */
+  --color-interactive: #818cf8;    /* 蓝紫色 - 交互提示 */
+  --color-interactive-light: #a5b4fc;  /* 亮蓝紫色（高光） */
+  --color-interactive-glow: rgba(129, 140, 248, 0.5);  /* 蓝紫色发光 */
+
   /* 边框和分隔 */
   --border-color: rgba(255, 255, 255, 0.08);
   --border-color-hover: rgba(255, 255, 255, 0.15);
@@ -108,6 +113,11 @@
   --color-gold-light: #daa520;     /* 亮金色（高光） */
   --color-gold-dark: #8b7355;      /* 暗金色（阴影） */
   --color-gold-glow: rgba(201, 162, 39, 0.3);  /* 金色发光 */
+
+  /* 交互高亮色 - 蓝紫色系 */
+  --color-interactive: #6366f1;    /* 深蓝紫色 - 交互提示 */
+  --color-interactive-light: #818cf8;  /* 亮蓝紫色（高光） */
+  --color-interactive-glow: rgba(99, 102, 241, 0.4);  /* 蓝紫色发光 */
 
   /* 边框 */
   --border-color: rgba(0, 0, 0, 0.08);
@@ -7821,12 +7831,12 @@
 
 .sc-name-clickable:hover,
 .scl-name-clickable:hover {
-    color: var(--color-gold);
+    color: var(--color-interactive);
     /* 精致的三层发光：内层高光 + 中层主发光 + 外层柔和扩散 */
     text-shadow:
-        0 0 4px var(--color-gold-light),   /* 内层高光 */
-        0 0 12px var(--color-gold-glow),   /* 中层主发光 */
-        0 0 24px var(--color-gold-glow);   /* 外层柔和扩散 */
+        0 0 4px var(--color-interactive-light),   /* 内层高光 */
+        0 0 12px var(--color-interactive-glow),   /* 中层主发光 */
+        0 0 24px var(--color-interactive-glow);   /* 外层柔和扩散 */
 }
 
 .sc-code {
