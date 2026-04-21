@@ -52,34 +52,6 @@ const Utils = {
     },
 
     /**
-     * 格式化大数字，自动转换单位（万、亿）
-     * @param {number} value - 数值
-     * @param {number} digits - 保留小数位
-     * @returns {string} 格式化后的字符串（如 ¥1.23万、¥1.23亿）
-     */
-    formatLargeNumber(value, digits = 2) {
-        const num = parseFloat(value);
-        if (isNaN(num)) return '¥0.00';
-
-        const absNum = Math.abs(num);
-        const sign = num < 0 ? '-' : '';
-
-        if (absNum >= 100000000) {
-            // 亿元
-            return sign + '¥' + (absNum / 100000000).toFixed(digits) + '亿';
-        } else if (absNum >= 10000) {
-            // 万元
-            return sign + '¥' + (absNum / 10000).toFixed(digits) + '万';
-        } else {
-            // 原样显示
-            return sign + '¥' + absNum.toLocaleString('zh-CN', {
-                minimumFractionDigits: digits,
-                maximumFractionDigits: digits
-            });
-        }
-    },
-
-    /**
      * 格式化大数字并返回完整信息（用于tooltip）
      * @param {number} value - 数值
      * @param {number} digits - 保留小数位
@@ -142,80 +114,6 @@ const Utils = {
     },
 
     /**
-     * 根据股票代码判断市场
-     * @param {string} code - 股票代码
-     * @returns {string} 市场标识 'sh' 或 'sz'
-     */
-    getMarket(code) {
-        if (!code) return 'sz';
-        if (code.startsWith('6') || code.startsWith('5')) {
-            return 'sh';
-        } else if (code.startsWith('0') || code.startsWith('3') || code.startsWith('15') || code.startsWith('16')) {
-            return 'sz';
-        }
-        return 'sz';
-    },
-
-    /**
-     * 生成东方财富股价查询URL
-     * @param {string} code - 股票代码
-     * @returns {string} 查询URL
-     */
-    getStockPriceUrl(code) {
-        const market = this.getMarket(code);
-        return `https://push2.eastmoney.com/api/qt/stock/get?secid=${market}.${code}&fields=f43,f44,f45,f46,f47,f48,f49,f50,f51,f52,f55,f57,f58,f60,f170,f171`;
-    },
-
-    /**
-     * 生成东方财富股票信息查询URL
-     * @param {string} code - 股票代码
-     * @returns {string} 查询URL
-     */
-    getStockInfoUrl(code) {
-        const market = this.getMarket(code);
-        return `https://push2.eastmoney.com/api/qt/stock/get?secid=${market}.${code}&fields=f57,f58`;
-    },
-
-    /**
-     * 格式化日期
-     * @param {Date|string} date - 日期对象或字符串
-     * @returns {string} 格式化后的日期 YYYY-MM-DD
-     */
-    formatDate(date) {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    },
-
-    /**
-     * 获取今天的日期字符串
-     * @returns {string} YYYY-MM-DD 格式的日期
-     */
-    getToday() {
-        return this.formatDate(new Date());
-    },
-
-    /**
-     * 防抖函数
-     * @param {Function} func - 要执行的函数
-     * @param {number} wait - 等待时间（毫秒）
-     * @returns {Function} 防抖后的函数
-     */
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    },
-
-    /**
      * 深拷贝对象
      * @param {Object} obj - 要拷贝的对象
      * @returns {Object} 拷贝后的新对象
@@ -227,13 +125,6 @@ const Utils = {
         return JSON.parse(JSON.stringify(obj));
     },
 
-    /**
-     * 生成唯一ID
-     * @returns {number} 时间戳作为唯一ID
-     */
-    generateId() {
-        return Date.now();
-    }
 };
 
 /**
