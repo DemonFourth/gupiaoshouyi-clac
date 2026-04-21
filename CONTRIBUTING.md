@@ -1,7 +1,7 @@
 # 股票收益计算器 - 开发规范文档
 
-> 版本：v2.4.3
-> 更新日期：2026-03-25
+> 版本：v2.26.0
+> 更新日期：2026-04-21
 
 ## 目录
 
@@ -1058,28 +1058,63 @@ Config.set('primaryColor', '#667eea');
 
 ## 图表开发规范
 
-### 1. 使用 ChartManager
+### 1. 使用 ChartManager（v2.25.0 重构）
 
 **必须遵循**：
-- 使用 ChartManager 管理图表实例
+- 使用 ChartManager 管理图表实例和主题
 - 图表初始化时指定唯一 ID
 - 页面切换时正确销毁图表
+- **主题自动管理**：ChartManager 自动注入主题配置，无需手动处理
 
 **示例**：
 ```javascript
 const ChartManager = StockProfitCalculator.ChartManager;
 
-// ✅ 正确：初始化图表
+// ✅ 正确：初始化图表（主题自动注入）
 ChartManager.init('profitChart', chartDom, option);
 
-// ✅ 正确：更新图表
+// ✅ 正确：更新图表（主题自动注入）
 ChartManager.update('profitChart', newOption);
 
 // ✅ 正确：销毁图表
 ChartManager.dispose('profitChart');
+
+// ✅ 正确：主题切换时自动刷新所有图表
+ChartManager.switchTheme('light');  // 自动调用 refreshAllCharts()
 ```
 
-### 2. 图表配置
+### 2. 图表主题管理（v2.25.0 新增）
+
+**核心机制**：
+- **自动注入**：`init()` 和 `setOption()` 自动注入主题配置
+- **自动更新**：主题切换时自动调用 `refreshAllCharts()` 更新所有图表
+- **深度合并**：使用 `mergeDeep()` 合并用户配置和主题配置
+
+**主题配置结构**：
+```javascript
+const themeConfig = {
+    backgroundColor: 'transparent',
+    textStyle: { color: '#333' },
+    title: { textStyle: { color: '#333' } },
+    legend: { textStyle: { color: '#333' } },
+    xAxis: { 
+        axisLine: { lineStyle: { color: '#999' } },
+        axisLabel: { color: '#666' }
+    },
+    yAxis: { 
+        axisLine: { lineStyle: { color: '#999' } },
+        axisLabel: { color: '#666' }
+    }
+};
+```
+
+**注意事项**：
+- ❌ 不要在图表渲染函数中手动设置主题颜色
+- ❌ 不要在主题切换时手动调用每个图表的 `setOption()`
+- ✅ 让 ChartManager 自动管理主题
+- ✅ 图表渲染函数只关注数据和业务逻辑
+
+### 3. 图表配置
 
 **必须遵循**：
 - 图表配置必须支持响应式
@@ -1144,6 +1179,208 @@ const option = {
         }
     }
 };
+```
+
+---
+
+## 滚动位置管理规范（v2.26.0 新增）
+
+### 1. Router 滚动位置记忆
+
+**必须遵循**：
+- 使用 `Router.state.scrollPositions` 存储滚动位置
+- 进入详情页时保存汇总页滚动位置
+- 返回汇总页时恢复滚动位置
+- 使用同步滚动（`window.scrollTo(0, pos)`）而非 smooth 滚动
+
+**示例**：
+```javascript
+const Router = {
+    state: {
+        currentPage: 'overview',
+        currentStockCode: null,
+        scrollPositions: {
+            overview: 0
+        }
+    },
+
+    // 进入详情页
+    showDetail(stockCode) {
+        // 保存汇总页滚动位置（仅当从汇总页进入且不是同一股票）
+        if (this.state.currentPage === 'overview' && 
+            this.state.currentStockCode !== stockCode) {
+            const scrollPosition = window.scrollY || window.pageYOffset || 0;
+            this.state.scrollPositions.overview = scrollPosition;
+        }
+
+        // 使用同步滚动到顶部
+        window.scrollTo(0, 0);
+    },
+
+    // 返回汇总页
+    showOverview() {
+        // 恢复滚动位置
+        const savedScrollPosition = this.state.scrollPositions?.overview || 0;
+        if (savedScrollPosition > 0) {
+            window.scrollTo(0, savedScrollPosition);
+            this._scrollPositionRestored = true;
+        }
+    }
+};
+```
+
+### 2. 重复进入检测
+
+**必须遵循**：
+- 使用 `currentStockCode` 判断是否重复进入同一股票
+- 重复进入时不保存滚动位置
+- 刷新页面时清除 `currentStockCode`
+
+**示例**：
+```javascript
+// 初始化时清除
+async init() {
+    await this.loadState();
+    this.state.scrollPositions = { overview: 0 };
+    this.state.currentStockCode = null;  // 清除，避免影响判断
+}
+
+// 判断重复进入
+if (this.state.currentStockCode === stockCode) {
+    // 同一只股票，跳过保存滚动位置
+    return;
+}
+```
+
+### 3. 同步滚动 vs 异步滚动
+
+**必须遵循**：
+- 进入详情页：使用同步滚动 `window.scrollTo(0, 0)`
+- 返回汇总页：使用同步滚动 `window.scrollTo(0, pos)`
+- ❌ 不要使用 `window.scrollTo({ top: 0, behavior: 'smooth' })`
+
+**原因**：
+- smooth 滚动是异步的，不会立即生效
+- `Detail.refresh()` 执行时，滚动位置可能还未改变
+- 导致保存错误的滚动位置
+
+---
+
+## 提示信息管理规范（v2.9.0 新增）
+
+### 1. TooltipManager 统一管理
+
+**必须遵循**：
+- 使用 TooltipManager 创建和管理所有 tooltip
+- tooltip 内容应包含计算公式和说明
+- 使用智能定位避免超出视口
+
+**示例**：
+```javascript
+const TooltipManager = StockProfitCalculator.TooltipManager;
+
+// ✅ 正确：创建 tooltip
+TooltipManager.create(element, {
+    content: '计算公式：总收益 ÷ 总投入 × 100%',
+    position: 'top'
+});
+
+// ✅ 正确：创建带公式的 tooltip
+TooltipManager.create(profitElement, {
+    content: `
+        <div class="tooltip-formula">
+            <div class="formula">总收益 = 卖出金额 - 买入金额 - 手续费</div>
+            <div class="result">= ¥${profit.toFixed(2)}</div>
+        </div>
+    `,
+    allowHTML: true
+});
+```
+
+### 2. 数据项 Tooltip 规范
+
+**必须遵循**：
+- 所有数值型数据项都应添加 tooltip
+- tooltip 应包含：字段名称、计算公式、当前值
+- 使用统一的样式类
+
+**示例**：
+```html
+<!-- ✅ 正确：数据项带 tooltip -->
+<span class="data-value" 
+      data-tooltip="计算公式：持仓成本 ÷ 持仓数量"
+      data-formula="总投入 ÷ 总数量">
+    ¥${avgCost.toFixed(2)}
+</span>
+```
+
+### 3. 大数字转换 Tooltip
+
+**必须遵循**：
+- 使用 `Utils.formatLargeNumberWithTooltip()` 转换大数字
+- 自动添加 tooltip 显示完整数值
+- 阈值：> 10000 转换为"万"单位
+
+**示例**：
+```javascript
+// ✅ 正确：大数字转换
+const result = Utils.formatLargeNumberWithTooltip(123456.78);
+// result.display = "¥12.35万"
+// result.tooltip = "¥123,456.78"
+
+element.textContent = result.display;
+element.setAttribute('data-tooltip', result.tooltip);
+```
+
+---
+
+## 响应式布局规范（v2.26.0 新增）
+
+### 1. CSS Grid 自动换行
+
+**必须遵循**：
+- 使用 `repeat(auto-fit, minmax(min-width, 1fr))` 实现自动换行
+- 设置合理的最小宽度
+- 避免使用固定列数
+
+**示例**：
+```css
+/* ✅ 正确：自动换行 */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+/* ❌ 错误：固定列数 */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  /* 不会自动换行 */
+}
+```
+
+### 2. 响应式断点
+
+**推荐断点**：
+- 移动端：< 768px
+- 平板：768px - 1024px
+- 桌面：> 1024px
+
+**示例**：
+```css
+/* 移动端 */
+@media (max-width: 767px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 平板和桌面 */
+@media (min-width: 768px) {
+    .container {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+}
 ```
 
 ---
@@ -1470,5 +1707,5 @@ EventBus.emit('data:sync_diff', {
 ---
 
 **维护者**：iFlow CLI
-**最后更新**：2026-03-18
-**版本**：v2.4.0
+**最后更新**：2026-04-21
+**版本**：v2.26.0
