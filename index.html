@@ -763,8 +763,13 @@
                                 <span class="tooltip-container">
                                     <span class="tooltip-icon">?</span>
                                     <span class="tooltip-text">
-                                        <strong>持仓成本：</strong>持仓成本÷持仓股数<br>
-                                        <strong>摊薄成本：</strong>(持仓市值-总收益)÷持仓股数
+                                        <strong>每股持仓成本：</strong><br>
+                                        Σ(买入价×数量+手续费) ÷ 持仓股数<br>
+                                        随FIFO卖出自动变化<br><br>
+                                        <strong>每股摊薄成本：</strong><br>
+                                        时间序列：(持仓成本-累计收益)÷持仓股数<br>
+                                        快照：(持仓市值-周期收益)÷持仓股数<br>
+                                        = (现价×股数-(已实现+浮动+分红-红利税))÷股数
                                     </span>
                                 </span>
                             </span>
