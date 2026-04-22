@@ -265,7 +265,86 @@ git show 0c16c84 --stat
 
 ---
 
-## 删除函数汇总
+## 注意事项
+
+1. **每次优化前先提交 Git**，方便回滚
+2. **优化后进行功能测试**，确保不影响现有功能
+3. **保留优化日志**，记录每次修改的详细信息
+4. **分阶段执行**，不要一次性删除所有代码
+
+---
+
+## 后续修复与优化 (2026-04-22)
+
+### 修复 1: config.js 误删函数恢复
+
+**问题**: 删除 `export()` 和 `import()` 后，控制台报错 `this.import is not a function`
+
+**原因**: 这两个函数被 `save()` 和 `load()` 内部调用，不应删除
+
+**修复**: 恢复这两个函数，标记为 `@private`
+
+**Git 提交**: `e7bf75d`
+
+---
+
+### 优化 2: Dark 主题弹窗适配
+
+**文件**: `css/style.css`
+
+**修改内容**:
+- 添加 `.add-stock-modal` Dark 主题样式
+- 添加 `.trade-modal-content` Dark 主题样式
+- 添加 `.add-trade-form-container` 表单元素 Dark 主题样式
+- 强制修复输入框背景色（使用 `!important`）
+
+**Git 提交**: `6aad60a`, `d422520`, `1d44a70`
+
+---
+
+### 重构 3: 分离 UI 状态和交易数据存储
+
+**目标**: D1 只存储交易数据，UI 状态存储在 localStorage
+
+**修改文件**:
+- `js/router.js`: 添加 `saveUIState()`/`loadUIState()`，移除 D1 保存
+- `functions/api/[[path]].js`: D1 API 只处理 `stocks` 数据
+- `js/dataManager.js`: 移除 `currentStockCode` 合并逻辑
+
+**数据存储架构**:
+| 存储位置 | 内容 |
+|----------|------|
+| D1 数据库 | `stocks`（交易数据） |
+| localStorage | `currentPage`, `currentStockCode`（UI 状态） |
+| 内存 | `scrollPositions`（会话内滚动位置） |
+
+**Git 提交**: `112db48`
+
+---
+
+### 重构 4: 简化刷新逻辑
+
+**目标**: 浏览器刷新后总是显示汇总页顶部
+
+**修改文件**: `js/router.js`
+
+**修改内容**:
+1. `init()` 清除 localStorage UI 状态，总是显示汇总页
+2. 滚动位置只在会话内保存（内存），不持久化到 localStorage
+3. 简化 `showDetail()` 滚动位置保存逻辑
+
+**新行为**:
+| 操作 | 结果 |
+|------|------|
+| 浏览器刷新 | 总是显示汇总页顶部 |
+| 汇总页 → 详情页 → 返回 | 恢复汇总页位置（会话内） |
+| 页面内刷新股价按钮 | 不受影响 |
+
+**Git 提交**: `88c5f05`, `78e72ef`, `26f24e7`, `5cc9473`, `0eecfa0`
+
+---
+
+## 最终删除函数汇总
 
 ### js/app.js (6 个函数)
 - `openBackupModal()`
@@ -296,28 +375,19 @@ git show 0c16c84 --stat
 - `getStocksByGroup()`
 - `searchStocks()`
 
-### js/config.js (4 个函数)
-- `reset()`
-- `export()`
-- `import()`
-- `getInfo()`
+### js/config.js (2 个函数，恢复 2 个)
+- `reset()` ✅ 已删除
+- `getInfo()` ✅ 已删除
+- ~~`export()`~~ ⚠️ 已恢复（内部调用）
+- ~~`import()`~~ ⚠️ 已恢复（内部调用）
 
 ### js/chartManager.js (3 个函数)
 - `exportImage()`
 - `initBatch()`
 - `initDelayed()`
 
-**总计删除函数**: 30 个
+**总计删除函数**: 28 个（原 30 个，恢复 2 个）
 
 ---
 
-## 注意事项
-
-1. **每次优化前先提交 Git**，方便回滚
-2. **优化后进行功能测试**，确保不影响现有功能
-3. **保留优化日志**，记录每次修改的详细信息
-4. **分阶段执行**，不要一次性删除所有代码
-
----
-
-*最后更新: 2026-04-21*
+*最后更新: 2026-04-22*
