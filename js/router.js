@@ -8,7 +8,7 @@ const Router = {
     state: {
         currentPage: 'overview',  // 'overview' | 'detail'
         currentStockCode: null,
-        scrollPositions: {  // 存储汇总页的滚动位置（仅在当前会话中）
+        scrollPositions: {  // 存储汇总页的滚动位置（仅在当前会话中，刷新后重置）
             overview: 0
         }
     },
@@ -22,29 +22,19 @@ const Router = {
 
     /**
      * 初始化路由
+     * 浏览器刷新后总是显示汇总页顶部
      */
     async init() {
-        // 从 localStorage 恢复 UI 状态（包括滚动位置）
-        await this.loadState();
+        // 清除 localStorage 中的 UI 状态（刷新后重置）
+        localStorage.removeItem(this.UI_STATE_KEY);
 
-        // 根据状态显示对应页面
-        if (this.state.currentPage === 'detail' && this.state.currentStockCode) {
-            const Detail = StockProfitCalculator.Detail;
-            if (typeof Detail !== 'undefined') {
-                this.showDetail(this.state.currentStockCode, false);  // 切换页面显示
-                Detail.loadStock(this.state.currentStockCode);  // 加载股票数据和显示返回按钮
+        // 重置状态
+        this.state.currentPage = 'overview';
+        this.state.currentStockCode = null;
+        this.state.scrollPositions = { overview: 0 };
 
-                // 延迟重新绑定 tooltip，确保 DOM 完全稳定
-                setTimeout(() => {
-                    if (window.TooltipManager) {
-                        TooltipManager.rebind();
-                    }
-                }, 100);
-            }
-        } else {
-            // 默认显示汇总页面（包括交易记录页面刷新时）
-            this.showOverview(false);
-        }
+        // 总是显示汇总页面
+        this.showOverview(false);
     },
 
     /**
@@ -122,20 +112,14 @@ const Router = {
 
         console.log('[showOverview] 返回汇总页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
 
-        // 恢复汇总页的滚动位置（在 saveState 和 onPageChange 之前）
+        // 恢复汇总页的滚动位置
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
         console.log('[showOverview] 准备恢复的滚动位置:', savedScrollPosition);
-
-        // 始终设置滚动位置：
-        // - 如果有保存的位置，恢复到该位置
-        // - 如果没有保存的位置（刷新后），滚动到顶部
         window.scrollTo(0, savedScrollPosition);
         if (savedScrollPosition > 0) {
             // 标记滚动位置已恢复，避免 refresh() 再次恢复
             this._scrollPositionRestored = true;
             console.log('[showOverview] 已恢复滚动位置到:', savedScrollPosition);
-        } else {
-            console.log('[showOverview] 无保存的滚动位置，滚动到顶部');
         }
 
         if (saveState) {
@@ -156,22 +140,8 @@ const Router = {
     async showDetail(stockCode, saveState = true) {
         const perfToken = window.Perf ? window.Perf.start('Router.showDetail') : null;
 
-        // 保存滚动位置的条件：
-        // 1. 当前页面是汇总页（用户从汇总页点击进入）
-        // 2. 详情页容器不可见（确保当前显示的是汇总页）
-        const detailPageEl = document.getElementById('detailPage');
-        const isDetailPageVisible = detailPageEl && detailPageEl.style.display !== 'none';
-        const shouldSaveScroll = this.state.currentPage === 'overview' && !isDetailPageVisible;
-
-        console.log('[showDetail] 检查是否保存滚动位置:', {
-            currentPage: this.state.currentPage,
-            isDetailPageVisible: isDetailPageVisible,
-            newStockCode: stockCode,
-            shouldSaveScroll: shouldSaveScroll,
-            currentScrollY: window.scrollY || window.pageYOffset || 0
-        });
-
-        if (shouldSaveScroll) {
+        // 保存汇总页滚动位置（仅在从汇总页进入时）
+        if (this.state.currentPage === 'overview') {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
             console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
@@ -274,14 +244,14 @@ const Router = {
 
     /**
      * 保存 UI 状态到 localStorage
-     * 包括滚动位置，刷新后可以恢复
+     * 注意：不保存滚动位置，刷新后总是从顶部开始
      */
     saveUIState() {
         try {
             const uiState = {
                 currentPage: this.state.currentPage,
                 currentStockCode: this.state.currentStockCode,
-                scrollPositions: this.state.scrollPositions,  // 保存滚动位置
+                // 不保存滚动位置，刷新后重置
                 currentYear: this.state.currentYear,
                 currentMonth: this.state.currentMonth,
                 startDate: this.state.startDate ? this.state.startDate.toISOString() : null,
@@ -295,7 +265,7 @@ const Router = {
 
     /**
      * 从 localStorage 加载 UI 状态
-     * 包括滚动位置
+     * 注意：不加载滚动位置
      */
     loadUIState() {
         try {
@@ -308,9 +278,7 @@ const Router = {
                 if (uiState.currentStockCode) {
                     this.state.currentStockCode = uiState.currentStockCode;
                 }
-                if (uiState.scrollPositions) {
-                    this.state.scrollPositions = uiState.scrollPositions;
-                }
+                // 不加载滚动位置
                 if (uiState.currentYear) {
                     this.state.currentYear = uiState.currentYear;
                 }
@@ -331,10 +299,10 @@ const Router = {
 
     /**
      * 保存状态
-     * 包括滚动位置，刷新后可以恢复
+     * 滚动位置只在会话内保存，不持久化
      */
     async saveState() {
-        // 保存 UI 状态到 localStorage（含滚动位置）
+        // 保存 UI 状态到 localStorage（不含滚动位置）
         this.saveUIState();
     },
 
