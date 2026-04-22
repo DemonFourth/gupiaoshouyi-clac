@@ -1706,6 +1706,113 @@ EventBus.emit('data:sync_diff', {
 
 ---
 
+## 代码优化记录
+
+### 2026-04-21 代码清理优化
+
+**目标**: 清理未使用的函数、变量、死代码，提高代码可维护性
+
+**删除统计**: 521 行代码，28 个函数
+
+#### 删除的函数列表
+
+| 文件 | 删除函数 | 数量 |
+|------|----------|------|
+| js/app.js | `openBackupModal`, `closeBackupModal`, `createBackup`, `loadBackupList`, `restoreBackup`, `deleteBackup` | 6 |
+| js/utils.js | `formatLargeNumber`, `getMarket`, `getStockPriceUrl`, `getStockInfoUrl`, `formatDate`, `getToday`, `debounce`, `generateId` | 8 |
+| js/dataManager.js | `exportToFile`, `importFromFile`, `getCurrentStock`, `switchStock`, `addTrade`, `updateTrade`, `deleteTrade`, `getStocksByGroup`, `searchStocks` | 9 |
+| js/config.js | `reset`, `getInfo` | 2 |
+| js/chartManager.js | `exportImage`, `initBatch`, `initDelayed` | 3 |
+
+**注意**: `config.js` 的 `export()` 和 `import()` 已恢复，因为被内部调用
+
+#### Git 提交记录
+
+```
+2c1f92f refactor(app): 删除已注释的备份管理死代码
+271e385 refactor(utils): 删除未使用的工具函数
+d66d5f9 refactor(dataManager): 删除未使用的辅助函数
+72795cd refactor(config): 删除未使用的配置函数
+0c16c84 refactor(chartManager): 删除未使用的图表函数
+e7bf75d fix(config): 恢复 export/import 函数，它们被内部调用
+```
+
+---
+
+### 2026-04-22 后续修复与重构
+
+#### 修复 1: Dark 主题弹窗适配
+
+**文件**: `css/style.css`
+
+**修改内容**:
+- 添加 `.add-stock-modal` Dark 主题样式
+- 添加 `.trade-modal-content` Dark 主题样式
+- 添加 `.add-trade-form-container` 表单元素 Dark 主题样式
+- 强制修复输入框背景色（使用 `!important`）
+
+**Git 提交**: `6aad60a`, `d422520`, `1d44a70`
+
+---
+
+#### 重构 2: 分离 UI 状态和交易数据存储
+
+**目标**: D1 只存储交易数据，UI 状态存储在 localStorage
+
+**修改文件**:
+- `js/router.js`: 添加 `saveUIState()`/`loadUIState()`，移除 D1 保存
+- `functions/api/[[path]].js`: D1 API 只处理 `stocks` 数据
+- `js/dataManager.js`: 移除 `currentStockCode` 合并逻辑
+
+**数据存储架构**:
+
+| 存储位置 | 内容 | 说明 |
+|----------|------|------|
+| D1 数据库 | `stocks` | 交易数据（持久化） |
+| localStorage | `currentPage`, `currentStockCode` | UI 状态（刷新时清除） |
+| 内存 | `scrollPositions` | 滚动位置（会话内） |
+
+**Git 提交**: `112db48`
+
+---
+
+#### 重构 3: 简化刷新逻辑
+
+**目标**: 浏览器刷新后总是显示汇总页顶部
+
+**修改文件**: `js/router.js`
+
+**新行为**:
+
+| 操作 | 结果 |
+|------|------|
+| 浏览器刷新 | 总是显示汇总页顶部 |
+| 汇总页 → 详情页 → 返回 | 恢复汇总页位置（会话内） |
+| 页面内刷新股价按钮 | 不受影响 |
+
+**Git 提交**: `88c5f05`, `78e72ef`, `26f24e7`, `5cc9473`, `0eecfa0`
+
+---
+
+### 回滚指南
+
+如需回滚优化，可使用以下命令：
+
+```bash
+# 查看提交历史
+git log --oneline -20
+
+# 回退到优化前的状态
+git reset --hard f068d02
+
+# 或逐个回退
+git revert 0eecfa0  # 回退刷新逻辑简化
+git revert 112db48  # 回退 UI 状态分离
+git revert 1d44a70  # 回退 Dark 主题修复
+```
+
+---
+
 **维护者**：iFlow CLI
-**最后更新**：2026-04-21
-**版本**：v2.26.0
+**最后更新**：2026-04-22
+**版本**：v2.27.0
