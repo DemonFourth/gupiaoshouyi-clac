@@ -10645,3 +10645,71 @@
     background: rgba(129, 140, 248, 0.05);
 }
 
+/* 字段设置弹窗 - Dark 主题 */
+[data-theme="dark"] .field-settings-content {
+    background: var(--bg-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-header {
+    background: var(--bg-tertiary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-header h3 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-close-btn {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-close-btn:hover {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-body {
+    background: var(--bg-card);
+}
+
+[data-theme="dark"] .field-settings-item {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .field-settings-item:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color-hover);
+}
+
+[data-theme="dark"] .field-settings-label {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .field-settings-item input[type="checkbox"] {
+    accent-color: var(--color-interactive);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-footer {
+    background: var(--bg-tertiary);
+    border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-footer .btn {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .field-settings-modal .modal-footer .btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+/* 已清仓股票卡片 - Dark 主题 */
+[data-theme="dark"] .stock-card-list-v2.is-cleared {
+    background: var(--bg-secondary);
+    opacity: 0.95;
+}
+
