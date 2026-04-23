@@ -585,7 +585,6 @@
             font-weight: 600;
             font-variant-numeric: tabular-nums;
         }
-        }
 
         /* 顶部工具条内刷新提示：放在刷新按钮左侧 */
         .header-refresh-status {
