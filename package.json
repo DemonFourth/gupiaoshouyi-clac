@@ -1,6 +1,6 @@
 {
   "name": "gupiaoshouyi-clac",
-  "version": "2.4.4",
+  "version": "2.29.0",
   "description": "股票投资收益计算工具 - 基于 FIFO 算法的股票收益计算器",
   "main": "index.html",
   "scripts": {
