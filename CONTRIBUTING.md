@@ -18,6 +18,7 @@
 - [图表开发规范](#图表开发规范)
 - [主题适配规范](#主题适配规范)
 - [辅助工具模块规范](#辅助工具模块规范)
+- [日志管理规范](#日志管理规范)
 - [测试规范](#测试规范)
 - [Git提交规范](#git提交规范)
 - [Cloudflare 部署规范](#cloudflare-部署规范)
@@ -1704,6 +1705,242 @@ ModuleRegistry.registerAll({
     Router
 });
 ```
+
+---
+
+## 日志管理规范（v2.28.0 新增）
+
+### 1. 核心原则
+
+**必须遵循**：
+- 所有调试日志必须使用 Logger 模块，禁止直接使用 `console.log`
+- 日志消息必须以 `[ModuleName]` 开头，便于模块识别
+- 日志默认关闭，通过设置界面或 URL 参数开启
+- 支持按模块控制日志输出，避免干扰调试
+
+### 2. Logger 模块使用
+
+**基本用法**：
+```javascript
+const Logger = StockProfitCalculator.Logger;
+
+// ✅ 正确：使用 Logger 输出调试日志
+Logger.debug('[ModuleName] 操作开始');
+Logger.debug('[ModuleName] 处理数据:', data);
+Logger.info('[ModuleName] 操作完成');
+Logger.warn('[ModuleName] 警告信息');
+Logger.error('[ModuleName] 错误信息', error);
+
+// ❌ 错误：直接使用 console.log
+console.log('操作开始');
+console.log('处理数据:', data);
+```
+
+**推荐用法（安全调用）**：
+```javascript
+// ✅ 正确：使用可选链安全调用
+StockProfitCalculator.Logger?.debug?.('[ModuleName] 操作开始');
+StockProfitCalculator.Logger?.info?.('[ModuleName] 操作完成');
+```
+
+### 3. 模块命名规范
+
+**必须遵循**：
+- 日志消息必须以 `[ModuleName]` 开头
+- 模块名使用 PascalCase 格式
+- 子模块使用 `ModuleName.subModule` 格式
+
+**模块名映射表**：
+
+| 日志前缀 | 映射到模块 | 说明 |
+|----------|-----------|------|
+| `[App]` | app | 应用初始化 |
+| `[Router]` | router | 路由导航 |
+| `[showOverview]` | router | 显示汇总页 |
+| `[showDetail]` | router | 显示详情页 |
+| `[handleRouteChange]` | router | 路由变化处理 |
+| `[DataManager]` | dataManager | 数据管理 |
+| `[loadFromLocalStorage]` | dataManager | 本地存储加载 |
+| `[saveToLocalStorage]` | dataManager | 本地存储保存 |
+| `[Detail]` | detail | 详情页 |
+| `[loadStock]` | detail | 加载股票 |
+| `[Overview]` | overview | 汇总页 |
+| `[Overview.refresh]` | overview | 汇总页刷新 |
+| `[StockManager]` | stockManager | 股票管理 |
+| `[saveStock]` | stockManager | 保存股票 |
+| `[TradeRecords]` | tradeRecords | 交易记录 |
+| `[EventBus]` | eventBus | 事件总线 |
+| `[Calculator]` | calculator | 计算器 |
+| `[Chart]` | chart | 图表渲染 |
+
+### 4. 日志格式规范
+
+**必须遵循**：
+- 日志消息格式：`[ModuleName] 描述信息`
+- 多行日志使用缩进对齐
+- 复杂数据使用 JSON 格式或对象展开
+
+**正确示例**：
+```javascript
+// ✅ 正确：单行日志
+Logger.debug('[TradeRecords] load 开始');
+Logger.debug('[TradeRecords] 查询参数：year =', year, ', month =', month);
+
+// ✅ 正确：多行日志（使用缩进）
+Logger.debug('[TradeRecords] 查询结果：');
+Logger.debug('[TradeRecords]   总收益:', totalProfit);
+Logger.debug('[TradeRecords]   总手续费:', totalFee);
+Logger.debug('[TradeRecords]   交易次数:', tradeCount);
+
+// ✅ 正确：复杂数据
+Logger.debug('[DataManager] 股票数据:', { code, name, trades: trades.length });
+```
+
+**错误示例**：
+```javascript
+// ❌ 错误：没有模块前缀
+Logger.debug('查询参数：year =', year);
+
+// ❌ 错误：使用 console.log
+console.log('[TradeRecords] 查询结果：');
+
+// ❌ 错误：前缀格式不正确
+Logger.debug('TradeRecords: 查询结果');
+Logger.debug('[traderecords] 查询结果');  // 应该是 PascalCase
+```
+
+### 5. 日志级别使用
+
+**级别说明**：
+
+| 级别 | 用途 | 示例 |
+|------|------|------|
+| `debug` | 调试信息，开发时使用 | 流程跟踪、变量值 |
+| `info` | 一般信息 | 操作完成、状态变化 |
+| `warn` | 警告信息 | 可恢复的异常、降级处理 |
+| `error` | 错误信息 | 异常、失败操作 |
+
+**使用示例**：
+```javascript
+// debug - 调试信息
+Logger.debug('[Calculator] 开始计算，交易数:', trades.length);
+
+// info - 一般信息
+Logger.info('[App] 初始化完成');
+
+// warn - 警告信息
+Logger.warn('[DataManager] 本地数据过期，使用缓存');
+
+// error - 错误信息
+Logger.error('[API] 请求失败:', error);
+```
+
+### 6. 开启日志的方式
+
+**方式一：设置界面**
+1. 打开设置弹窗
+2. 在「开发者选项」中开启「调试日志」开关
+3. 选择需要查看日志的模块
+4. 设置会持久化，刷新后保持
+
+**方式二：URL 参数**
+```bash
+# 启用所有模块日志
+https://example.com/?debug=1
+
+# 只启用指定模块日志
+https://example.com/?debug=router,overview,calculator
+```
+
+**方式三：控制台命令**
+```javascript
+// 开启日志
+StockProfitCalculator.Logger.setEnabled(true);
+
+// 启用指定模块
+StockProfitCalculator.Logger.setModuleEnabled('router', true);
+StockProfitCalculator.Logger.setModuleEnabled('overview', true);
+
+// 启用所有模块
+StockProfitCalculator.Logger.enableAllModules();
+
+// 禁用所有模块
+StockProfitCalculator.Logger.disableAllModules();
+
+// 查看当前状态
+StockProfitCalculator.Logger.getStatus();
+```
+
+### 7. 新增模块日志指南
+
+**步骤**：
+
+1. **确定模块名**：选择一个唯一的模块名（如 `NewModule`）
+
+2. **注册模块**：在 `js/logger.js` 的 `modules` 对象中添加：
+```javascript
+modules: {
+    // ... 现有模块
+    newModule: { name: '新模块', enabled: false, icon: '🔧' }
+}
+```
+
+3. **添加映射**：在 `_extractModule` 的 `moduleMap` 中添加：
+```javascript
+const moduleMap = {
+    // ... 现有映射
+    'newmodule': 'newModule',
+    'newmodule.sub': 'newModule'
+};
+```
+
+4. **使用日志**：在代码中使用：
+```javascript
+StockProfitCalculator.Logger?.debug?.('[NewModule] 操作开始');
+StockProfitCalculator.Logger?.debug?.('[NewModule] 处理数据:', data);
+```
+
+### 8. 日志性能考虑
+
+**必须遵循**：
+- 生产环境默认关闭日志
+- 避免在循环中输出大量日志
+- 复杂对象使用懒计算
+
+**正确示例**：
+```javascript
+// ✅ 正确：条件日志
+if (Logger.enabled && Logger.modules.myModule?.enabled) {
+    Logger.debug('[MyModule] 复杂数据:', expensiveCalculation());
+}
+
+// ✅ 正确：限制日志数量
+items.slice(0, 5).forEach((item, index) => {
+    Logger.debug(`[MyModule] 项目 ${index}:`, item);
+});
+```
+
+### 9. 日志检查清单
+
+开发新功能时，必须检查以下项目：
+
+- [ ] 所有调试日志使用 Logger 而非 console.log
+- [ ] 日志消息以 `[ModuleName]` 开头
+- [ ] 模块名已在 Logger.modules 中注册
+- [ ] 模块名已在 _extractModule.moduleMap 中映射
+- [ ] 日志格式符合规范
+- [ ] 避免在循环中输出大量日志
+- [ ] 测试日志开关功能正常
+
+### 10. 常见问题
+
+| 问题 | 原因 | 解决方案 |
+|------|------|----------|
+| 日志不输出 | 模块未启用 | 在设置中启用对应模块 |
+| 日志不输出 | 日志级别不匹配 | 开启日志时自动设置为 DEBUG 级别 |
+| 所有模块日志都输出 | URL 参数 `?debug=1` | 使用 `?debug=module1,module2` 指定模块 |
+| 日志没有模块标识 | 没有使用 `[ModuleName]` 前缀 | 添加正确的前缀格式 |
+| 刷新后设置丢失 | 配置未持久化 | 检查 Config.save() 是否被调用 |
 
 ---
 
