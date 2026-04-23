@@ -1469,11 +1469,11 @@ const Calculator = {
      * @returns {Array} 该时间段的交易记录
      */
     getTradesByPeriod(trades, year, month = null) {
-        StockProfitCalculator.Logger?.debug?.('=== Calculator.getTradesByPeriod ===');
-        StockProfitCalculator.Logger?.debug?.('输入：year =', year, ', month =', month);
+        StockProfitCalculator.Logger?.debug?.('[Calculator] getTradesByPeriod 开始');
+        StockProfitCalculator.Logger?.debug?.('[Calculator] 输入：year =', year, ', month =', month);
         
         if (!trades || trades.length === 0) {
-            StockProfitCalculator.Logger?.debug?.('trades 为空或长度为0，返回空数组');
+            StockProfitCalculator.Logger?.debug?.('[Calculator] trades 为空或长度为0，返回空数组');
             return [];
         }
 
@@ -1485,30 +1485,30 @@ const Calculator = {
             new Date(`${year}-${monthStr}-${new Date(year, month + 1, 0).getDate()}T23:59:59.999`) :
             new Date(`${year + 1}-01-01T23:59:59.999`);
 
-        StockProfitCalculator.Logger?.debug?.('查询时间范围：');
-        StockProfitCalculator.Logger?.debug?.('  startDate =', startDate.toISOString());
-        StockProfitCalculator.Logger?.debug?.('  endDate =', endDate.toISOString());
-        StockProfitCalculator.Logger?.debug?.('  startDate (本地) =', startDate.toLocaleString());
-        StockProfitCalculator.Logger?.debug?.('  endDate (本地) =', endDate.toLocaleString());
+        StockProfitCalculator.Logger?.debug?.('[Calculator] 查询时间范围：');
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   startDate =', startDate.toISOString());
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   endDate =', endDate.toISOString());
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   startDate (本地) =', startDate.toLocaleString());
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   endDate (本地) =', endDate.toLocaleString());
 
         const filteredTrades = trades.filter((trade, index) => {
             const tradeDate = new Date(trade.date);
             const inRange = tradeDate >= startDate && tradeDate <= endDate;
             
             if (index < 5) {  // 只输出前5条记录的详细信息
-                StockProfitCalculator.Logger?.debug?.(`  交易记录 ${index}:`);
-                StockProfitCalculator.Logger?.debug?.('    trade.date =', trade.date);
-                StockProfitCalculator.Logger?.debug?.('    tradeDate =', tradeDate.toISOString());
-                StockProfitCalculator.Logger?.debug?.('    tradeDate (本地) =', tradeDate.toLocaleString());
-                StockProfitCalculator.Logger?.debug?.('    inRange =', inRange);
+                StockProfitCalculator.Logger?.debug?.(`[Calculator]   交易记录 ${index}:`);
+                StockProfitCalculator.Logger?.debug?.('[Calculator]     trade.date =', trade.date);
+                StockProfitCalculator.Logger?.debug?.('[Calculator]     tradeDate =', tradeDate.toISOString());
+                StockProfitCalculator.Logger?.debug?.('[Calculator]     tradeDate (本地) =', tradeDate.toLocaleString());
+                StockProfitCalculator.Logger?.debug?.('[Calculator]     inRange =', inRange);
             }
             
             return inRange;
         });
 
-        StockProfitCalculator.Logger?.debug?.('过滤结果：');
-        StockProfitCalculator.Logger?.debug?.('  输入 trades 数量:', trades.length);
-        StockProfitCalculator.Logger?.debug?.('  过滤后数量:', filteredTrades.length);
+        StockProfitCalculator.Logger?.debug?.('[Calculator] 过滤结果：');
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   输入 trades 数量:', trades.length);
+        StockProfitCalculator.Logger?.debug?.('[Calculator]   过滤后数量:', filteredTrades.length);
 
         return filteredTrades;
     },

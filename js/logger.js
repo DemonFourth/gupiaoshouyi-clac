@@ -115,62 +115,40 @@ const Logger = {
     _extractModule(message) {
         if (typeof message !== 'string') return null;
         
-        const msg = message.toLowerCase();
+        // 匹配 [ModuleName] 格式
+        const match = message.match(/^\[([^\]]+)\]/i);
+        if (!match) return null;
         
-        // 直接匹配模块名（按优先级排序，避免误匹配）
-        // app - 应用初始化
-        if (msg.startsWith('[app]') || msg.includes('[app]')) return 'app';
+        const name = match[1].toLowerCase();
         
-        // router - 路由导航
-        if (msg.includes('[router') || 
-            msg.includes('[showoverview') || 
-            msg.includes('[showdetail') || 
-            msg.includes('[handleroutechange') ||
-            msg.includes('routepage') ||
-            msg.includes('traderecords sticky')) return 'router';
+        // 映射到模块名
+        const moduleMap = {
+            'app': 'app',
+            'router': 'router',
+            'showoverview': 'router',
+            'showdetail': 'router',
+            'handleroutechange': 'router',
+            'datamanager': 'dataManager',
+            'loadfromlocalstorage': 'dataManager',
+            'savetolocalstorage': 'dataManager',
+            'clearlocalstorage': 'dataManager',
+            'detail': 'detail',
+            'loadstock': 'detail',
+            'overview': 'overview',
+            'stockmanager': 'stockManager',
+            'savestock': 'stockManager',
+            'traderecords': 'tradeRecords',
+            'eventbus': 'eventBus',
+            'calculator': 'calculator',
+            'chart': 'chart'
+        };
         
-        // dataManager - 数据管理
-        if (msg.includes('[datamanager') || 
-            msg.includes('[loadfromlocalstorage') || 
-            msg.includes('[savetolocalstorage') || 
-            msg.includes('[clearlocalstorage]') ||
-            msg.includes('[load]') ||
-            msg.includes('[save]')) return 'dataManager';
-        
-        // detail - 详情页
-        if (msg.includes('[detail') || 
-            msg.includes('[loadstock') ||
-            msg.includes('detailpage sticky')) return 'detail';
-        
-        // overview - 汇总页
-        if (msg.includes('[overview') || 
-            msg.includes('搜索框初始化') ||
-            msg.includes('搜索关键词') ||
-            msg.includes('匹配结果') ||
-            msg.includes('点击本周收益') ||
-            msg.includes('点击本月收益')) return 'overview';
-        
-        // stockManager - 股票管理
-        if (msg.includes('[savestock') || 
-            msg.includes('stockmanager')) return 'stockManager';
-        
-        // tradeRecords - 交易记录
-        if (msg.includes('traderecords') || 
-            msg.includes('[traderecords') ||
-            msg.includes('traderecords 模块')) return 'tradeRecords';
-        
-        // eventBus - 事件总线
-        if (msg.includes('[eventbus') || 
-            msg.includes('eventbus')) return 'eventBus';
-        
-        // calculator - 计算器
-        if (msg.includes('calculator') || 
-            msg.includes('gettradesbyperiod')) return 'calculator';
-        
-        // chart - 图表渲染
-        if (msg.includes('chart') || 
-            msg.includes('timeseries') ||
-            msg.includes('图表')) return 'chart';
+        // 直接匹配或部分匹配
+        for (const [key, module] of Object.entries(moduleMap)) {
+            if (name === key || name.includes(key)) {
+                return module;
+            }
+        }
         
         return null;
     },
@@ -182,7 +160,8 @@ const Logger = {
      */
     _isModuleEnabled(moduleName) {
         if (!this.enabled) return false;
-        if (!moduleName) return true; // 没有模块标识的日志，跟随全局开关
+        // 没有匹配到模块的日志，不输出（避免干扰）
+        if (!moduleName) return false;
         return this.modules[moduleName]?.enabled ?? false;
     },
 

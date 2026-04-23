@@ -2252,9 +2252,9 @@ const Overview = {
         const searchResults = this._domCache.searchResults;
         
         // 调试日志
-        StockProfitCalculator.Logger?.debug?.('搜索框初始化:');
-        StockProfitCalculator.Logger?.debug?.('searchInput:', searchInput);
-        StockProfitCalculator.Logger?.debug?.('searchResults:', searchResults);
+        StockProfitCalculator.Logger?.debug?.('[Overview] 搜索框初始化:');
+        StockProfitCalculator.Logger?.debug?.('[Overview] searchInput:', searchInput);
+        StockProfitCalculator.Logger?.debug?.('[Overview] searchResults:', searchResults);
         
         if (!searchInput || !searchResults) {
             console.error('搜索框元素未找到，无法初始化');
@@ -2271,7 +2271,7 @@ const Overview = {
             const query = e.target.value.trim();
             
             // 调试日志
-            StockProfitCalculator.Logger?.debug?.('输入事件触发，query:', query);
+            StockProfitCalculator.Logger?.debug?.('[Overview] 输入事件触发，query:', query);
             
             if (query.length < 1) {
                 searchResults.style.display = 'none';
@@ -2279,7 +2279,7 @@ const Overview = {
             }
             
             this._searchDebounceTimer = setTimeout(() => {
-                StockProfitCalculator.Logger?.debug?.('执行搜索，query:', query);
+                StockProfitCalculator.Logger?.debug?.('[Overview] 执行搜索，query:', query);
                 this._performSearch(query);
             }, 200);  // 200ms 防抖
         });
@@ -2318,8 +2318,8 @@ const Overview = {
         const stocks = this.stocks || [];
         
         // 调试日志
-        StockProfitCalculator.Logger?.debug?.('搜索关键词:', query);
-        StockProfitCalculator.Logger?.debug?.('股票总数:', stocks.length);
+        StockProfitCalculator.Logger?.debug?.('[Overview] 搜索关键词:', query);
+        StockProfitCalculator.Logger?.debug?.('[Overview] 股票总数:', stocks.length);
         
         // 模糊搜索：匹配股票代码或名称
         const matches = stocks.filter(stock => {
@@ -2329,8 +2329,8 @@ const Overview = {
         });
         
         // 调试日志
-        StockProfitCalculator.Logger?.debug?.('匹配结果数:', matches.length);
-        StockProfitCalculator.Logger?.debug?.('匹配结果:', matches);
+        StockProfitCalculator.Logger?.debug?.('[Overview] 匹配结果数:', matches.length);
+        StockProfitCalculator.Logger?.debug?.('[Overview] 匹配结果:', matches);
         
         // 渲染搜索结果
         this._renderSearchResults(matches, query);
@@ -2519,8 +2519,8 @@ const Overview = {
             startDate = weekRange.start;
             endDate = weekRange.end;
             
-            StockProfitCalculator.Logger?.debug?.('=== 点击本周收益 ===');
-            StockProfitCalculator.Logger?.debug?.('weekRange:', weekRange);
+            StockProfitCalculator.Logger?.debug?.('[Overview] 点击本周收益');
+            StockProfitCalculator.Logger?.debug?.('[Overview] weekRange:', weekRange);
         } else if (period === 'month') {
             // 本月：获取本月的年份和月份
             year = now.getFullYear();
@@ -2528,8 +2528,8 @@ const Overview = {
             startDate = null;
             endDate = null;
             
-            StockProfitCalculator.Logger?.debug?.('=== 点击本月收益 ===');
-            StockProfitCalculator.Logger?.debug?.('当前时间:', now);
+            StockProfitCalculator.Logger?.debug?.('[Overview] 点击本月收益');
+            StockProfitCalculator.Logger?.debug?.('[Overview] 当前时间:', now);
         }
 
         // 跳转到交易记录查询页面

@@ -499,11 +499,11 @@ const TradeRecords = {
         const stocks = await DataService.getAllStocks();
 
         // 调试日志
-        StockProfitCalculator.Logger?.debug?.('=== TradeRecords.load ===');
-        StockProfitCalculator.Logger?.debug?.('查询参数：year =', year, ', month =', month);
-        StockProfitCalculator.Logger?.debug?.('时间范围：startDate =', startDate, ', endDate =', endDate);
-        StockProfitCalculator.Logger?.debug?.('获取到的 stocks:', stocks);
-        StockProfitCalculator.Logger?.debug?.('stocks 数量:', stocks.length);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] load 开始');
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 查询参数：year =', year, ', month =', month);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 时间范围：startDate =', startDate, ', endDate =', endDate);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 获取到的 stocks:', stocks);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] stocks 数量:', stocks.length);
 
         // 填充股票筛选下拉框
         this._populateStockFilter(stocks);
@@ -521,7 +521,7 @@ const TradeRecords = {
                 return;
             }
 
-            StockProfitCalculator.Logger?.debug?.('股票:', stock.code, stock.name, '交易记录数:', stock.trades.length);
+            StockProfitCalculator.Logger?.debug?.('[TradeRecords] 股票:', stock.code, stock.name, '交易记录数:', stock.trades.length);
             
             // 获取所有交易记录（用于显示）
             stock.trades.forEach(trade => {
@@ -545,8 +545,8 @@ const TradeRecords = {
             });
         });
 
-        StockProfitCalculator.Logger?.debug?.('所有交易记录数:', allTrades.length);
-        StockProfitCalculator.Logger?.debug?.('所有卖出记录数:', allSellRecords.length);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 所有交易记录数:', allTrades.length);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 所有卖出记录数:', allSellRecords.length);
 
         // 创建 sellProfitMap（使用 stockCode + tradeId 作为唯一 key，避免不同股票的 tradeId 重复）
         const sellProfitMap = new Map(
@@ -559,18 +559,18 @@ const TradeRecords = {
             // 使用传入的时间范围（本周）
             queryStartDate = startDate;
             queryEndDate = endDate;
-            StockProfitCalculator.Logger?.debug?.('使用传入的时间范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('[TradeRecords] 使用传入的时间范围：', queryStartDate, '-', queryEndDate);
         } else if (month !== null) {
             // 使用月份范围（本月）
             const monthStr = (month + 1).toString().padStart(2, '0');
             queryStartDate = new Date(`${year}-${monthStr}-01T00:00:00`);
             queryEndDate = new Date(`${year}-${monthStr}-${new Date(year, month + 1, 0).getDate()}T23:59:59.999`);
-            StockProfitCalculator.Logger?.debug?.('使用月份范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('[TradeRecords] 使用月份范围：', queryStartDate, '-', queryEndDate);
         } else {
             // 全年
             queryStartDate = new Date(`${year}-01-01T00:00:00`);
             queryEndDate = new Date(`${year}-12-31T23:59:59.999`);
-            StockProfitCalculator.Logger?.debug?.('使用全年范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('[TradeRecords] 使用全年范围：', queryStartDate, '-', queryEndDate);
         }
 
         // 按日期排序
@@ -582,7 +582,7 @@ const TradeRecords = {
             return tradeDate >= queryStartDate && tradeDate <= queryEndDate;
         });
 
-        StockProfitCalculator.Logger?.debug?.('过滤后的交易记录数:', periodTrades.length);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 过滤后的交易记录数:', periodTrades.length);
 
         // 获取所有股票的交易记录
         const stocksWithTrades = new Set();
