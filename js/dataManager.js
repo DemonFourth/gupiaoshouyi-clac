@@ -155,7 +155,7 @@ const DataManager = {
             const json = localStorage.getItem(this.LOCAL_STORAGE_KEY);
             if (!json) return null;
             const data = JSON.parse(json);
-            console.log('[loadFromLocalStorage] 读取成功，股票数量:', data?.stocks?.length || 0);
+            StockProfitCalculator.Logger?.debug?.('[loadFromLocalStorage] 读取成功，股票数量:', data?.stocks?.length || 0);
             return data;
         } catch (error) {
             console.error('[loadFromLocalStorage] 读取失败:', error);
@@ -172,7 +172,7 @@ const DataManager = {
             // 添加/更新时间戳
             data.lastModified = new Date().toISOString();
             localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(data));
-            console.log('[saveToLocalStorage] 保存成功');
+            StockProfitCalculator.Logger?.debug?.('[saveToLocalStorage] 保存成功');
         } catch (error) {
             console.error('[saveToLocalStorage] 保存失败:', error);
         }
@@ -184,7 +184,7 @@ const DataManager = {
     clearLocalStorage() {
         try {
             localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-            console.log('[clearLocalStorage] 清除成功');
+            StockProfitCalculator.Logger?.debug?.('[clearLocalStorage] 清除成功');
         } catch (error) {
             console.error('[clearLocalStorage] 清除失败:', error);
         }
@@ -353,7 +353,7 @@ const DataManager = {
 
     // 初始化数据
     async init() {
-        console.log('[DataManager.init] 开始初始化数据');
+        StockProfitCalculator.Logger?.debug?.('[DataManager.init] 开始初始化数据');
 
         // 从 Config 加载防抖延迟配置
         const Config = StockProfitCalculator.Config;
@@ -371,7 +371,7 @@ const DataManager = {
         // 初始化边界：确保分组与持仓一致
         this.normalizeAllGroups(data);
         
-        console.log('[DataManager.init] 初始化完成，股票数量:', data.stocks.length);
+        StockProfitCalculator.Logger?.debug?.('[DataManager.init] 初始化完成，股票数量:', data.stocks.length);
         return data;
     },
 
@@ -436,7 +436,7 @@ const DataManager = {
         
         // 如果有本地数据，先返回本地数据，后台异步检查 D1
         if (localData && localData.stocks && localData.stocks.length > 0) {
-            console.log('[DataManager.load] 使用 localStorage 数据，股票数量:', localData.stocks.length);
+            StockProfitCalculator.Logger?.debug?.('[DataManager.load] 使用 localStorage 数据，股票数量:', localData.stocks.length);
             
             // 数据迁移和验证
             this.migrateData(localData);
@@ -454,7 +454,7 @@ const DataManager = {
         }
 
         // 没有本地数据，从 D1 加载
-        console.log('[DataManager.load] localStorage 无数据，从 API 加载');
+        StockProfitCalculator.Logger?.debug?.('[DataManager.load] localStorage 无数据，从 API 加载');
         return await this._loadFromD1();
     },
 
@@ -482,7 +482,7 @@ const DataManager = {
             // 如果本地更新时间 >= D1 更新时间，说明是本地更新，跳过差异检测
             // 这可以避免 D1 边缘节点同步延迟导致的误判
             if (localTime >= d1Time && localTime > 0) {
-                console.log('[DataManager] 本地数据更新时间 >= D1，跳过差异检测', {
+                StockProfitCalculator.Logger?.debug?.('[DataManager] 本地数据更新时间 >= D1，跳过差异检测', {
                     localTime: localData.lastModified,
                     d1Time: d1Data.last_updated
                 });
@@ -493,7 +493,7 @@ const DataManager = {
             
             if (diff.hasDiff) {
                 // 有差异，触发事件通知 UI
-                console.log('[DataManager] 检测到数据差异:', diff);
+                StockProfitCalculator.Logger?.debug?.('[DataManager] 检测到数据差异:', diff);
                 if (StockProfitCalculator.EventBus) {
                     StockProfitCalculator.EventBus.emit('data:sync_diff', {
                         localData,
@@ -516,7 +516,7 @@ const DataManager = {
     async _loadFromD1() {
         // 本地开发环境，不尝试连接 D1 API
         if (this._isLocalDevelopment()) {
-            console.log('[DataManager._loadFromD1] 本地开发环境，返回默认数据结构');
+            StockProfitCalculator.Logger?.debug?.('[DataManager._loadFromD1] 本地开发环境，返回默认数据结构');
             // 返回默认数据结构，而不是 null
             const defaultData = this.getDefaultData();
             this._cache = defaultData;
@@ -524,7 +524,7 @@ const DataManager = {
             return defaultData;
         }
 
-        console.log('[DataManager._loadFromD1] 开始从 API 加载数据');
+        StockProfitCalculator.Logger?.debug?.('[DataManager._loadFromD1] 开始从 API 加载数据');
 
         try {
             const response = await fetch(`${this.API_BASE}/data`);
@@ -542,7 +542,7 @@ const DataManager = {
             }
 
             const data = await response.json();
-            console.log('[DataManager._loadFromD1] 从 API 加载数据成功，股票数量:', data.stocks?.length || 0);
+            StockProfitCalculator.Logger?.debug?.('[DataManager._loadFromD1] 从 API 加载数据成功，股票数量:', data.stocks?.length || 0);
 
             // 数据验证
             if (this.validateData(data)) {

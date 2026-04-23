@@ -178,7 +178,7 @@ const Detail = {
             this._domCache.perShareCostTrendChart
         ];
 
-        console.log('[Detail] _initChartObserver: 图表容器状态:', {
+        StockProfitCalculator.Logger?.debug?.('[Detail] _initChartObserver: 图表容器状态:', {
             holdingTrendChart: !!this._domCache.holdingTrendChart,
             cumulativeProfitChart: !!this._domCache.cumulativeProfitChart,
             profitTrendChart: !!this._domCache.profitTrendChart,
@@ -208,17 +208,17 @@ const Detail = {
      * 内部图表渲染方法
      */
     _renderTimeSeriesChartsInternal() {
-        console.log('[Detail] _renderTimeSeriesChartsInternal: 开始渲染图表');
+        StockProfitCalculator.Logger?.debug?.('[Detail] _renderTimeSeriesChartsInternal: 开始渲染图表');
         
         const timeSeries = this.snapshot?.calcResult?.timeSeries;
-        console.log('[Detail] _renderTimeSeriesChartsInternal: timeSeries 存在:', !!timeSeries);
+        StockProfitCalculator.Logger?.debug?.('[Detail] _renderTimeSeriesChartsInternal: timeSeries 存在:', !!timeSeries);
         
         if (!timeSeries) {
-            console.log('[Detail] _renderTimeSeriesChartsInternal: timeSeries 为空，跳过渲染');
+            StockProfitCalculator.Logger?.debug?.('[Detail] _renderTimeSeriesChartsInternal: timeSeries 为空，跳过渲染');
             return;
         }
 
-        console.log('[Detail] _renderTimeSeriesChartsInternal: timeSeries 数据:', {
+        StockProfitCalculator.Logger?.debug?.('[Detail] _renderTimeSeriesChartsInternal: timeSeries 数据:', {
             dates: timeSeries.dates?.length,
             holdings: timeSeries.holdings?.length,
             costs: timeSeries.costs?.length,
@@ -335,7 +335,7 @@ const Detail = {
      * @param {string} stockCode - 股票代码
      */
     async loadStock(stockCode) {
-        console.log('[loadStock] 开始执行, stockCode:', stockCode);
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 开始执行, stockCode:', stockCode);
         
         const TradeManager = StockProfitCalculator.TradeManager;
         const DataManager = StockProfitCalculator.DataManager;
@@ -344,7 +344,7 @@ const Detail = {
 
         const perfToken = window.Perf ? window.Perf.start('Detail.loadStock') : null;
         this.currentStockCode = stockCode;
-        console.log('[loadStock] 设置 currentStockCode:', this.currentStockCode);
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 设置 currentStockCode:', this.currentStockCode);
 
         // 确保 DOM 缓存已初始化
         this._ensureDOMCache();
@@ -380,11 +380,11 @@ const Detail = {
 
         // 检查是否有交易记录
         if (!stock.trades || stock.trades.length === 0) {
-            console.log('[loadStock] 股票没有交易记录，显示空状态提示');
+            StockProfitCalculator.Logger?.debug?.('[loadStock] 股票没有交易记录，显示空状态提示');
             // 显示空状态提示
             this._showEmptyState();
         } else {
-            console.log('[loadStock] 股票有交易记录，数量:', stock.trades.length);
+            StockProfitCalculator.Logger?.debug?.('[loadStock] 股票有交易记录，数量:', stock.trades.length);
         }
 
         // 更新页面标题
@@ -393,27 +393,27 @@ const Detail = {
         h1.textContent = fullName;
         h1.title = fullName;  // 悬浮显示完整名称
         document.getElementById('stockInfo').textContent = '点击返回查看所有股票';
-        console.log('[loadStock] 更新页面标题:', stock.name);
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 更新页面标题:', stock.name);
 
         // 显示返回按钮
         document.getElementById('backBtn').style.display = 'inline-flex';
 
         // 先构建 snapshot（包含数据计算），避免重复计算
-        console.log('[loadStock] 开始构建 snapshot');
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 开始构建 snapshot');
         this.snapshot = await StockSnapshot.build(stockCode, null);
-        console.log('[loadStock] snapshot 构建完成');
+        StockProfitCalculator.Logger?.debug?.('[loadStock] snapshot 构建完成');
         this.calcResult = this.snapshot.calcResult;
 
         // 更新UI
-        console.log('[loadStock] 更新 UI');
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 更新 UI');
         this.updateAll(stock);
 
         // 获取实时股价
-        console.log('[loadStock] 获取实时股价');
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 获取实时股价');
         await this.fetchStockPrice();
 
         // 绑定表单事件
-        console.log('[loadStock] 绑定表单事件');
+        StockProfitCalculator.Logger?.debug?.('[loadStock] 绑定表单事件');
         this.bindFormEvents();
 
         // Tooltip 已由 TooltipManager 统一管理，在 app.js 中初始化

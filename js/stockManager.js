@@ -92,13 +92,13 @@ const StockManager = {
      * 保存股票
      */
     async saveStock() {
-        console.log('[saveStock] 开始执行');
+        StockProfitCalculator.Logger?.debug?.('[saveStock] 开始执行');
         
         const code = document.getElementById('newStockCode').value.trim();
         const name = document.getElementById('newStockName').value.trim();
         // 新股票默认分组为 cleared，后续会根据交易记录自动归一化
         const group = 'cleared';
-        console.log('[saveStock] 股票代码:', code, ', 名称:', name, ', 分组:', group);
+        StockProfitCalculator.Logger?.debug?.('[saveStock] 股票代码:', code, ', 名称:', name, ', 分组:', group);
 
         // 使用 Validator 进行数据验证
         const Validator = StockProfitCalculator.Validator;
@@ -121,24 +121,24 @@ const StockManager = {
         Loading.show('正在保存股票...');
 
         const data = await DataManager.load();
-        console.log('[saveStock] 数据加载完成, 股票数量:', data.stocks.length);
+        StockProfitCalculator.Logger?.debug?.('[saveStock] 数据加载完成, 股票数量:', data.stocks.length);
         
         const isEdit = document.getElementById('newStockCode').disabled;
-        console.log('[saveStock] 是否编辑模式:', isEdit);
+        StockProfitCalculator.Logger?.debug?.('[saveStock] 是否编辑模式:', isEdit);
 
         let result;
         if (isEdit) {
             result = await DataManager.updateStock(data, code, { name, group });
-            console.log('[saveStock] updateStock 结果:', result);
+            StockProfitCalculator.Logger?.debug?.('[saveStock] updateStock 结果:', result);
         } else {
             result = await DataManager.addStock(data, { code, name, group });
-            console.log('[saveStock] addStock 结果:', result);
+            StockProfitCalculator.Logger?.debug?.('[saveStock] addStock 结果:', result);
         }
         
-        console.log('[saveStock] result.success:', result?.success);
+        StockProfitCalculator.Logger?.debug?.('[saveStock] result.success:', result?.success);
 
         if (result.success) {
-            console.log('[saveStock] 操作成功，准备跳转');
+            StockProfitCalculator.Logger?.debug?.('[saveStock] 操作成功，准备跳转');
             this.closeModal();
 
             ErrorHandler.showSuccess(result.message);
@@ -146,15 +146,15 @@ const StockManager = {
             // 添加新股票成功后，自动跳转到详情页，让用户开始添加交易记录
             // 详情页会自动检测并提示"请添加第一笔交易"
             if (!isEdit) {
-                console.log('[saveStock] 准备跳转到详情页:', code);
+                StockProfitCalculator.Logger?.debug?.('[saveStock] 准备跳转到详情页:', code);
                 // 使用统一的路由处理函数，确保 Detail.loadStock() 被调用
                 if (window.App && window.App.handleRouteChange) {
-                    console.log('[saveStock] 调用 App.handleRouteChange(detail, ' + code + ')');
+                    StockProfitCalculator.Logger?.debug?.('[saveStock] 调用 App.handleRouteChange(detail, ' + code + ')');
                     await window.App.handleRouteChange('detail', code);
-                    console.log('[saveStock] handleRouteChange 完成');
+                    StockProfitCalculator.Logger?.debug?.('[saveStock] handleRouteChange 完成');
                 } else {
                     // 降级处理：直接调用（兼容旧代码）
-                    console.log('[saveStock] 降级处理：直接调用 Router.showDetail');
+                    StockProfitCalculator.Logger?.debug?.('[saveStock] 降级处理：直接调用 Router.showDetail');
                     Router.showDetail(code);
                     if (window.Detail && window.Detail.loadStock) {
                         window.Detail.loadStock(code);
@@ -162,10 +162,10 @@ const StockManager = {
                 }
             }
         } else {
-            console.log('[saveStock] 操作失败:', result.message);
+            StockProfitCalculator.Logger?.debug?.('[saveStock] 操作失败:', result.message);
             if (!isEdit && result.message === '该股票已存在') {
                 // 已存在：直接跳转到对应股票详情页
-                console.log('[saveStock] 股票已存在，跳转到详情页');
+                StockProfitCalculator.Logger?.debug?.('[saveStock] 股票已存在，跳转到详情页');
                 this.closeModal();
                 Loading.hide();
                 Router.showDetail(code);

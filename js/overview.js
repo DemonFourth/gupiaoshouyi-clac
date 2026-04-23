@@ -2252,9 +2252,9 @@ const Overview = {
         const searchResults = this._domCache.searchResults;
         
         // 调试日志
-        console.log('搜索框初始化:');
-        console.log('searchInput:', searchInput);
-        console.log('searchResults:', searchResults);
+        StockProfitCalculator.Logger?.debug?.('搜索框初始化:');
+        StockProfitCalculator.Logger?.debug?.('searchInput:', searchInput);
+        StockProfitCalculator.Logger?.debug?.('searchResults:', searchResults);
         
         if (!searchInput || !searchResults) {
             console.error('搜索框元素未找到，无法初始化');
@@ -2271,7 +2271,7 @@ const Overview = {
             const query = e.target.value.trim();
             
             // 调试日志
-            console.log('输入事件触发，query:', query);
+            StockProfitCalculator.Logger?.debug?.('输入事件触发，query:', query);
             
             if (query.length < 1) {
                 searchResults.style.display = 'none';
@@ -2279,7 +2279,7 @@ const Overview = {
             }
             
             this._searchDebounceTimer = setTimeout(() => {
-                console.log('执行搜索，query:', query);
+                StockProfitCalculator.Logger?.debug?.('执行搜索，query:', query);
                 this._performSearch(query);
             }, 200);  // 200ms 防抖
         });
@@ -2318,8 +2318,8 @@ const Overview = {
         const stocks = this.stocks || [];
         
         // 调试日志
-        console.log('搜索关键词:', query);
-        console.log('股票总数:', stocks.length);
+        StockProfitCalculator.Logger?.debug?.('搜索关键词:', query);
+        StockProfitCalculator.Logger?.debug?.('股票总数:', stocks.length);
         
         // 模糊搜索：匹配股票代码或名称
         const matches = stocks.filter(stock => {
@@ -2329,8 +2329,8 @@ const Overview = {
         });
         
         // 调试日志
-        console.log('匹配结果数:', matches.length);
-        console.log('匹配结果:', matches);
+        StockProfitCalculator.Logger?.debug?.('匹配结果数:', matches.length);
+        StockProfitCalculator.Logger?.debug?.('匹配结果:', matches);
         
         // 渲染搜索结果
         this._renderSearchResults(matches, query);
@@ -2519,8 +2519,8 @@ const Overview = {
             startDate = weekRange.start;
             endDate = weekRange.end;
             
-            console.log('=== 点击本周收益 ===');
-            console.log('weekRange:', weekRange);
+            StockProfitCalculator.Logger?.debug?.('=== 点击本周收益 ===');
+            StockProfitCalculator.Logger?.debug?.('weekRange:', weekRange);
         } else if (period === 'month') {
             // 本月：获取本月的年份和月份
             year = now.getFullYear();
@@ -2528,8 +2528,8 @@ const Overview = {
             startDate = null;
             endDate = null;
             
-            console.log('=== 点击本月收益 ===');
-            console.log('当前时间:', now);
+            StockProfitCalculator.Logger?.debug?.('=== 点击本月收益 ===');
+            StockProfitCalculator.Logger?.debug?.('当前时间:', now);
         }
 
         // 跳转到交易记录查询页面
@@ -2918,12 +2918,12 @@ const Overview = {
         const currentPage = StockProfitCalculator.Router.getCurrentPage();
         const isOverviewPage = currentPage === 'overview';
 
-        console.log('[Overview.refresh] 当前页面:', currentPage, ', 是否汇总页:', isOverviewPage);
+        StockProfitCalculator.Logger?.debug?.('[Overview.refresh] 当前页面:', currentPage, ', 是否汇总页:', isOverviewPage);
 
         // 检查是否刚从其他页面返回（Router 已恢复滚动位置）
         const scrollPositionRestored = StockProfitCalculator.Router._scrollPositionRestored;
         if (scrollPositionRestored) {
-            console.log('[Overview.refresh] Router 已恢复滚动位置，跳过 refresh 的滚动处理');
+            StockProfitCalculator.Logger?.debug?.('[Overview.refresh] Router 已恢复滚动位置，跳过 refresh 的滚动处理');
             // 清除标记
             StockProfitCalculator.Router._scrollPositionRestored = false;
             // 重新加载数据和渲染，但不处理滚动
@@ -2937,7 +2937,7 @@ const Overview = {
 
         // 保存当前滚动位置（仅在汇总页时）
         const scrollTop = isOverviewPage ? (window.scrollY || window.pageYOffset || 0) : 0;
-        console.log('[Overview.refresh] 保存的滚动位置:', scrollTop, ', 当前实际滚动位置:', window.scrollY);
+        StockProfitCalculator.Logger?.debug?.('[Overview.refresh] 保存的滚动位置:', scrollTop, ', 当前实际滚动位置:', window.scrollY);
 
         // 重新加载数据
         this.stocks = await StockProfitCalculator.DataService.getAllStocks();
@@ -2950,17 +2950,17 @@ const Overview = {
 
         // 只有在汇总页面且滚动位置大于0时才恢复（避免覆盖Router的滚动位置恢复）
         if (isOverviewPage && scrollTop > 0) {
-            console.log('[Overview.refresh] 准备恢复滚动位置到:', scrollTop);
+            StockProfitCalculator.Logger?.debug?.('[Overview.refresh] 准备恢复滚动位置到:', scrollTop);
             // 使用多次requestAnimationFrame确保DOM完全渲染
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     // 强制设置滚动位置（不使用smooth，避免动画）
                     window.scrollTo(0, scrollTop);
-                    console.log('[Overview.refresh] 已恢复滚动位置到:', scrollTop);
+                    StockProfitCalculator.Logger?.debug?.('[Overview.refresh] 已恢复滚动位置到:', scrollTop);
                 });
             });
         } else {
-            console.log('[Overview.refresh] 跳过滚动位置恢复 (isOverviewPage:', isOverviewPage, ', scrollTop:', scrollTop, ')');
+            StockProfitCalculator.Logger?.debug?.('[Overview.refresh] 跳过滚动位置恢复 (isOverviewPage:', isOverviewPage, ', scrollTop:', scrollTop, ')');
         }
     }
 };

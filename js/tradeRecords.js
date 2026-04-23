@@ -18,7 +18,7 @@ const TradeRecords = {
      */
     init() {
         this.initDOMCache();
-        console.log('TradeRecords 模块初始化完成');
+        StockProfitCalculator.Logger?.debug?.('TradeRecords 模块初始化完成');
     },
 
     /**
@@ -347,11 +347,11 @@ const TradeRecords = {
      * @param {number|null} month - 月份（null 表示全年）
      */
     load(year, month = null, startDate = null, endDate = null) {
-        console.log('[TradeRecords.load] 收到参数:');
-        console.log('  year:', year);
-        console.log('  month:', month);
-        console.log('  startDate:', startDate);
-        console.log('  endDate:', endDate);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords.load] 收到参数:');
+        StockProfitCalculator.Logger?.debug?.('  year:', year);
+        StockProfitCalculator.Logger?.debug?.('  month:', month);
+        StockProfitCalculator.Logger?.debug?.('  startDate:', startDate);
+        StockProfitCalculator.Logger?.debug?.('  endDate:', endDate);
         
         this._ensureDOMCache();
         
@@ -499,11 +499,11 @@ const TradeRecords = {
         const stocks = await DataService.getAllStocks();
 
         // 调试日志
-        console.log('=== TradeRecords.load ===');
-        console.log('查询参数：year =', year, ', month =', month);
-        console.log('时间范围：startDate =', startDate, ', endDate =', endDate);
-        console.log('获取到的 stocks:', stocks);
-        console.log('stocks 数量:', stocks.length);
+        StockProfitCalculator.Logger?.debug?.('=== TradeRecords.load ===');
+        StockProfitCalculator.Logger?.debug?.('查询参数：year =', year, ', month =', month);
+        StockProfitCalculator.Logger?.debug?.('时间范围：startDate =', startDate, ', endDate =', endDate);
+        StockProfitCalculator.Logger?.debug?.('获取到的 stocks:', stocks);
+        StockProfitCalculator.Logger?.debug?.('stocks 数量:', stocks.length);
 
         // 填充股票筛选下拉框
         this._populateStockFilter(stocks);
@@ -521,7 +521,7 @@ const TradeRecords = {
                 return;
             }
 
-            console.log('股票:', stock.code, stock.name, '交易记录数:', stock.trades.length);
+            StockProfitCalculator.Logger?.debug?.('股票:', stock.code, stock.name, '交易记录数:', stock.trades.length);
             
             // 获取所有交易记录（用于显示）
             stock.trades.forEach(trade => {
@@ -545,8 +545,8 @@ const TradeRecords = {
             });
         });
 
-        console.log('所有交易记录数:', allTrades.length);
-        console.log('所有卖出记录数:', allSellRecords.length);
+        StockProfitCalculator.Logger?.debug?.('所有交易记录数:', allTrades.length);
+        StockProfitCalculator.Logger?.debug?.('所有卖出记录数:', allSellRecords.length);
 
         // 创建 sellProfitMap（使用 stockCode + tradeId 作为唯一 key，避免不同股票的 tradeId 重复）
         const sellProfitMap = new Map(
@@ -559,18 +559,18 @@ const TradeRecords = {
             // 使用传入的时间范围（本周）
             queryStartDate = startDate;
             queryEndDate = endDate;
-            console.log('使用传入的时间范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('使用传入的时间范围：', queryStartDate, '-', queryEndDate);
         } else if (month !== null) {
             // 使用月份范围（本月）
             const monthStr = (month + 1).toString().padStart(2, '0');
             queryStartDate = new Date(`${year}-${monthStr}-01T00:00:00`);
             queryEndDate = new Date(`${year}-${monthStr}-${new Date(year, month + 1, 0).getDate()}T23:59:59.999`);
-            console.log('使用月份范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('使用月份范围：', queryStartDate, '-', queryEndDate);
         } else {
             // 全年
             queryStartDate = new Date(`${year}-01-01T00:00:00`);
             queryEndDate = new Date(`${year}-12-31T23:59:59.999`);
-            console.log('使用全年范围：', queryStartDate, '-', queryEndDate);
+            StockProfitCalculator.Logger?.debug?.('使用全年范围：', queryStartDate, '-', queryEndDate);
         }
 
         // 按日期排序
@@ -582,7 +582,7 @@ const TradeRecords = {
             return tradeDate >= queryStartDate && tradeDate <= queryEndDate;
         });
 
-        console.log('过滤后的交易记录数:', periodTrades.length);
+        StockProfitCalculator.Logger?.debug?.('过滤后的交易记录数:', periodTrades.length);
 
         // 获取所有股票的交易记录
         const stocksWithTrades = new Set();
@@ -635,14 +635,14 @@ const TradeRecords = {
         const dividendCount = tradesWithProfit.filter(t => t.type === 'dividend').length;
         const taxCount = tradesWithProfit.filter(t => t.type === 'tax').length;
 
-        console.log('查询结果：');
-        console.log('  总收益:', totalProfit);
-        console.log('  总手续费:', totalFee);
-        console.log('  交易次数:', tradesWithProfit.length);
-        console.log('  买入次数:', buyCount);
+        StockProfitCalculator.Logger?.debug?.('查询结果：');
+        StockProfitCalculator.Logger?.debug?.('  总收益:', totalProfit);
+        StockProfitCalculator.Logger?.debug?.('  总手续费:', totalFee);
+        StockProfitCalculator.Logger?.debug?.('  交易次数:', tradesWithProfit.length);
+        StockProfitCalculator.Logger?.debug?.('  买入次数:', buyCount);
         console.log('  卖出次数:', sellCount);
-        console.log('  分红次数:', dividendCount);
-        console.log('  红利税次数:', taxCount);
+        StockProfitCalculator.Logger?.debug?.('  分红次数:', dividendCount);
+        StockProfitCalculator.Logger?.debug?.('  红利税次数:', taxCount);
 
         // 更新汇总信息
         this._updateSummary({

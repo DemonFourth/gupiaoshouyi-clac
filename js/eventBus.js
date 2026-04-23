@@ -74,7 +74,7 @@ const EventBus = (function() {
         subscriptions.push({ eventName, handler: wrappedHandler });
 
         if (logEnabled) {
-            console.log(`[EventBus] Subscribe: ${eventName}`, { context: context?.constructor?.name });
+            StockProfitCalculator.Logger?.debug?.(`[EventBus] Subscribe: ${eventName}`, { context: context?.constructor?.name });
         }
 
         // 返回自身，支持链式调用
@@ -103,7 +103,7 @@ const EventBus = (function() {
         }
 
         if (logEnabled) {
-            console.log(`[EventBus] Unsubscribe: ${eventName}`);
+            StockProfitCalculator.Logger?.debug?.(`[EventBus] Unsubscribe: ${eventName}`);
         }
 
         return this;
@@ -119,18 +119,18 @@ const EventBus = (function() {
         const set = listeners.get(eventName);
         if (!set || set.size === 0) {
             if (logEnabled) {
-                console.log(`[EventBus] Emit: ${eventName} (no listeners)`, payload);
+                StockProfitCalculator.Logger?.debug?.(`[EventBus] Emit: ${eventName} (no listeners)`, payload);
             }
             return this;
         }
 
         if (logEnabled) {
-            console.log(`[EventBus] Emit: ${eventName}`, payload);
+            StockProfitCalculator.Logger?.debug?.(`[EventBus] Emit: ${eventName}`, payload);
         }
 
         // 为 ROUTE_CHANGE 事件添加调试日志
         if (eventName === EventTypes.ROUTE_CHANGE) {
-            console.log(`[EventBus] ROUTE_CHANGE emitted:`, payload);
+            StockProfitCalculator.Logger?.debug?.(`[EventBus] ROUTE_CHANGE emitted:`, payload);
         }
 
         // 拷贝一份，避免 handler 内 on/off 影响本次遍历
@@ -173,7 +173,7 @@ const EventBus = (function() {
         listeners.delete(eventName);
 
         if (logEnabled) {
-            console.log(`[EventBus] Unsubscribe all: ${eventName}`);
+            StockProfitCalculator.Logger?.debug?.(`[EventBus] Unsubscribe all: ${eventName}`);
         }
 
         return this;
@@ -188,7 +188,7 @@ const EventBus = (function() {
         subscriptions.length = 0;
 
         if (logEnabled) {
-            console.log('[EventBus] Clear all subscriptions');
+            StockProfitCalculator.Logger?.debug?.('[EventBus] Clear all subscriptions');
         }
 
         return this;
