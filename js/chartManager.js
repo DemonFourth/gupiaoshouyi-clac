@@ -275,7 +275,10 @@ const ChartManager = {
                     // 构建更新配置
                     const updateConfig = {
                         textStyle: { color: colors.text },
-                        title: { textStyle: { color: colors.text } },
+                        title: {
+                            textStyle: { color: colors.text },
+                            subtextStyle: { color: colors.textMuted || colors.text }
+                        },
                         xAxis: {
                             axisLine: { lineStyle: { color: colors.axisLine } },
                             axisLabel: { color: colors.text },

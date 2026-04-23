@@ -68,6 +68,15 @@ window.App = {
 
         // 通知 ChartManager 更新所有图表
         StockProfitCalculator.ChartManager.onThemeChange(theme);
+
+        // 重新渲染收益趋势图表（因为 tooltip 中的颜色需要重新计算）
+        const Overview = StockProfitCalculator.Overview;
+        if (Overview && Overview.renderYearlyProfitChart) {
+            Overview.renderYearlyProfitChart();
+            if (Overview.selectedYear) {
+                Overview.renderMonthlyProfitChart(Overview.selectedYear);
+            }
+        }
     },
 
     /**
