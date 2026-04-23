@@ -418,6 +418,3 @@ const Logger = {
 
 // 挂载到命名空间
 StockProfitCalculator.Logger = Logger;
-
-// 初始化日志模块
-Logger.init();

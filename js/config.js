@@ -470,7 +470,8 @@ const Config = {
         enabled: false,
         debug: false,
         consoleLog: false,
-        performanceMonitoring: false
+        performanceMonitoring: false,
+        logModules: {}  // 日志模块开关配置
     },
 
     /**

@@ -116,6 +116,11 @@ window.App = {
         // 加载配置（必须在其他初始化之前）
         Config.load();
 
+        // 初始化日志模块（必须在 Config.load() 之后）
+        if (StockProfitCalculator.Logger) {
+            StockProfitCalculator.Logger.init();
+        }
+
         // 初始化主题
         this.initTheme();
 
