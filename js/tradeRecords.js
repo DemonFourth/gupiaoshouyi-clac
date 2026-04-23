@@ -410,8 +410,79 @@ const TradeRecords = {
             this._domCache.tradeRecordsEndDate.value = formatDateForInput(lastDay);
         }
 
+        // 根据传入参数设置快捷按钮的选中状态
+        this._updateQuickButtonState(year, month, startDate, endDate);
+
         // 异步加载数据
         this._loadDataAsync(year, month, startDate, endDate);
+    },
+
+    /**
+     * 根据筛选参数更新快捷按钮的选中状态
+     * @param {number} year - 年份
+     * @param {number|null} month - 月份（null 表示全年）
+     * @param {Date|null} startDate - 起始日期
+     * @param {Date|null} endDate - 结束日期
+     */
+    _updateQuickButtonState(year, month, startDate, endDate) {
+        // 移除所有快捷按钮的 active 状态
+        document.querySelectorAll('.header-tr-quick-btn').forEach(b => b.classList.remove('active'));
+
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        const currentDate = today.getDate();
+
+        // 判断是否匹配某个快捷筛选
+        let matchedRange = null;
+
+        if (startDate && endDate) {
+            // 检查是否是"今日"
+            const isToday = startDate.getFullYear() === currentYear &&
+                           startDate.getMonth() === currentMonth &&
+                           startDate.getDate() === currentDate &&
+                           endDate.getFullYear() === currentYear &&
+                           endDate.getMonth() === currentMonth &&
+                           endDate.getDate() === currentDate;
+            if (isToday) {
+                matchedRange = 'today';
+            }
+
+            // 检查是否是"本周"
+            if (!matchedRange) {
+                const dayOfWeek = today.getDay();
+                const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() + diffToMonday);
+                weekStart.setHours(0, 0, 0, 0);
+                const weekEnd = new Date(today);
+                weekEnd.setHours(23, 59, 59, 999);
+
+                const isThisWeek = startDate.getTime() === weekStart.getTime() &&
+                                  endDate.getTime() === weekEnd.getTime();
+                if (isThisWeek) {
+                    matchedRange = 'week';
+                }
+            }
+        } else if (month !== null) {
+            // 检查是否是"本月"
+            if (year === currentYear && month === currentMonth) {
+                matchedRange = 'month';
+            }
+        } else {
+            // 检查是否是"本年"
+            if (year === currentYear) {
+                matchedRange = 'year';
+            }
+        }
+
+        // 设置匹配的按钮为 active
+        if (matchedRange) {
+            const btn = document.querySelector(`.header-tr-quick-btn[data-range="${matchedRange}"]`);
+            if (btn) {
+                btn.classList.add('active');
+            }
+        }
     },
 
     /**

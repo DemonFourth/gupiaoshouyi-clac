@@ -6192,11 +6192,19 @@
     }
 
     /* 头部筛选器响应式 */
+    /* 交易记录页面：让 #headerLeft 能够换行 */
+    body.page-trade-records #headerLeft {
+        flex-wrap: wrap;
+    }
+
     .header-tr-filters {
         flex-wrap: wrap;
         gap: 8px;
         margin-left: 0;
         margin-top: 8px;
+        /* 在小屏幕时占据整行 */
+        width: 100%;
+        order: 10;
     }
 
     .header-tr-input {
@@ -6204,11 +6212,11 @@
     }
 
     .header-tr-quick-btns {
-        order: 3;
+        flex-wrap: wrap;
     }
 
-    .header-tr-filter-btn {
-        order: 4;
+    .header-tr-select {
+        min-width: 100px;
     }
 }
 
