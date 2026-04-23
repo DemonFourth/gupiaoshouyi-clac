@@ -56,7 +56,8 @@ const Logger = {
         // 从 Config 读取日志配置
         const Config = StockProfitCalculator.Config;
         this.enabled = Config.get('development.consoleLog', false);
-        this.currentLevel = this._parseLogLevel(Config.get('errorHandling.logLevel', 'info'));
+        // 启用日志时，默认使用 DEBUG 级别以显示所有日志
+        this.currentLevel = this.enabled ? this.levels.DEBUG : this._parseLogLevel(Config.get('errorHandling.logLevel', 'info'));
         
         // 从 Config 读取各模块的日志开关
         const savedModules = Config.get('development.logModules', {});
@@ -112,21 +113,23 @@ const Logger = {
      * @returns {string|null} 模块名
      */
     _extractModule(message) {
-        // 匹配 [moduleName] 或 [functionName] 格式
+        if (typeof message !== 'string') return null;
+        
+        // 匹配 [moduleName] 格式
         const match = message.match(/^\[([^\]]+)\]/);
         if (match) {
             const name = match[1].toLowerCase();
             // 映射到模块名
-            if (name.includes('app')) return 'app';
-            if (name.includes('router') || name.includes('showoverview') || name.includes('showdetail')) return 'router';
-            if (name.includes('datamanager') || name.includes('load') || name.includes('save')) return 'dataManager';
-            if (name.includes('detail') || name.includes('loadstock')) return 'detail';
-            if (name.includes('overview') || name.includes('refresh')) return 'overview';
-            if (name.includes('stockmanager') || name.includes('savestock')) return 'stockManager';
-            if (name.includes('traderecords')) return 'tradeRecords';
-            if (name.includes('eventbus')) return 'eventBus';
-            if (name.includes('calculator')) return 'calculator';
-            if (name.includes('chart')) return 'chart';
+            if (name === 'app' || name.includes('app')) return 'app';
+            if (name === 'router' || name.includes('router') || name.includes('showoverview') || name.includes('showdetail') || name.includes('handleroutechange')) return 'router';
+            if (name === 'datamanager' || name.includes('datamanager') || name.includes('load') || name.includes('save')) return 'dataManager';
+            if (name === 'detail' || name.includes('detail') || name.includes('loadstock')) return 'detail';
+            if (name === 'overview' || name.includes('overview') || name.includes('refresh')) return 'overview';
+            if (name === 'stockmanager' || name.includes('stockmanager') || name.includes('savestock') || name.includes('stock')) return 'stockManager';
+            if (name === 'traderecords' || name.includes('traderecords') || name.includes('trade')) return 'tradeRecords';
+            if (name === 'eventbus' || name.includes('eventbus') || name.includes('event')) return 'eventBus';
+            if (name === 'calculator' || name.includes('calculator') || name.includes('calc')) return 'calculator';
+            if (name === 'chart' || name.includes('chart')) return 'chart';
         }
         return null;
     },
@@ -148,6 +151,10 @@ const Logger = {
      */
     setEnabled(enabled) {
         this.enabled = enabled;
+        // 启用日志时，自动设置为 DEBUG 级别
+        if (enabled) {
+            this.currentLevel = this.levels.DEBUG;
+        }
         this._saveConfig();
     },
 
