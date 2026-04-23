@@ -540,8 +540,8 @@ const Validator = {
         if (!name || typeof name !== 'string') {
             return false;
         }
-        // 股票名称：2-10个字符
-        return /^.{2,10}$/.test(name.trim());
+        // 股票名称：2-20个字符（支持长ETF名称，如"华夏上证50ETF"）
+        return /^.{2,20}$/.test(name.trim());
     },
 
     /**
@@ -778,8 +778,8 @@ const Validator = {
         }
         // 去除首尾空格
         const cleaned = name.trim();
-        // 长度检查
-        if (cleaned.length >= 2 && cleaned.length <= 10) {
+        // 长度检查（支持长ETF名称，2-20个字符）
+        if (cleaned.length >= 2 && cleaned.length <= 20) {
             return cleaned;
         }
         return null;

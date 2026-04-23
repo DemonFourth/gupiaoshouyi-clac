@@ -100,18 +100,25 @@ const StockManager = {
         const group = 'cleared';
         console.log('[saveStock] 股票代码:', code, ', 名称:', name, ', 分组:', group);
 
-        if (!code || !name) {
-            ErrorHandler.showErrorSimple('请填写股票代码和名称');
+        // 使用 Validator 进行数据验证
+        const Validator = StockProfitCalculator.Validator;
+        
+        if (!Validator.validateStockCode(code)) {
+            ErrorHandler.showErrorSimple('股票代码必须是6位数字');
             return;
         }
 
-        if (!/^\d{6}$/.test(code)) {
-            ErrorHandler.showErrorSimple('股票代码必须是6位数字');
+        if (!Validator.validateStockName(name)) {
+            ErrorHandler.showErrorSimple('股票名称长度必须在2-20个字符之间');
             return;
         }
 
         const DataManager = StockProfitCalculator.DataManager;
         const Router = StockProfitCalculator.Router;
+        const Loading = StockProfitCalculator.Loading;
+
+        // 显示加载状态
+        Loading.show('正在保存股票...');
 
         const data = await DataManager.load();
         console.log('[saveStock] 数据加载完成, 股票数量:', data.stocks.length);
@@ -160,12 +167,16 @@ const StockManager = {
                 // 已存在：直接跳转到对应股票详情页
                 console.log('[saveStock] 股票已存在，跳转到详情页');
                 this.closeModal();
+                Loading.hide();
                 Router.showDetail(code);
                 return;
             }
 
             ErrorHandler.showErrorSimple(result.message);
         }
+
+        // 隐藏加载状态
+        Loading.hide();
     },
     
     /**
@@ -224,6 +235,7 @@ const StockManager = {
      */
     async deleteStock(stockCode) {
         const DataManager = StockProfitCalculator.DataManager;
+        const Loading = StockProfitCalculator.Loading;
         const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === stockCode);
 
@@ -238,6 +250,9 @@ const StockManager = {
             return;
         }
 
+        // 显示加载状态
+        Loading.show('正在删除股票...');
+
         const result = await DataManager.deleteStock(data, stockCode);
 
         if (result.success) {
@@ -249,6 +264,9 @@ const StockManager = {
         } else {
             ErrorHandler.showErrorSimple(result.message);
         }
+
+        // 隐藏加载状态
+        Loading.hide();
     },
 
     /**

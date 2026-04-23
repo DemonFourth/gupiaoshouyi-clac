@@ -304,10 +304,31 @@ const TradeManager = {
         const date = this._domCache.editTradeDate.value;
         const type = this._domCache.editTradeType.value;
 
+        // 使用 Validator 进行数据验证
+        const Validator = StockProfitCalculator.Validator;
+        
+        // 验证日期
+        if (!Validator.validateDate(date)) {
+            ErrorHandler.showErrorSimple('交易日期格式无效');
+            return;
+        }
+
+        // 验证交易类型
+        if (!Validator.validateTradeType(type)) {
+            ErrorHandler.showErrorSimple('交易类型无效');
+            return;
+        }
+
+        const Loading = StockProfitCalculator.Loading;
+        
+        // 显示加载状态
+        Loading.show('正在保存交易记录...');
+
         const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === code);
         if (!stock) {
             ErrorHandler.showErrorSimple('未找到当前股票');
+            Loading.hide();
             return;
         }
 
@@ -326,6 +347,7 @@ const TradeManager = {
                 const totalAmount = parseFloat(this._domCache.editTradeAmountDisplay.value) || 0;
                 if (!totalAmount || totalAmount <= 0) {
                     ErrorHandler.showErrorSimple('请填写正确的金额');
+                    Loading.hide();
                     return;
                 }
                 newTrade = {
@@ -343,14 +365,22 @@ const TradeManager = {
                 const amount = parseInt(this._domCache.editTradeAmount.value);
                 const fee = parseFloat(this._domCache.editTradeFee.value) || 0;
 
-                if (!price || !amount) {
-                    ErrorHandler.showErrorSimple('请填写完整的价格和数量');
+                // 使用 Validator 验证价格和数量
+                if (!Validator.validatePrice(price)) {
+                    ErrorHandler.showErrorSimple('价格必须在0.001-9999.999之间');
+                    Loading.hide();
                     return;
                 }
 
-                // 验证数量必须是100的倍数
-                if (amount < 100 || amount % 100 !== 0) {
+                if (!Validator.validateAmount(amount)) {
                     ErrorHandler.showErrorSimple('数量必须是100的倍数，且最小为100股');
+                    Loading.hide();
+                    return;
+                }
+
+                if (!Validator.validateFee(fee)) {
+                    ErrorHandler.showErrorSimple('手续费必须在0-10000之间');
+                    Loading.hide();
                     return;
                 }
 
@@ -374,6 +404,7 @@ const TradeManager = {
             const trade = stock.trades.find(t => t.id === tradeId);
             if (!trade) {
                 ErrorHandler.showWarning('交易记录不存在');
+                Loading.hide();
                 return;
             }
 
@@ -381,6 +412,7 @@ const TradeManager = {
                 const totalAmount = parseFloat(this._domCache.editTradeAmountDisplay.value) || 0;
                 if (!totalAmount || totalAmount <= 0) {
                     ErrorHandler.showErrorSimple('请填写正确的金额');
+                    Loading.hide();
                     return;
                 }
                 Object.assign(trade, {
@@ -397,14 +429,22 @@ const TradeManager = {
                 const amount = parseInt(this._domCache.editTradeAmount.value);
                 const fee = parseFloat(this._domCache.editTradeFee.value) || 0;
 
-                if (!price || !amount) {
-                    ErrorHandler.showErrorSimple('请填写完整的价格和数量');
+                // 使用 Validator 验证价格和数量
+                if (!Validator.validatePrice(price)) {
+                    ErrorHandler.showErrorSimple('价格必须在0.001-9999.999之间');
+                    Loading.hide();
                     return;
                 }
 
-                // 验证数量必须是100的倍数
-                if (amount < 100 || amount % 100 !== 0) {
+                if (!Validator.validateAmount(amount)) {
                     ErrorHandler.showErrorSimple('数量必须是100的倍数，且最小为100股');
+                    Loading.hide();
+                    return;
+                }
+
+                if (!Validator.validateFee(fee)) {
+                    ErrorHandler.showErrorSimple('手续费必须在0-10000之间');
+                    Loading.hide();
                     return;
                 }
 
@@ -434,6 +474,9 @@ const TradeManager = {
         if (currentPage === 'tradeRecords' && StockProfitCalculator.TradeRecords) {
             await StockProfitCalculator.TradeRecords.refresh();
         }
+
+        // 隐藏加载状态
+        Loading.hide();
     },
     
     /**
@@ -450,16 +493,23 @@ const TradeManager = {
             return;
         }
 
+        const Loading = StockProfitCalculator.Loading;
+        
+        // 显示加载状态
+        Loading.show('正在删除交易记录...');
+
         const data = await DataManager.load();
         const stock = data.stocks.find(s => s.code === code);
         if (!stock) {
             ErrorHandler.showErrorSimple('未找到当前股票');
+            Loading.hide();
             return;
         }
 
         const index = stock.trades.findIndex(t => t.id === tradeId);
         if (index === -1) {
             ErrorHandler.showWarning('交易记录不存在');
+            Loading.hide();
             return;
         }
         
@@ -469,6 +519,9 @@ const TradeManager = {
         if (window.App && window.App.updateAll) {
             await window.App.updateAll();
         }
+
+        // 隐藏加载状态
+        Loading.hide();
     },
     
     /**
