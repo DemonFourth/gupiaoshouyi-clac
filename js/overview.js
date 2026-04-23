@@ -1971,10 +1971,13 @@ const Overview = {
             },
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                textStyle: { color: '#fff' },
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${textMutedColor};font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:rgba(255, 255, 255, 0.6);font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
@@ -2072,10 +2075,13 @@ const Overview = {
             },
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: 'rgba(50, 50, 50, 0.9)',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                textStyle: { color: '#fff' },
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${textMutedColor};font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:rgba(255, 255, 255, 0.6);font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
