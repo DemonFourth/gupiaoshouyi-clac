@@ -83,8 +83,12 @@ const Router = {
         }
 
         // 显示股票搜索框和设置按钮（汇总页面）
+        const headerRightActions = document.querySelector('.header-right-actions');
+        const headerLeft = document.getElementById('headerLeft');
         const searchContainer = document.querySelector('.search-container');
         const settingsBtn = document.getElementById('settingsBtn');
+        if (headerRightActions) headerRightActions.style.display = 'inline-flex';
+        if (headerLeft) headerLeft.classList.remove('full-width');
         if (searchContainer) searchContainer.style.display = 'flex';
         if (settingsBtn) settingsBtn.style.display = 'inline-flex';
 
@@ -193,8 +197,12 @@ const Router = {
         }
 
         // 隐藏股票搜索框和设置按钮（详情页面）
+        const headerRightActions = document.querySelector('.header-right-actions');
+        const headerLeft = document.getElementById('headerLeft');
         const searchContainer = document.querySelector('.search-container');
         const settingsBtn = document.getElementById('settingsBtn');
+        if (headerRightActions) headerRightActions.style.display = 'none';
+        if (headerLeft) headerLeft.classList.add('full-width');
         if (searchContainer) searchContainer.style.display = 'none';
         if (settingsBtn) settingsBtn.style.display = 'none';
 
@@ -477,8 +485,12 @@ const Router = {
         }
 
         // 隐藏股票搜索框和设置按钮（仅交易记录页面）
+        const headerRightActions = document.querySelector('.header-right-actions');
+        const headerLeft = document.getElementById('headerLeft');
         const searchContainer = document.querySelector('.search-container');
         const settingsBtn = document.getElementById('settingsBtn');
+        if (headerRightActions) headerRightActions.style.display = 'none';
+        if (headerLeft) headerLeft.classList.add('full-width');
         if (searchContainer) searchContainer.style.display = 'none';
         if (settingsBtn) settingsBtn.style.display = 'none';
 

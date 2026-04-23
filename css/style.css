@@ -353,6 +353,19 @@
             min-width: max-content;  /* 保持内容最小宽度 */
         }
 
+        /* 当 header-right-actions 隐藏时，headerLeft 占满整行 */
+        .header-right-actions:empty,
+        .header-right-actions[style*="display: none"],
+        .header-right-actions[style*="display:none"] {
+            display: none !important;
+        }
+
+        /* headerLeft 占满整行的样式 */
+        #headerLeft.full-width {
+            flex: 1 1 100%;
+            min-width: 100%;
+        }
+
         .header-quote {
             display: flex;
             align-items: center;
