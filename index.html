@@ -1703,8 +1703,32 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="setting-row">
+                            <span class="setting-label">调试日志</span>
+                            <div class="setting-control">
+                                <label class="perf-switch">
+                                    <input type="checkbox" id="debugLogToggle">
+                                    <span class="perf-switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <p class="settings-hint">开启后控制台输出关键模块耗时，用于性能分析</p>
+                    
+                    <!-- 日志模块控制 -->
+                    <div class="log-modules-section" id="logModulesSection" style="display: none;">
+                        <div class="log-modules-header">
+                            <span class="log-modules-title">日志模块控制</span>
+                            <div class="log-modules-actions">
+                                <button type="button" class="btn-log-action" id="enableAllLogModulesBtn">全选</button>
+                                <button type="button" class="btn-log-action" id="disableAllLogModulesBtn">全不选</button>
+                            </div>
+                        </div>
+                        <div class="log-modules-grid" id="logModulesGrid">
+                            <!-- 动态生成 -->
+                        </div>
+                        <p class="settings-hint">选择要输出日志的模块，未选中的模块不会输出调试日志</p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

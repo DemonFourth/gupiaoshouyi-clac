@@ -1,8 +1,8 @@
 /**
  * 统一日志管理模块
- * 提供可控的日志输出，支持通过配置开关控制
+ * 提供可控的日志输出，支持按模块/功能控制
  * 
- * 版本: 1.0.0
+ * 版本: 2.0.0
  * 创建日期: 2026-04-23
  */
 
@@ -26,12 +26,28 @@ const Logger = {
     /**
      * 是否启用日志（从 Config 读取）
      */
-    enabled: true,
+    enabled: false,
 
     /**
      * 日志前缀
      */
     prefix: '',
+
+    /**
+     * 模块定义（可控制的模块列表）
+     */
+    modules: {
+        app: { name: '应用初始化', enabled: false, icon: '🚀' },
+        router: { name: '路由导航', enabled: false, icon: '🔀' },
+        dataManager: { name: '数据管理', enabled: false, icon: '💾' },
+        detail: { name: '详情页', enabled: false, icon: '📄' },
+        overview: { name: '汇总页', enabled: false, icon: '📊' },
+        stockManager: { name: '股票管理', enabled: false, icon: '📈' },
+        tradeRecords: { name: '交易记录', enabled: false, icon: '📝' },
+        eventBus: { name: '事件总线', enabled: false, icon: '📡' },
+        calculator: { name: '计算器', enabled: false, icon: '🧮' },
+        chart: { name: '图表渲染', enabled: false, icon: '📉' }
+    },
 
     /**
      * 初始化日志模块
@@ -42,12 +58,34 @@ const Logger = {
         this.enabled = Config.get('development.consoleLog', false);
         this.currentLevel = this._parseLogLevel(Config.get('errorHandling.logLevel', 'info'));
         
-        // 如果 URL 中包含 debug=1 参数，强制启用日志
+        // 从 Config 读取各模块的日志开关
+        const savedModules = Config.get('development.logModules', {});
+        for (const [key, value] of Object.entries(savedModules)) {
+            if (this.modules[key]) {
+                this.modules[key].enabled = value;
+            }
+        }
+        
+        // 如果 URL 中包含 debug=1 参数，强制启用所有日志
         if (typeof window !== 'undefined') {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('debug') === '1') {
                 this.enabled = true;
                 this.currentLevel = this.levels.DEBUG;
+                // 启用所有模块
+                for (const key in this.modules) {
+                    this.modules[key].enabled = true;
+                }
+            }
+            // 支持 debug=module1,module2 格式，只启用指定模块
+            const debugParam = urlParams.get('debug');
+            if (debugParam && debugParam !== '1') {
+                this.enabled = true;
+                this.currentLevel = this.levels.DEBUG;
+                const enabledModules = debugParam.split(',');
+                for (const key in this.modules) {
+                    this.modules[key].enabled = enabledModules.includes(key);
+                }
             }
         }
     },
@@ -69,15 +107,112 @@ const Logger = {
     },
 
     /**
-     * 设置日志开关
+     * 从消息中提取模块名
+     * @param {string} message - 日志消息
+     * @returns {string|null} 模块名
+     */
+    _extractModule(message) {
+        // 匹配 [moduleName] 或 [functionName] 格式
+        const match = message.match(/^\[([^\]]+)\]/);
+        if (match) {
+            const name = match[1].toLowerCase();
+            // 映射到模块名
+            if (name.includes('app')) return 'app';
+            if (name.includes('router') || name.includes('showoverview') || name.includes('showdetail')) return 'router';
+            if (name.includes('datamanager') || name.includes('load') || name.includes('save')) return 'dataManager';
+            if (name.includes('detail') || name.includes('loadstock')) return 'detail';
+            if (name.includes('overview') || name.includes('refresh')) return 'overview';
+            if (name.includes('stockmanager') || name.includes('savestock')) return 'stockManager';
+            if (name.includes('traderecords')) return 'tradeRecords';
+            if (name.includes('eventbus')) return 'eventBus';
+            if (name.includes('calculator')) return 'calculator';
+            if (name.includes('chart')) return 'chart';
+        }
+        return null;
+    },
+
+    /**
+     * 检查模块是否启用
+     * @param {string|null} moduleName - 模块名
+     * @returns {boolean} 是否启用
+     */
+    _isModuleEnabled(moduleName) {
+        if (!this.enabled) return false;
+        if (!moduleName) return true; // 没有模块标识的日志，跟随全局开关
+        return this.modules[moduleName]?.enabled ?? false;
+    },
+
+    /**
+     * 设置全局日志开关
      * @param {boolean} enabled - 是否启用日志
      */
     setEnabled(enabled) {
         this.enabled = enabled;
-        
-        // 同步到 Config
+        this._saveConfig();
+    },
+
+    /**
+     * 设置模块日志开关
+     * @param {string} moduleName - 模块名
+     * @param {boolean} enabled - 是否启用
+     */
+    setModuleEnabled(moduleName, enabled) {
+        if (this.modules[moduleName]) {
+            this.modules[moduleName].enabled = enabled;
+            this._saveConfig();
+        }
+    },
+
+    /**
+     * 批量设置模块日志开关
+     * @param {Object} modules - 模块开关对象 { moduleName: boolean }
+     */
+    setModulesEnabled(modules) {
+        for (const [name, enabled] of Object.entries(modules)) {
+            if (this.modules[name]) {
+                this.modules[name].enabled = enabled;
+            }
+        }
+        this._saveConfig();
+    },
+
+    /**
+     * 启用所有模块
+     */
+    enableAllModules() {
+        for (const key in this.modules) {
+            this.modules[key].enabled = true;
+        }
+        this._saveConfig();
+    },
+
+    /**
+     * 禁用所有模块
+     */
+    disableAllModules() {
+        for (const key in this.modules) {
+            this.modules[key].enabled = false;
+        }
+        this._saveConfig();
+    },
+
+    /**
+     * 保存配置到 Config
+     */
+    _saveConfig() {
         const Config = StockProfitCalculator.Config;
-        Config.set('development.consoleLog', enabled);
+        Config.set('development.consoleLog', this.enabled);
+        
+        const levelNames = ['debug', 'info', 'warn', 'error', 'none'];
+        Config.set('errorHandling.logLevel', levelNames[this.currentLevel] || 'info');
+        
+        // 保存各模块的开关状态
+        const moduleStates = {};
+        for (const [key, value] of Object.entries(this.modules)) {
+            moduleStates[key] = value.enabled;
+        }
+        Config.set('development.logModules', moduleStates);
+        
         Config.save();
     },
 
@@ -91,12 +226,7 @@ const Logger = {
         } else {
             this.currentLevel = level;
         }
-        
-        // 同步到 Config
-        const Config = StockProfitCalculator.Config;
-        const levelNames = ['debug', 'info', 'warn', 'error', 'none'];
-        Config.set('errorHandling.logLevel', levelNames[this.currentLevel] || 'info');
-        Config.save();
+        this._saveConfig();
     },
 
     /**
@@ -125,7 +255,8 @@ const Logger = {
      * @param {...any} args - 额外参数
      */
     debug(message, ...args) {
-        if (this.enabled && this.currentLevel <= this.levels.DEBUG) {
+        const moduleName = this._extractModule(message);
+        if (this._isModuleEnabled(moduleName) && this.currentLevel <= this.levels.DEBUG) {
             console.log(this._formatMessage(message), ...args);
         }
     },
@@ -136,7 +267,8 @@ const Logger = {
      * @param {...any} args - 额外参数
      */
     info(message, ...args) {
-        if (this.enabled && this.currentLevel <= this.levels.INFO) {
+        const moduleName = this._extractModule(message);
+        if (this._isModuleEnabled(moduleName) && this.currentLevel <= this.levels.INFO) {
             console.info(this._formatMessage(message), ...args);
         }
     },
@@ -147,13 +279,14 @@ const Logger = {
      * @param {...any} args - 额外参数
      */
     warn(message, ...args) {
-        if (this.enabled && this.currentLevel <= this.levels.WARN) {
+        const moduleName = this._extractModule(message);
+        if (this._isModuleEnabled(moduleName) && this.currentLevel <= this.levels.WARN) {
             console.warn(this._formatMessage(message), ...args);
         }
     },
 
     /**
-     * 输出错误日志
+     * 输出错误日志（错误日志始终输出，不受模块开关限制）
      * @param {string} message - 日志消息
      * @param {...any} args - 额外参数
      */
@@ -253,11 +386,33 @@ const Logger = {
      */
     getStatus() {
         const levelNames = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'NONE'];
+        const moduleStatus = {};
+        for (const [key, value] of Object.entries(this.modules)) {
+            moduleStatus[key] = {
+                name: value.name,
+                enabled: value.enabled,
+                icon: value.icon
+            };
+        }
         return {
             enabled: this.enabled,
             level: levelNames[this.currentLevel],
-            prefix: this.prefix
+            prefix: this.prefix,
+            modules: moduleStatus
         };
+    },
+
+    /**
+     * 获取模块列表（用于 UI 显示）
+     * @returns {Array} 模块列表
+     */
+    getModuleList() {
+        return Object.entries(this.modules).map(([key, value]) => ({
+            key,
+            name: value.name,
+            enabled: value.enabled,
+            icon: value.icon
+        }));
     }
 };
 

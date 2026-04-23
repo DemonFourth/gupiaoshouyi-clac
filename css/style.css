@@ -2431,6 +2431,115 @@
             transform: translateX(20px);
         }
 
+        /* 日志模块控制 */
+        .log-modules-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e8ebf3;
+        }
+
+        .log-modules-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .log-modules-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .log-modules-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-log-action {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: 1px solid #d0d4e8;
+            background: #f8f9ff;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #4a5568;
+            transition: all 0.2s;
+        }
+
+        .btn-log-action:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .log-modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .log-module-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f8f9ff;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .log-module-item:hover {
+            border-color: #667eea;
+        }
+
+        .log-module-item.enabled {
+            background: #f0f3ff;
+            border-color: #667eea;
+        }
+
+        .log-module-icon {
+            font-size: 16px;
+        }
+
+        .log-module-name {
+            font-size: 13px;
+            color: #4a5568;
+            flex: 1;
+        }
+
+        .log-module-check {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #d0d4e8;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .log-module-item.enabled .log-module-check {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .log-module-check::after {
+            content: '';
+            width: 6px;
+            height: 3px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg) translateY(-1px);
+            opacity: 0;
+        }
+
+        .log-module-item.enabled .log-module-check::after {
+            opacity: 1;
+        }
+
         /* 导入预览弹窗 */
         .import-modal-content {
             position: relative;

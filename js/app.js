@@ -385,6 +385,31 @@ window.App = {
             };
         }
 
+        // 调试日志开关
+        const debugLogToggle = document.getElementById('debugLogToggle');
+        const logModulesSection = document.getElementById('logModulesSection');
+        if (debugLogToggle) {
+            const Logger = StockProfitCalculator.Logger;
+            debugLogToggle.checked = Logger.enabled;
+            
+            // 显示/隐藏模块控制区域
+            if (logModulesSection) {
+                logModulesSection.style.display = Logger.enabled ? 'block' : 'none';
+            }
+            
+            debugLogToggle.onchange = () => {
+                Logger.setEnabled(debugLogToggle.checked);
+                if (logModulesSection) {
+                    logModulesSection.style.display = debugLogToggle.checked ? 'block' : 'none';
+                }
+                // 刷新模块列表
+                this._renderLogModules();
+            };
+        }
+
+        // 初始化日志模块控制
+        this._initLogModules();
+
         const holdingDetailToggle = document.getElementById('holdingDetailToggle');
         if (holdingDetailToggle) {
             // 初始化 UI 状态
@@ -589,6 +614,61 @@ window.App = {
         if (typeof Detail !== 'undefined' && Detail.fetchStockPrice) {
             await Detail.fetchStockPrice();
         }
+    },
+
+    // ==================== 日志模块控制 ====================
+
+    /**
+     * 初始化日志模块控制
+     */
+    _initLogModules() {
+        this._renderLogModules();
+        
+        // 全选按钮
+        const enableAllBtn = document.getElementById('enableAllLogModulesBtn');
+        if (enableAllBtn) {
+            enableAllBtn.onclick = () => {
+                StockProfitCalculator.Logger.enableAllModules();
+                this._renderLogModules();
+            };
+        }
+        
+        // 全不选按钮
+        const disableAllBtn = document.getElementById('disableAllLogModulesBtn');
+        if (disableAllBtn) {
+            disableAllBtn.onclick = () => {
+                StockProfitCalculator.Logger.disableAllModules();
+                this._renderLogModules();
+            };
+        }
+    },
+
+    /**
+     * 渲染日志模块列表
+     */
+    _renderLogModules() {
+        const grid = document.getElementById('logModulesGrid');
+        if (!grid) return;
+        
+        const modules = StockProfitCalculator.Logger.getModuleList();
+        grid.innerHTML = modules.map(m => `
+            <div class="log-module-item ${m.enabled ? 'enabled' : ''}" data-module="${m.key}">
+                <span class="log-module-icon">${m.icon}</span>
+                <span class="log-module-name">${m.name}</span>
+                <span class="log-module-check"></span>
+            </div>
+        `).join('');
+        
+        // 绑定点击事件
+        grid.querySelectorAll('.log-module-item').forEach(item => {
+            item.onclick = () => {
+                const moduleKey = item.dataset.module;
+                const Logger = StockProfitCalculator.Logger;
+                const currentState = Logger.modules[moduleKey]?.enabled ?? false;
+                Logger.setModuleEnabled(moduleKey, !currentState);
+                item.classList.toggle('enabled', !currentState);
+            };
+        });
     },
 
     // ==================== 设置弹窗相关方法 ====================
