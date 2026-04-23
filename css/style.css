@@ -3250,6 +3250,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px;
+  min-width: 0;  /* 允许收缩 */
+  overflow: hidden;  /* 防止内容溢出 */
 }
 
 .osv2-toplist-header {
@@ -3310,6 +3312,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  min-width: 0;  /* 允许收缩 */
+}
+
+.osv2-toplist-column {
+  min-width: 0;  /* 允许收缩 */
+  overflow: hidden;  /* 防止内容溢出 */
 }
 
 .osv2-toplist-column-header {
@@ -3334,6 +3342,7 @@
 
 .osv2-toplist-items {
   min-height: 120px;
+  min-width: 0;  /* 允许收缩 */
 }
 
 /* 兼容原有 JS 的 profit-loss-item 类名 */
@@ -3347,6 +3356,7 @@
   margin-bottom: 4px;
   transition: background var(--transition-fast);
   cursor: pointer;
+  min-width: 0;  /* 允许收缩 */
 }
 
 .osv2-toplist-items .profit-loss-item:hover,
@@ -3358,12 +3368,18 @@
 .osv2-toplist-items .top-item .stock-name {
   font-size: 13px;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;  /* 占据剩余空间 */
+  min-width: 0;  /* 允许收缩 */
 }
 
 .osv2-toplist-items .profit-loss-item .profit-loss-code {
   font-size: 11px;
   color: var(--text-muted);
   margin-left: 6px;
+  flex-shrink: 0;  /* 不收缩 */
 }
 
 .osv2-toplist-items .profit-loss-item .profit-loss-profit,
@@ -3371,6 +3387,7 @@
   font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;  /* 不收缩 */
 }
 
 .osv2-toplist-items .profit-loss-item .profit-loss-profit.profit,
