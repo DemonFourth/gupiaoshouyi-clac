@@ -70,8 +70,9 @@ window.App = {
         StockProfitCalculator.ChartManager.onThemeChange(theme);
 
         // 重新渲染收益趋势图表（因为 tooltip 中的颜色需要重新计算）
+        // 只有在数据已加载后才重新渲染
         const Overview = StockProfitCalculator.Overview;
-        if (Overview && Overview.renderYearlyProfitChart) {
+        if (Overview && Overview.yearlyProfitData && Overview.renderYearlyProfitChart) {
             Overview.renderYearlyProfitChart();
             if (Overview.selectedYear) {
                 Overview.renderMonthlyProfitChart(Overview.selectedYear);
