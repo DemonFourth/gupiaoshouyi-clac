@@ -10434,3 +10434,214 @@
     color: #555;
 }
 
+/* 设置按钮 - Dark 主题 */
+[data-theme="dark"] .settings-btn {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .settings-btn:hover {
+    background: var(--color-interactive);
+    border-color: var(--color-interactive);
+    color: white;
+}
+
+/* 设置弹窗 - Dark 主题 */
+[data-theme="dark"] .settings-modal-content {
+    background: var(--bg-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .settings-modal-content .modal-header {
+    background: var(--bg-tertiary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-modal-content .modal-header h2 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-modal-content .modal-header-icon {
+    background: rgba(129, 140, 248, 0.15);
+    color: var(--color-interactive);
+}
+
+[data-theme="dark"] .settings-body {
+    background: var(--bg-card);
+}
+
+/* 设置分区 - Dark 主题 */
+[data-theme="dark"] .settings-section {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-section-header {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-section-title h3 {
+    color: var(--text-primary);
+}
+
+/* 分区图标 - Dark 主题 */
+[data-theme="dark"] .settings-section-icon {
+    background: rgba(129, 140, 248, 0.1);
+}
+
+[data-theme="dark"] .settings-section-icon.icon-blue {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+[data-theme="dark"] .settings-section-icon.icon-green {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+[data-theme="dark"] .settings-section-icon.icon-orange {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+}
+
+[data-theme="dark"] .settings-section-icon.icon-purple {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+}
+
+[data-theme="dark"] .settings-section-icon.icon-red {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* 存储卡片 - Dark 主题 */
+[data-theme="dark"] .storage-card {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .storage-card-label {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .storage-card-value {
+    color: var(--text-primary);
+}
+
+/* 设置行 - Dark 主题 */
+[data-theme="dark"] .setting-row {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .setting-row:hover {
+    background: rgba(129, 140, 248, 0.05);
+    border-color: var(--border-color-hover);
+}
+
+[data-theme="dark"] .setting-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .setting-unit {
+    color: var(--text-muted);
+}
+
+/* 设置输入框 - Dark 主题 */
+[data-theme="dark"] .setting-input {
+    background: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .setting-input:focus {
+    border-color: var(--color-interactive) !important;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+[data-theme="dark"] .setting-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* 设置提示文字 - Dark 主题 */
+[data-theme="dark"] .settings-hint {
+    color: var(--text-muted);
+    background: rgba(129, 140, 248, 0.05);
+    border-color: rgba(129, 140, 248, 0.1);
+}
+
+/* 保存按钮 - Dark 主题 */
+[data-theme="dark"] .btn-save-settings {
+    background: var(--color-interactive);
+    color: white;
+    border-color: var(--color-interactive);
+}
+
+[data-theme="dark"] .btn-save-settings:hover {
+    background: #6366f1;
+    border-color: #6366f1;
+}
+
+/* 数据管理按钮 - Dark 主题 */
+[data-theme="dark"] .settings-body .btn {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .settings-body .btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .settings-body .btn-primary {
+    background: var(--color-interactive);
+    color: white;
+    border-color: var(--color-interactive);
+}
+
+[data-theme="dark"] .settings-body .btn-primary:hover {
+    background: #6366f1;
+    border-color: #6366f1;
+}
+
+[data-theme="dark"] .settings-body .btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .settings-body .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* 开关控件 - Dark 主题 */
+[data-theme="dark"] .perf-switch {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .perf-switch-slider {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .perf-switch input:checked + .perf-switch-slider {
+    background: var(--color-interactive);
+    border-color: var(--color-interactive);
+}
+
+/* 弹窗底部 - Dark 主题 */
+[data-theme="dark"] .settings-modal-content .modal-footer {
+    background: var(--bg-tertiary);
+    border-top-color: var(--border-color);
+}
+
+/* 版本号 - Dark 主题 */
+[data-theme="dark"] .settings-version {
+    color: var(--text-muted);
+    background: rgba(129, 140, 248, 0.05);
+}
+
