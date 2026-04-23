@@ -115,22 +115,63 @@ const Logger = {
     _extractModule(message) {
         if (typeof message !== 'string') return null;
         
-        // 匹配 [moduleName] 格式
-        const match = message.match(/^\[([^\]]+)\]/);
-        if (match) {
-            const name = match[1].toLowerCase();
-            // 映射到模块名
-            if (name === 'app' || name.includes('app')) return 'app';
-            if (name === 'router' || name.includes('router') || name.includes('showoverview') || name.includes('showdetail') || name.includes('handleroutechange')) return 'router';
-            if (name === 'datamanager' || name.includes('datamanager') || name.includes('load') || name.includes('save')) return 'dataManager';
-            if (name === 'detail' || name.includes('detail') || name.includes('loadstock')) return 'detail';
-            if (name === 'overview' || name.includes('overview') || name.includes('refresh')) return 'overview';
-            if (name === 'stockmanager' || name.includes('stockmanager') || name.includes('savestock') || name.includes('stock')) return 'stockManager';
-            if (name === 'traderecords' || name.includes('traderecords') || name.includes('trade')) return 'tradeRecords';
-            if (name === 'eventbus' || name.includes('eventbus') || name.includes('event')) return 'eventBus';
-            if (name === 'calculator' || name.includes('calculator') || name.includes('calc')) return 'calculator';
-            if (name === 'chart' || name.includes('chart')) return 'chart';
-        }
+        const msg = message.toLowerCase();
+        
+        // 直接匹配模块名（按优先级排序，避免误匹配）
+        // app - 应用初始化
+        if (msg.startsWith('[app]') || msg.includes('[app]')) return 'app';
+        
+        // router - 路由导航
+        if (msg.includes('[router') || 
+            msg.includes('[showoverview') || 
+            msg.includes('[showdetail') || 
+            msg.includes('[handleroutechange') ||
+            msg.includes('routepage') ||
+            msg.includes('traderecords sticky')) return 'router';
+        
+        // dataManager - 数据管理
+        if (msg.includes('[datamanager') || 
+            msg.includes('[loadfromlocalstorage') || 
+            msg.includes('[savetolocalstorage') || 
+            msg.includes('[clearlocalstorage]') ||
+            msg.includes('[load]') ||
+            msg.includes('[save]')) return 'dataManager';
+        
+        // detail - 详情页
+        if (msg.includes('[detail') || 
+            msg.includes('[loadstock') ||
+            msg.includes('detailpage sticky')) return 'detail';
+        
+        // overview - 汇总页
+        if (msg.includes('[overview') || 
+            msg.includes('搜索框初始化') ||
+            msg.includes('搜索关键词') ||
+            msg.includes('匹配结果') ||
+            msg.includes('点击本周收益') ||
+            msg.includes('点击本月收益')) return 'overview';
+        
+        // stockManager - 股票管理
+        if (msg.includes('[savestock') || 
+            msg.includes('stockmanager')) return 'stockManager';
+        
+        // tradeRecords - 交易记录
+        if (msg.includes('traderecords') || 
+            msg.includes('[traderecords') ||
+            msg.includes('traderecords 模块')) return 'tradeRecords';
+        
+        // eventBus - 事件总线
+        if (msg.includes('[eventbus') || 
+            msg.includes('eventbus')) return 'eventBus';
+        
+        // calculator - 计算器
+        if (msg.includes('calculator') || 
+            msg.includes('gettradesbyperiod')) return 'calculator';
+        
+        // chart - 图表渲染
+        if (msg.includes('chart') || 
+            msg.includes('timeseries') ||
+            msg.includes('图表')) return 'chart';
+        
         return null;
     },
 
