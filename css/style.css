@@ -9775,13 +9775,13 @@
 }
 
 .trade-records-table thead th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     padding: 12px 8px;
     text-align: left;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.3px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid var(--border-color);
 }
 
 .trade-records-table tbody tr {
@@ -9789,7 +9789,7 @@
 }
 
 .trade-records-table tbody tr:hover {
-    background: rgba(102, 126, 234, 0.05);
+    background: var(--bg-card-hover);
 }
 
 .trade-records-table tbody td {
