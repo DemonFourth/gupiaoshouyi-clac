@@ -2296,6 +2296,8 @@ const Detail = {
                 const currentHolding = this.calcResult?.summary?.currentHolding || 0;
                 const currentCost = this.calcResult?.summary?.currentCost || 0;
                 const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
+                const currentCycleDividend = this.calcResult?.summary?.currentCycleDividend || 0;
+                const currentCycleTax = this.calcResult?.summary?.currentCycleTax || 0;
                 
                 const predictAmountMoney = price * amount;
                 if (predictAmountMoneyEl) predictAmountMoneyEl.textContent = '¥' + predictAmountMoney.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -2304,7 +2306,9 @@ const Detail = {
                 const newCost = currentCost + price * amount;
                 const predictCps = newHolding > 0 ? newCost / newHolding : 0;
                 
-                const dilutedBase = currentCost - currentCycleProfit;
+                // 每股摊薄成本：只考虑卖出收益，不考虑分红和红利税
+                const cumulativeSellProfit = currentCycleProfit - currentCycleDividend + currentCycleTax;
+                const dilutedBase = currentCost - cumulativeSellProfit;
                 const newDilutedBase = dilutedBase + price * amount;
                 const predictDps = newHolding > 0 ? newDilutedBase / newHolding : 0;
                 
@@ -2528,12 +2532,15 @@ const Detail = {
 
         const currentCost = this.calcResult?.summary?.currentCost || 0;
         const currentCycleProfit = this.calcResult?.summary?.currentCycleProfit || 0;
+        const currentCycleDividend = this.calcResult?.summary?.currentCycleDividend || 0;
+        const currentCycleTax = this.calcResult?.summary?.currentCycleTax || 0;
         const holdingQueue = this.calcResult?.holdingQueue || [];
 
         // 当前每股成本
         const currentCps = currentHolding > 0 ? currentCost / currentHolding : 0;
-        // 当前每股摊薄成本
-        const currentDps = currentHolding > 0 ? (currentCost - currentCycleProfit) / currentHolding : 0;
+        // 当前每股摊薄成本：只考虑卖出收益，不考虑分红和红利税
+        const cumulativeSellProfit = currentCycleProfit - currentCycleDividend + currentCycleTax;
+        const currentDps = currentHolding > 0 ? (currentCost - cumulativeSellProfit) / currentHolding : 0;
 
         // 默认卖出价格
         const defaultSellPrice = latestPrice != null ? latestPrice.toFixed(3) : '';
@@ -2704,8 +2711,9 @@ const Detail = {
                 const afterCost = currentCost - sellCost;
                 const afterCps = afterHolding > 0 ? afterCost / afterHolding : 0;
 
-                // 摊薄成本
-                const dilutedBase = currentCost - currentCycleProfit;
+                // 摊薄成本：只考虑卖出收益，不考虑分红和红利税
+                const cumulativeSellProfit = currentCycleProfit - currentCycleDividend + currentCycleTax;
+                const dilutedBase = currentCost - cumulativeSellProfit;
                 const afterDilutedBase = dilutedBase - sellCost;
                 const afterDps = afterHolding > 0 ? afterDilutedBase / afterHolding : 0;
 

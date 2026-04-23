@@ -119,9 +119,10 @@ const StockSnapshot = {
 
         if (marketValue !== null) {
             totalAllProfit = summary.totalProfit + holdingProfit;
-            // 摊薄成本：考虑已实现收益后的持仓成本
-            // 摊薄成本 = 持仓成本 - 当前持仓周期累计收益
-            const dilutedCost = marketValue - cycleProfit;
+            // 摊薄成本：只考虑卖出收益，不考虑分红和红利税
+            // 累计卖出收益 = 当前持仓周期收益 - 分红 + 红利税
+            const cumulativeSellProfit = (summary.currentCycleProfit || 0) - (summary.currentCycleDividend || 0) + (summary.currentCycleTax || 0);
+            const dilutedCost = summary.currentCost - cumulativeSellProfit;
             dilutedCostPerShare = summary.currentHolding > 0 ? (dilutedCost / summary.currentHolding) : null;
 
             // 持仓周期收益率 = (现价 - 摊薄成本) / 摊薄成本 * 100%

@@ -375,7 +375,10 @@ const Calculator = {
         
         // 计算每股持仓成本与每股摊薄成本
         const costPerShare = state.currentHolding > 0 ? (currentCost / state.currentHolding) : null;
-        const dilutedCostTotal = currentCost - state.cumulativeProfit;
+        // 每股摊薄成本：只考虑卖出收益，不考虑分红和红利税
+        // 累计卖出收益 = 累计收益 - 分红 + 红利税
+        const cumulativeSellProfit = state.cumulativeProfit - state.currentCycleDividend + state.currentCycleTax;
+        const dilutedCostTotal = currentCost - cumulativeSellProfit;
         const dilutedCostPerShare = state.currentHolding > 0 ? (dilutedCostTotal / state.currentHolding) : null;
         
         state.timeSeriesData.dates.push(trade.date);
