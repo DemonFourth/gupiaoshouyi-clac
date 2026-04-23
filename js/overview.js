@@ -1962,6 +1962,13 @@ const Overview = {
         const chartColors = StockProfitCalculator.ChartManager.getThemeColors();
         const textMutedColor = chartColors.textMuted || chartColors.text;
 
+        // 根据主题设置 tooltip 样式
+        const isDark = StockProfitCalculator.ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        const tooltipMuted = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)';
+
         const option = {
             title: {
                 text: '年度收益统计（已实现）',
@@ -1971,13 +1978,13 @@ const Overview = {
             },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: 'rgba(50, 50, 50, 0.9)',
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-                textStyle: { color: '#fff' },
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:rgba(255, 255, 255, 0.6);font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${tooltipMuted};font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
@@ -2066,6 +2073,13 @@ const Overview = {
         const chartColors = StockProfitCalculator.ChartManager.getThemeColors();
         const textMutedColor = chartColors.textMuted || chartColors.text;
 
+        // 根据主题设置 tooltip 样式
+        const isDark = StockProfitCalculator.ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        const tooltipMuted = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)';
+
         const option = {
             title: {
                 text: `${year}年月度收益趋势（已实现）`,
@@ -2075,13 +2089,13 @@ const Overview = {
             },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: 'rgba(50, 50, 50, 0.9)',
-                borderColor: 'rgba(255, 255, 255, 0.2)',
-                textStyle: { color: '#fff' },
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:rgba(255, 255, 255, 0.6);font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${tooltipMuted};font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
