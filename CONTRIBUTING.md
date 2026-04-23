@@ -1,7 +1,7 @@
 # 股票收益计算器 - 开发规范文档
 
-> 版本：v2.26.0
-> 更新日期：2026-04-21
+> 版本：v2.28.0
+> 更新日期：2026-04-23
 
 ## 目录
 
@@ -16,6 +16,7 @@
 - [数据验证规范](#数据验证规范)
 - [配置管理规范](#配置管理规范)
 - [图表开发规范](#图表开发规范)
+- [主题适配规范](#主题适配规范)
 - [测试规范](#测试规范)
 - [Git提交规范](#git提交规范)
 - [Cloudflare 部署规范](#cloudflare-部署规范)
@@ -1385,6 +1386,182 @@ element.setAttribute('data-tooltip', result.tooltip);
 
 ---
 
+## 主题适配规范（v2.28.0 新增）
+
+### 1. 核心原则
+
+**必须遵循**：
+- 所有新增 UI 元素必须同时适配 dark 和 light 主题
+- 使用 CSS 变量而非硬编码颜色值
+- 图表元素必须通过 ChartManager 统一管理主题
+- 主题切换后 UI 必须正确更新
+
+### 2. CSS 变量使用规范
+
+**必须遵循**：
+- 背景色使用 `var(--bg-primary)`、`var(--bg-secondary)`、`var(--bg-card)`
+- 文字颜色使用 `var(--text-primary)`、`var(--text-secondary)`、`var(--text-muted)`
+- 边框颜色使用 `var(--border-color)`
+- 状态颜色使用 `var(--color-profit)`、`var(--color-loss)`
+
+**示例**：
+```css
+/* ✅ 正确：使用 CSS 变量 */
+.my-component {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.my-component:hover {
+    background: var(--bg-card-hover);
+}
+
+/* ❌ 错误：硬编码颜色 */
+.my-component {
+    background: #ffffff;
+    color: #333333;
+}
+```
+
+### 3. 图表主题适配规范
+
+**必须遵循**：
+- 图表标题、副标题、坐标轴文字由 ChartManager 自动注入主题
+- Tooltip 必须根据主题设置背景色和文字颜色
+- 图表配置中不要硬编码颜色值
+
+**Tooltip 适配示例**：
+```javascript
+// ✅ 正确：根据主题设置 tooltip 样式
+const isDark = StockProfitCalculator.ChartManager.currentTheme === 'dark';
+const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+const tooltipMuted = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)';
+
+const option = {
+    tooltip: {
+        backgroundColor: tooltipBg,
+        borderColor: tooltipBorder,
+        textStyle: { color: tooltipText },
+        formatter: function(params) {
+            return `...<span style="color:${tooltipMuted};">...</span>`;
+        }
+    }
+};
+
+// ❌ 错误：硬编码 tooltip 样式
+const option = {
+    tooltip: {
+        backgroundColor: '#fff',  // light 主题下正常，dark 主题下刺眼
+        textStyle: { color: '#333' }
+    }
+};
+```
+
+### 4. 图表副标题适配规范
+
+**必须遵循**：
+- 副标题颜色由 ChartManager 自动注入（通过 `subtextStyle`）
+- ChartManager.themeColors 必须包含 `textMuted` 颜色配置
+
+**ChartManager 配置**：
+```javascript
+// chartManager.js
+themeColors: {
+    dark: {
+        text: '#e8eaf6',
+        textMuted: 'rgba(255, 255, 255, 0.6)',  // 副标题用淡色
+        axisLine: 'rgba(255, 255, 255, 0.1)',
+        splitLine: 'rgba(255, 255, 255, 0.05)'
+    },
+    light: {
+        text: '#1e293b',
+        textMuted: 'rgba(0, 0, 0, 0.5)',  // 副标题用淡色
+        axisLine: 'rgba(0, 0, 0, 0.1)',
+        splitLine: 'rgba(0, 0, 0, 0.05)'
+    }
+}
+```
+
+### 5. 主题切换时图表更新规范
+
+**必须遵循**：
+- 主题切换时必须重新渲染包含动态颜色的图表
+- 在 `app.js` 的 `applyTheme()` 中调用图表重新渲染
+- 检查数据是否已加载后再渲染
+
+**示例**：
+```javascript
+// app.js
+applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    // 通知 ChartManager 更新所有图表
+    StockProfitCalculator.ChartManager.onThemeChange(theme);
+    
+    // 重新渲染包含动态颜色的图表（如 tooltip 颜色）
+    const Overview = StockProfitCalculator.Overview;
+    if (Overview && Overview.yearlyProfitData && Overview.renderYearlyProfitChart) {
+        Overview.renderYearlyProfitChart();
+        if (Overview.selectedYear) {
+            Overview.renderMonthlyProfitChart(Overview.selectedYear);
+        }
+    }
+}
+```
+
+### 6. 表格主题适配规范
+
+**必须遵循**：
+- 表格标题行背景使用 `var(--bg-secondary)`
+- 表格行 hover 效果使用 `var(--bg-card-hover)`
+- 边框颜色使用 `var(--border-color)`
+
+**示例**：
+```css
+/* ✅ 正确：表格主题适配 */
+.my-table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.my-table tbody tr:hover {
+    background: var(--bg-card-hover);
+}
+
+/* ❌ 错误：硬编码表格样式 */
+.my-table thead th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  /* 固定渐变 */
+    color: #fff;
+}
+```
+
+### 7. 主题适配检查清单
+
+开发新功能时，必须检查以下项目：
+
+- [ ] CSS 样式使用 CSS 变量而非硬编码颜色
+- [ ] 图表 tooltip 根据主题设置背景色和文字颜色
+- [ ] 图表副标题颜色由 ChartManager 自动注入
+- [ ] 表格标题行和 hover 效果适配主题
+- [ ] 主题切换后 UI 正确更新
+- [ ] 在 dark 和 light 主题下分别测试
+
+### 8. 常见主题适配问题
+
+| 问题 | 原因 | 解决方案 |
+|------|------|----------|
+| tooltip 背景色不随主题变化 | 硬编码了背景色 | 根据主题动态设置 `backgroundColor` |
+| 副标题颜色不更新 | ChartManager 未注入 `subtextStyle` | 在 `injectThemeConfig` 中添加 `subtextStyle` |
+| 表格标题行颜色固定 | 使用了固定渐变色 | 改用 CSS 变量 |
+| 主题切换后图表不更新 | 未调用图表重新渲染 | 在 `applyTheme` 中调用渲染方法 |
+
+---
+
 ## 测试规范
 
 ### 1. 手动测试
@@ -1814,5 +1991,5 @@ git revert 1d44a70  # 回退 Dark 主题修复
 ---
 
 **维护者**：iFlow CLI
-**最后更新**：2026-04-22
-**版本**：v2.27.0
+**最后更新**：2026-04-23
+**版本**：v2.28.0
