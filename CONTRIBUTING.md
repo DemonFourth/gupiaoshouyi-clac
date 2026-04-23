@@ -17,6 +17,7 @@
 - [配置管理规范](#配置管理规范)
 - [图表开发规范](#图表开发规范)
 - [主题适配规范](#主题适配规范)
+- [辅助工具模块规范](#辅助工具模块规范)
 - [测试规范](#测试规范)
 - [Git提交规范](#git提交规范)
 - [Cloudflare 部署规范](#cloudflare-部署规范)
@@ -1559,6 +1560,150 @@ applyTheme(theme) {
 | 副标题颜色不更新 | ChartManager 未注入 `subtextStyle` | 在 `injectThemeConfig` 中添加 `subtextStyle` |
 | 表格标题行颜色固定 | 使用了固定渐变色 | 改用 CSS 变量 |
 | 主题切换后图表不更新 | 未调用图表重新渲染 | 在 `applyTheme` 中调用渲染方法 |
+
+---
+
+## 辅助工具模块规范（v2.28.0 新增）
+
+### 1. Perf 性能计时工具
+
+**用途**：轻量级性能计时，用于测量代码执行时间
+
+**使用场景**：
+- 测量关键计算耗时
+- 分析性能瓶颈
+- 调试慢操作
+
+**示例**：
+```javascript
+const Perf = StockProfitCalculator.Perf;
+
+// ✅ 正确：使用 Perf 计时
+Perf.start('calculateProfit');
+const result = Calculator.calculateAll(trades);
+Perf.end('calculateProfit');
+// 控制台输出: [Perf] calculateProfit: 12.5ms
+
+// ✅ 正确：使用标记点
+Perf.mark('dataLoad');
+// ... 加载数据
+Perf.mark('dataProcess');
+// ... 处理数据
+Perf.measure('dataLoad', 'dataProcess', '数据处理耗时');
+```
+
+### 2. Pagination 分页组件
+
+**用途**：统一分页逻辑和 UI
+
+**使用场景**：
+- 交易记录列表分页
+- 大数据量列表展示
+
+**示例**：
+```javascript
+const Pagination = StockProfitCalculator.Pagination;
+
+// ✅ 正确：初始化分页
+const pagination = Pagination.create({
+    container: document.getElementById('pagination'),
+    pageSize: 20,
+    total: 100,
+    onChange: (page) => {
+        this._renderPage(page);
+    }
+});
+
+// ✅ 正确：更新总数
+pagination.updateTotal(200);
+
+// ✅ 正确：销毁分页
+pagination.destroy();
+```
+
+### 3. Skeleton 骨架屏
+
+**用途**：加载时显示占位骨架，提升用户体验
+
+**使用场景**：
+- 页面初始加载
+- 数据刷新时
+- 异步操作等待
+
+**示例**：
+```javascript
+const Skeleton = StockProfitCalculator.Skeleton;
+
+// ✅ 正确：显示骨架屏
+Skeleton.show('overview');
+
+// ✅ 正确：隐藏骨架屏
+Skeleton.hide('overview');
+
+// ✅ 正确：根据主题自动适配颜色
+// Skeleton 会自动读取当前主题并显示对应颜色
+```
+
+### 4. FileStorage 文件存储
+
+**用途**：文件导入导出、本地存储管理
+
+**使用场景**：
+- 数据导出为 JSON 文件
+- 从文件导入数据
+- 备份恢复
+
+**示例**：
+```javascript
+const FileStorage = StockProfitCalculator.FileStorage;
+
+// ✅ 正确：导出数据
+FileStorage.exportToFile(data, 'stock-data.json');
+
+// ✅ 正确：导入数据
+const data = await FileStorage.importFromFile(file);
+```
+
+### 5. StockPriceAPI 股价接口
+
+**用途**：获取实时股价数据
+
+**使用场景**：
+- 刷新股票当前价格
+- 获取实时行情
+
+**示例**：
+```javascript
+const StockPriceAPI = StockProfitCalculator.StockPriceAPI;
+
+// ✅ 正确：获取股价
+const price = await StockPriceAPI.getPrice('002460');
+
+// ✅ 正确：批量获取股价
+const prices = await StockPriceAPI.getPrices(['002460', '000001']);
+```
+
+### 6. ModuleRegistry 模块注册
+
+**用途**：统一注册模块到命名空间
+
+**使用场景**：
+- 应用启动时注册所有模块
+- 确保模块挂载顺序正确
+
+**示例**：
+```javascript
+// ✅ 正确：注册模块
+ModuleRegistry.register('Calculator', Calculator);
+ModuleRegistry.register('DataService', DataService);
+
+// ✅ 正确：批量注册
+ModuleRegistry.registerAll({
+    Calculator,
+    DataService,
+    Router
+});
+```
 
 ---
 
