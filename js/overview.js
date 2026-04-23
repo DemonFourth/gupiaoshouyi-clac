@@ -1958,17 +1958,16 @@ const Overview = {
         const years = Object.keys(this.yearlyProfitData).sort();
         const profits = years.map(y => this.yearlyProfitData[y]);
 
-        // 获取当前主题的文字颜色
-        const computedStyle = getComputedStyle(document.documentElement);
-        const textMutedColor = computedStyle.getPropertyValue('--text-muted').trim() || '#999';
+        // 获取当前主题的淡色文字（用于 tooltip 说明）
+        const chartColors = StockProfitCalculator.ChartManager.getThemeColors();
+        const textMutedColor = chartColors.textMuted || chartColors.text;
 
         const option = {
             title: {
                 text: '年度收益统计（已实现）',
                 subtext: '统计各年度卖出收益+分红-红利税，不含浮动盈亏',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' },
-                subtextStyle: { fontSize: 11, color: textMutedColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',
@@ -2060,17 +2059,16 @@ const Overview = {
         const monthlyData = this.yearlyMonthlyData[year] || {};
         const profits = months.map(m => monthlyData[m] || 0);
 
-        // 获取当前主题的文字颜色
-        const computedStyle = getComputedStyle(document.documentElement);
-        const textMutedColor = computedStyle.getPropertyValue('--text-muted').trim() || '#999';
+        // 获取当前主题的淡色文字（用于 tooltip 说明）
+        const chartColors = StockProfitCalculator.ChartManager.getThemeColors();
+        const textMutedColor = chartColors.textMuted || chartColors.text;
 
         const option = {
             title: {
                 text: `${year}年月度收益趋势（已实现）`,
                 subtext: '统计各月卖出收益+分红-红利税，不含浮动盈亏',
                 left: 'center',
-                textStyle: { fontSize: 16, fontWeight: 'bold' },
-                subtextStyle: { fontSize: 11, color: textMutedColor }
+                textStyle: { fontSize: 16, fontWeight: 'bold' }
             },
             tooltip: {
                 trigger: 'axis',

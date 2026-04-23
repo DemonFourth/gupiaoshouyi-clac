@@ -22,11 +22,13 @@ const ChartManager = {
     themeColors: {
         dark: {
             text: '#e8eaf6',
+            textMuted: 'rgba(255, 255, 255, 0.6)',
             axisLine: 'rgba(255, 255, 255, 0.1)',
             splitLine: 'rgba(255, 255, 255, 0.05)'
         },
         light: {
             text: '#1e293b',
+            textMuted: 'rgba(0, 0, 0, 0.5)',
             axisLine: 'rgba(0, 0, 0, 0.1)',
             splitLine: 'rgba(0, 0, 0, 0.05)'
         }
@@ -175,6 +177,9 @@ const ChartManager = {
             title: {
                 textStyle: {
                     color: colors.text
+                },
+                subtextStyle: {
+                    color: colors.textMuted || colors.text
                 }
             },
             xAxis: {
