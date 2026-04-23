@@ -143,9 +143,14 @@ const Logger = {
             'chart': 'chart'
         };
         
-        // 直接匹配或部分匹配
+        // 直接匹配
+        if (moduleMap[name]) {
+            return moduleMap[name];
+        }
+        
+        // 部分匹配（处理 overview.refresh 这种子模块格式）
         for (const [key, module] of Object.entries(moduleMap)) {
-            if (name === key || name.includes(key)) {
+            if (name.startsWith(key + '.') || name.includes(key)) {
                 return module;
             }
         }
