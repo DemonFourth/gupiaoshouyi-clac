@@ -110,16 +110,17 @@ const Router = {
         // 注意：不清空 currentStockCode，用于判断是否重复进入同一股票
         // this.state.currentStockCode = null;
 
-        console.log('[showOverview] 返回汇总页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
+        const Logger = StockProfitCalculator.Logger;
+        Logger?.debug?.('[showOverview] 返回汇总页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
 
         // 恢复汇总页的滚动位置
         const savedScrollPosition = this.state.scrollPositions?.overview || 0;
-        console.log('[showOverview] 准备恢复的滚动位置:', savedScrollPosition);
+        Logger?.debug?.('[showOverview] 准备恢复的滚动位置:', savedScrollPosition);
         window.scrollTo(0, savedScrollPosition);
         if (savedScrollPosition > 0) {
             // 标记滚动位置已恢复，避免 refresh() 再次恢复
             this._scrollPositionRestored = true;
-            console.log('[showOverview] 已恢复滚动位置到:', savedScrollPosition);
+            Logger?.debug?.('[showOverview] 已恢复滚动位置到:', savedScrollPosition);
         }
 
         if (saveState) {
@@ -144,10 +145,10 @@ const Router = {
         if (this.state.currentPage === 'overview') {
             const scrollPosition = window.scrollY || window.pageYOffset || 0;
             this.state.scrollPositions.overview = scrollPosition;
-            console.log('[showDetail] 保存汇总页滚动位置:', scrollPosition);
+            Logger?.debug?.('[showDetail] 保存汇总页滚动位置:', scrollPosition);
         }
 
-        console.log('[showDetail] 进入详情页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
+        Logger?.debug?.('[showDetail] 进入详情页，当前滚动位置:', window.scrollY || window.pageYOffset || 0);
 
         if (typeof document !== 'undefined' && document && document.body && document.body.classList) {
             document.body.classList.add('page-detail');
@@ -157,7 +158,7 @@ const Router = {
             const headerBar = document.querySelector('.header-bar');
             if (headerBar) {
                 const computedStyle = window.getComputedStyle(headerBar);
-                console.log('[DetailPage Sticky Debug]', {
+                Logger?.debug?.('[DetailPage Sticky Debug]', {
                     bodyClasses: document.body.className,
                     headerBarPosition: computedStyle.position,
                     headerBarTop: computedStyle.top,
@@ -228,10 +229,10 @@ const Router = {
         }
 
         // 滚动到页面顶部
-        console.log('[showDetail] 滚动到顶部前，当前位置:', window.scrollY || window.pageYOffset || 0);
+        Logger?.debug?.('[showDetail] 滚动到顶部前，当前位置:', window.scrollY || window.pageYOffset || 0);
         // 使用同步滚动（不使用 smooth），确保立即生效
         window.scrollTo(0, 0);
-        console.log('[showDetail] 已滚动到顶部，当前位置:', window.scrollY || window.pageYOffset || 0);
+        Logger?.debug?.('[showDetail] 已滚动到顶部，当前位置:', window.scrollY || window.pageYOffset || 0);
 
         // 注意：不调用 onPageChange，因为 handleRouteChange 已经是路由变化的主要处理函数
         // 避免无限循环：handleRouteChange → showDetail → onPageChange → emit → handleRouteChange
@@ -408,11 +409,11 @@ const Router = {
      * @param {number|null} month - 月份（null 表示全年）
      */
     async showTradeRecords(year, month = null, startDate = null, endDate = null) {
-        console.log('[Router.showTradeRecords] 收到参数:');
-        console.log('  year:', year);
-        console.log('  month:', month);
-        console.log('  startDate:', startDate);
-        console.log('  endDate:', endDate);
+        Logger?.debug?.('[Router.showTradeRecords] 收到参数:');
+        Logger?.debug?.('  year:', year);
+        Logger?.debug?.('  month:', month);
+        Logger?.debug?.('  startDate:', startDate);
+        Logger?.debug?.('  endDate:', endDate);
         
         const perfToken = window.Perf ? window.Perf.start('Router.showTradeRecords') : null;
 
@@ -440,7 +441,7 @@ const Router = {
             const headerBar = document.querySelector('.header-bar');
             if (headerBar) {
                 const computedStyle = window.getComputedStyle(headerBar);
-                console.log('[TradeRecords Sticky Debug]', {
+                Logger?.debug?.('[TradeRecords Sticky Debug]', {
                     bodyClasses: document.body.className,
                     headerBarPosition: computedStyle.position,
                     headerBarTop: computedStyle.top,

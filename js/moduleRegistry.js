@@ -10,6 +10,7 @@
 // 模块列表
 const modules = [
     'Config',
+    'Logger',
     'Utils',
     'ErrorHandler',
     'Validator',

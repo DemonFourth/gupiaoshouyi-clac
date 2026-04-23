@@ -41,7 +41,8 @@ window.App = {
         // 从localStorage读取保存的主题，默认为深色
         const savedTheme = localStorage.getItem('theme') || 'dark';
         this.applyTheme(savedTheme);
-        console.log(`[App] 主题初始化: ${savedTheme}`);
+        const Logger = StockProfitCalculator.Logger;
+        Logger?.debug?.(`[App] 主题初始化: ${savedTheme}`);
     },
 
     /**
@@ -64,7 +65,8 @@ window.App = {
         // 保存到localStorage
         localStorage.setItem('theme', theme);
 
-        console.log(`[App] 主题已切换为: ${theme}`);
+        const Logger = StockProfitCalculator.Logger;
+        Logger?.debug?.(`[App] 主题已切换为: ${theme}`);
 
         // 通知 ChartManager 更新所有图表
         StockProfitCalculator.ChartManager.onThemeChange(theme);
@@ -98,7 +100,8 @@ window.App = {
      * 初始化应用
      */
     async init() {
-        console.log('[App] 初始化开始');
+        const Logger = StockProfitCalculator.Logger;
+        Logger?.debug?.('[App] 初始化开始');
 
         const FileStorage = StockProfitCalculator.FileStorage;
         const DataManager = StockProfitCalculator.DataManager;
@@ -160,7 +163,7 @@ window.App = {
 
         if (window.Perf) window.Perf.end(perfToken);
 
-        console.log('[App] 初始化完成');
+        Logger?.debug?.('[App] 初始化完成');
     },
 
     /**
@@ -513,14 +516,14 @@ window.App = {
      * @param {string|null} stockCode
      */
     async handleRouteChange(page, stockCode = null) {
-        console.log('[handleRouteChange] 开始执行, page:', page, ', stockCode:', stockCode);
+        Logger?.debug?.('[handleRouteChange] 开始执行, page:', page, ', stockCode:', stockCode);
         
         const Overview = StockProfitCalculator.Overview;
         const Detail = StockProfitCalculator.Detail;
         const Router = StockProfitCalculator.Router;
 
         if (page === 'overview') {
-            console.log('[handleRouteChange] 切换到汇总页');
+            Logger?.debug?.('[handleRouteChange] 切换到汇总页');
             if (typeof Overview !== 'undefined') {
                 // 判断是否首次加载
                 if (Overview.stocks && Overview.stocks.length > 0) {
@@ -539,23 +542,23 @@ window.App = {
         }
 
         if (page === 'detail' && stockCode) {
-            console.log('[handleRouteChange] 切换到详情页, stockCode:', stockCode);
+            Logger?.debug?.('[handleRouteChange] 切换到详情页, stockCode:', stockCode);
             if (typeof Detail !== 'undefined') {
                 // 判断是否首次加载或切换股票
                 if (Detail.currentStockCode === stockCode) {
                     // 同一只股票，使用平滑刷新
-                    console.log('[handleRouteChange] 同一只股票，使用平滑刷新');
+                    Logger?.debug?.('[handleRouteChange] 同一只股票，使用平滑刷新');
                     // 确保页面视图已切换
                     await Router.showDetail(stockCode, false);  // 不保存状态，避免重复保存
                     await Detail.refresh();
                 } else {
                     // 首次加载或切换股票，使用完整加载
-                    console.log('[handleRouteChange] 调用 Router.showDetail()');
+                    Logger?.debug?.('[handleRouteChange] 调用 Router.showDetail()');
                     await Router.showDetail(stockCode);  // 先切换页面
-                    console.log('[handleRouteChange] Router.showDetail() 完成');
-                    console.log('[handleRouteChange] 调用 Detail.loadStock()');
+                    Logger?.debug?.('[handleRouteChange] Router.showDetail() 完成');
+                    Logger?.debug?.('[handleRouteChange] 调用 Detail.loadStock()');
                     await Detail.loadStock(stockCode);  // 再加载股票数据
-                    console.log('[handleRouteChange] Detail.loadStock() 完成');
+                    Logger?.debug?.('[handleRouteChange] Detail.loadStock() 完成');
                 }
             }
             // 重新绑定 tooltip
@@ -566,7 +569,7 @@ window.App = {
         }
 
         // tradeRecords 页面：Router.showTradeRecords() 已经调用了 TradeRecords.load()，不需要再次调用
-        console.log('[handleRouteChange] 其他页面:', page);
+        Logger?.debug?.('[handleRouteChange] 其他页面:', page);
     },
 
     /**
@@ -915,7 +918,7 @@ window.App = {
      * @param {Object} diff - 差异信息
      */
     async _handleDataSyncDiff(localData, d1Data, diff) {
-        console.log('[App] 检测到数据同步差异:', diff);
+        Logger?.debug?.('[App] 检测到数据同步差异:', diff);
 
         const DataManager = StockProfitCalculator.DataManager;
         const ErrorHandler = StockProfitCalculator.ErrorHandler;
