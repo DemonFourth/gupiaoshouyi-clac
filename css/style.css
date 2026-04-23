@@ -356,19 +356,19 @@
         .header-quote {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 0;
+            justify-content: flex-start;
+            gap: 8px;
             padding: 0;
             border-radius: 0;
             background: transparent;
             border: none;
-            flex-wrap: wrap;
-            flex: 7;
-            min-width: 0;
+            flex-wrap: wrap;  /* 允许换行 */
+            flex: 1 1 auto;  /* 允许伸缩 */
+            min-width: 200px;  /* 设置最小宽度 */
         }
 
         .header-quote-item {
-            flex: 1;
+            flex: 0 0 auto;  /* 不伸缩，保持固定大小 */
             display: inline-flex;
             flex-direction: column;
             align-items: center;
@@ -530,10 +530,10 @@
 
         /* 标签列和数值列容器 */
         .header-quote-group {
-            flex: 1;
+            flex: 0 0 auto;  /* 不伸缩 */
             display: inline-flex;
             align-items: stretch;
-            min-width: 0;
+            min-width: 90px;  /* 设置最小宽度 */
         }
 
         /* 标签列和数值列样式（6列布局） */
@@ -6148,6 +6148,18 @@
 
 
 
+/* 详情页 header-bar 中等宽度响应式 */
+@media (max-width: 1024px) {
+    /* 详情页：行情信息区域占满整行 */
+    body.page-detail .header-quote {
+        width: 100%;
+        order: 10;  /* 放到最后 */
+        margin-top: 8px;
+    }
+}
+
+
+
 /* 头部工具栏响应式 */
 
 @media (max-width: 768px) {
@@ -6189,21 +6201,17 @@
 
 
     .header-quote {
-
-        flex-wrap: wrap;
-
-        justify-content: flex-end;
-
+        justify-content: flex-start;
+        gap: 6px;
     }
 
-
-
     .header-quote-item {
-
         min-width: 60px;
-
         padding: 4px 8px;
+    }
 
+    .header-quote-group {
+        min-width: 80px;
     }
 
 }
