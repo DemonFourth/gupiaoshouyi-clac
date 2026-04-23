@@ -1,5 +1,83 @@
 # 股票收益计算器 - 项目上下文
 
+## AI 助手工作流程规范
+
+> **重要**：AI 助手在执行任何任务时，必须遵循以下工作流程：
+
+### 1. 任务分析阶段
+
+**每次执行任务前，必须先调用 `using-superpowers` skill 进行任务分析**：
+
+```
+1. 接收用户任务
+2. 调用 SkillTool(skill_name="using-superpowers")
+3. 根据 skill 指导确定任务类型和执行策略
+4. 制定详细的执行计划
+```
+
+**目的**：
+- 确保任务理解准确
+- 选择正确的执行策略
+- 避免遗漏关键步骤
+- 提高执行效率
+
+### 2. 任务执行阶段
+
+**执行过程中必须遵循**：
+- 使用 TodoWrite 工具跟踪任务进度
+- 每完成一个步骤立即标记为 completed
+- 遇到问题及时调整计划
+
+### 3. Git 提交规范
+
+**每次修改代码后，必须创建 git 提交记录**：
+
+```bash
+# 提交格式
+git add <修改的文件>
+git commit -m "<type>(<scope>): <subject>
+
+<body>
+
+🤖 Generated with CodeArts Agent"
+```
+
+**提交类型 (type)**：
+- `feat`: 新功能
+- `fix`: Bug 修复
+- `docs`: 文档更新
+- `style`: 代码格式（不影响功能）
+- `refactor`: 重构
+- `perf`: 性能优化
+- `test`: 测试相关
+- `chore`: 构建/工具变动
+
+**提交范围 (scope)**：
+- 模块名称，如 `calculator`, `detail`, `overview` 等
+- 或文件名称，如 `AGENTS.md`, `style.css` 等
+
+**提交示例**：
+```bash
+git add AGENTS.md
+git commit -m "docs(AGENTS.md): 添加 AI 助手工作流程规范
+
+- 新增任务分析阶段规范（使用 using-superpowers skill）
+- 新增 Git 提交规范
+- 确保每次修改都有可追溯的记录
+
+🤖 Generated with CodeArts Agent"
+```
+
+### 4. 任务完成阶段
+
+**任务完成后必须**：
+1. 总结任务执行情况
+2. 列出所有修改的文件
+3. 确认 git 提交已完成
+4. 在最后一行添加 🎯 标记
+
+---
+
 ## 项目概述
 
 这是一个股票投资收益计算工具，专为**已发生的股票交易操作**提供收益计算和分析功能，针对**持仓中**和**已清仓**的股票进行精确的收益统计。项目采用原生 HTML + CSS + JavaScript 技术栈，部署在 Cloudflare Pages 上，使用 localStorage + D1 混合存储策略，适合个人投资记录和分析使用。
