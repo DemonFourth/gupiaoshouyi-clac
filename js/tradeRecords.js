@@ -635,14 +635,14 @@ const TradeRecords = {
         const dividendCount = tradesWithProfit.filter(t => t.type === 'dividend').length;
         const taxCount = tradesWithProfit.filter(t => t.type === 'tax').length;
 
-        StockProfitCalculator.Logger?.debug?.('查询结果：');
-        StockProfitCalculator.Logger?.debug?.('  总收益:', totalProfit);
-        StockProfitCalculator.Logger?.debug?.('  总手续费:', totalFee);
-        StockProfitCalculator.Logger?.debug?.('  交易次数:', tradesWithProfit.length);
-        StockProfitCalculator.Logger?.debug?.('  买入次数:', buyCount);
-        console.log('  卖出次数:', sellCount);
-        StockProfitCalculator.Logger?.debug?.('  分红次数:', dividendCount);
-        StockProfitCalculator.Logger?.debug?.('  红利税次数:', taxCount);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords] 查询结果：');
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   总收益:', totalProfit);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   总手续费:', totalFee);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   交易次数:', tradesWithProfit.length);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   买入次数:', buyCount);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   危出次数:', sellCount);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   分红次数:', dividendCount);
+        StockProfitCalculator.Logger?.debug?.('[TradeRecords]   红利税次数:', taxCount);
 
         // 更新汇总信息
         this._updateSummary({
