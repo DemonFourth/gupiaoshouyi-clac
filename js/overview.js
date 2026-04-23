@@ -1958,20 +1958,24 @@ const Overview = {
         const years = Object.keys(this.yearlyProfitData).sort();
         const profits = years.map(y => this.yearlyProfitData[y]);
 
+        // 获取当前主题的文字颜色
+        const computedStyle = getComputedStyle(document.documentElement);
+        const textMutedColor = computedStyle.getPropertyValue('--text-muted').trim() || '#999';
+
         const option = {
             title: {
                 text: '年度收益统计（已实现）',
                 subtext: '统计各年度卖出收益+分红-红利税，不含浮动盈亏',
                 left: 'center',
                 textStyle: { fontSize: 16, fontWeight: 'bold' },
-                subtextStyle: { fontSize: 11, color: '#999' }
+                subtextStyle: { fontSize: 11, color: textMutedColor }
             },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:#999;font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${textMutedColor};font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
@@ -2056,20 +2060,24 @@ const Overview = {
         const monthlyData = this.yearlyMonthlyData[year] || {};
         const profits = months.map(m => monthlyData[m] || 0);
 
+        // 获取当前主题的文字颜色
+        const computedStyle = getComputedStyle(document.documentElement);
+        const textMutedColor = computedStyle.getPropertyValue('--text-muted').trim() || '#999';
+
         const option = {
             title: {
                 text: `${year}年月度收益趋势（已实现）`,
                 subtext: '统计各月卖出收益+分红-红利税，不含浮动盈亏',
                 left: 'center',
                 textStyle: { fontSize: 16, fontWeight: 'bold' },
-                subtextStyle: { fontSize: 11, color: '#999' }
+                subtextStyle: { fontSize: 11, color: textMutedColor }
             },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
                     const data = params[0];
                     const sign = data.value >= 0 ? '+' : '';
-                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:#999;font-size:11px;">（卖出收益+分红-红利税）</span>`;
+                    return `${year}年${data.name}<br/>已实现收益: ${sign}¥${data.value.toFixed(2)}<br/><span style="color:${textMutedColor};font-size:11px;">（卖出收益+分红-红利税）</span>`;
                 }
             },
             grid: {
