@@ -381,15 +381,6 @@ window.App = {
             });
         }
 
-        const perfToggle = document.getElementById('perfToggle');
-        if (perfToggle) {
-            // 初始化 UI 状态
-            perfToggle.checked = (window.__PERF_ENABLED__ === true);
-            perfToggle.onchange = () => {
-                window.__PERF_ENABLED__ = perfToggle.checked;
-            };
-        }
-
         // 调试日志开关
         const debugLogToggle = document.getElementById('debugLogToggle');
         const logModulesSection = document.getElementById('logModulesSection');

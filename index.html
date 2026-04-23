@@ -1695,15 +1695,6 @@
                     </div>
                     <div class="setting-rows">
                         <div class="setting-row">
-                            <span class="setting-label">性能日志</span>
-                            <div class="setting-control">
-                                <label class="perf-switch">
-                                    <input type="checkbox" id="perfToggle" checked>
-                                    <span class="perf-switch-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="setting-row">
                             <span class="setting-label">调试日志</span>
                             <div class="setting-control">
                                 <label class="perf-switch">
@@ -1713,7 +1704,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="settings-hint">开启后控制台输出关键模块耗时，用于性能分析</p>
+                    <p class="settings-hint">开启后控制台输出调试日志，用于开发调试</p>
                     
                     <!-- 日志模块控制 -->
                     <div class="log-modules-section" id="logModulesSection" style="display: none;">
@@ -1727,7 +1718,7 @@
                         <div class="log-modules-grid" id="logModulesGrid">
                             <!-- 动态生成 -->
                         </div>
-                        <p class="settings-hint">选择要输出日志的模块，未选中的模块不会输出调试日志</p>
+                        <p class="settings-hint">选择要输出日志的模块，包括性能日志（Perf）</p>
                     </div>
                 </div>
             </div>

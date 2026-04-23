@@ -46,7 +46,8 @@ const Logger = {
         tradeRecords: { name: '交易记录', enabled: false, icon: '📝' },
         eventBus: { name: '事件总线', enabled: false, icon: '📡' },
         calculator: { name: '计算器', enabled: false, icon: '🧮' },
-        chart: { name: '图表渲染', enabled: false, icon: '📉' }
+        chart: { name: '图表渲染', enabled: false, icon: '📉' },
+        perf: { name: '性能日志', enabled: false, icon: '⏱️' }
     },
 
     /**
@@ -140,7 +141,8 @@ const Logger = {
             'traderecords': 'tradeRecords',
             'eventbus': 'eventBus',
             'calculator': 'calculator',
-            'chart': 'chart'
+            'chart': 'chart',
+            'perf': 'perf'
         };
         
         // 直接匹配
