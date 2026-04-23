@@ -474,9 +474,9 @@ const TradeRecords = {
         console.log('所有交易记录数:', allTrades.length);
         console.log('所有卖出记录数:', allSellRecords.length);
 
-        // 创建 sellProfitMap
+        // 创建 sellProfitMap（使用 stockCode + tradeId 作为唯一 key，避免不同股票的 tradeId 重复）
         const sellProfitMap = new Map(
-            allSellRecords.map(sell => [sell.tradeId, sell])
+            allSellRecords.map(sell => [`${sell.stockCode}_${sell.tradeId}`, sell])
         );
 
         // 确定时间范围
@@ -528,8 +528,8 @@ const TradeRecords = {
             };
 
             if (trade.type === 'sell') {
-                // 从 sellProfitMap 获取盈亏
-                const sellRecord = sellProfitMap.get(trade.id);
+                // 从 sellProfitMap 获取盈亏（使用 stockCode + tradeId 作为唯一 key）
+                const sellRecord = sellProfitMap.get(`${trade.stockCode}_${trade.id}`);
                 if (sellRecord) {
                     tradeWithProfit.profit = sellRecord.profit;
                     tradeWithProfit.profitPercent = sellRecord.returnRate;
