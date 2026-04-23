@@ -8045,6 +8045,16 @@
     color: var(--card-loss-color);
 }
 
+/* 当日股价突出显示 */
+.sc-current-price {
+    color: var(--color-primary);
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
 /* 周期点击样式 */
 .sc-col-cycle-link {
     cursor: pointer;

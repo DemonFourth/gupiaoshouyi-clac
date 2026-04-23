@@ -1422,7 +1422,7 @@ const Overview = {
 
         // 价格列
         const priceItems = [
-            { visible: fields.currentPrice?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">当日股价</span><span class="sc-col-value">${quote ? '¥' + quote.price.toFixed(2) : '--'}</span></div>` },
+            { visible: fields.currentPrice?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">当日股价</span><span class="sc-col-value sc-current-price">${quote ? '¥' + quote.price.toFixed(2) : '--'}</span></div>` },
             { visible: fields.costPerShare?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">每股持仓成本</span><span class="sc-col-value">¥${costPerShare.toFixed(2)}</span></div>` },
             { visible: fields.dilutedCostPerShare?.visible, html: `<div class="sc-col-item"><span class="sc-col-label">每股摊薄成本</span><span class="sc-col-value">${dilutedCostPerShare !== null ? '¥' + dilutedCostPerShare.toFixed(2) : '--'}</span></div>` }
         ];
