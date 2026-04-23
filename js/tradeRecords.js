@@ -425,9 +425,6 @@ const TradeRecords = {
      * @param {Date|null} endDate - 结束日期
      */
     _updateQuickButtonState(year, month, startDate, endDate) {
-        // 移除所有快捷按钮的 active 状态
-        document.querySelectorAll('.header-tr-quick-btn').forEach(b => b.classList.remove('active'));
-
         const today = new Date();
         const currentYear = today.getFullYear();
         const currentMonth = today.getMonth();
@@ -435,6 +432,9 @@ const TradeRecords = {
 
         // 判断是否匹配某个快捷筛选
         let matchedRange = null;
+
+        // 确保 year 是数字类型
+        const yearNum = parseInt(year, 10);
 
         if (startDate && endDate) {
             // 检查是否是"今日"
@@ -448,14 +448,15 @@ const TradeRecords = {
                 matchedRange = 'today';
             }
 
-            // 检查是否是"本周"
+            // 检查是否是"本周"（周一到周日）
             if (!matchedRange) {
                 const dayOfWeek = today.getDay();
                 const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
                 const weekStart = new Date(today);
                 weekStart.setDate(today.getDate() + diffToMonday);
                 weekStart.setHours(0, 0, 0, 0);
-                const weekEnd = new Date(today);
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6); // 周日
                 weekEnd.setHours(23, 59, 59, 999);
 
                 const isThisWeek = startDate.getTime() === weekStart.getTime() &&
@@ -464,19 +465,21 @@ const TradeRecords = {
                     matchedRange = 'week';
                 }
             }
-        } else if (month !== null) {
+        } else if (month !== null && month !== undefined) {
             // 检查是否是"本月"
-            if (year === currentYear && month === currentMonth) {
+            if (yearNum === currentYear && month === currentMonth) {
                 matchedRange = 'month';
             }
         } else {
             // 检查是否是"本年"
-            if (year === currentYear) {
+            if (yearNum === currentYear) {
                 matchedRange = 'year';
             }
         }
 
-        // 设置匹配的按钮为 active
+        // 移除所有快捷按钮的 active 状态，然后设置匹配的按钮为 active
+        document.querySelectorAll('.header-tr-quick-btn').forEach(b => b.classList.remove('active'));
+        
         if (matchedRange) {
             const btn = document.querySelector(`.header-tr-quick-btn[data-range="${matchedRange}"]`);
             if (btn) {
