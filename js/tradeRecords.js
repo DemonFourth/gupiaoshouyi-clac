@@ -494,7 +494,6 @@ const TradeRecords = {
     async _loadDataAsync(year, month, startDate, endDate) {
         // 获取数据
         const DataService = StockProfitCalculator.DataService;
-        const Calculator = StockProfitCalculator.Calculator;
 
         const stocks = await DataService.getAllStocks();
 
@@ -511,14 +510,14 @@ const TradeRecords = {
         // 获取选中的股票
         const selectedStockCode = this._domCache.tradeRecordsStockFilter ? this._domCache.tradeRecordsStockFilter.value : '';
 
-        // 为每只股票调用 calculateAll() 获取 sellRecords
+        // 为每只股票通过 DataService 获取计算结果（使用缓存）
         let allSellRecords = [];
         let allTrades = [];
 
-        stocks.forEach(stock => {
+        for (const stock of stocks) {
             // 如果选中了特定股票，跳过其他股票
             if (selectedStockCode && stock.code !== selectedStockCode) {
-                return;
+                continue;
             }
 
             StockProfitCalculator.Logger?.debug?.('[TradeRecords] 股票:', stock.code, stock.name, '交易记录数:', stock.trades.length);
@@ -532,18 +531,20 @@ const TradeRecords = {
                 });
             });
 
-            // 调用 calculateAll() 获取 sellRecords（包含盈亏）
-            const calcResult = Calculator.calculateAll(stock.trades);
+            // 通过 DataService 获取计算结果（使用缓存，避免重复计算）
+            const calcResult = await DataService.getCalculationResult(stock.code);
             
             // 合并 sellRecords，添加股票信息
-            calcResult.sellRecords.forEach(sellRecord => {
-                allSellRecords.push({
-                    ...sellRecord,
-                    stockCode: stock.code,
-                    stockName: stock.name
+            if (calcResult && calcResult.sellRecords) {
+                calcResult.sellRecords.forEach(sellRecord => {
+                    allSellRecords.push({
+                        ...sellRecord,
+                        stockCode: stock.code,
+                        stockName: stock.name
+                    });
                 });
-            });
-        });
+            }
+        }
 
         StockProfitCalculator.Logger?.debug?.('[TradeRecords] 所有交易记录数:', allTrades.length);
         StockProfitCalculator.Logger?.debug?.('[TradeRecords] 所有卖出记录数:', allSellRecords.length);
