@@ -1540,6 +1540,49 @@ applyTheme(theme) {
 - ✅ 所有包含 tooltip 的图表都应在 `onThemeChange()` 中重新渲染
 - ✅ 使用 `_rerenderChart()` 方法重新渲染缓存的图表数据
 
+**各模块实现示例**：
+
+```javascript
+// Overview 实现示例
+onThemeChange(theme) {
+    if (this.yearlyProfitData && this.renderYearlyProfitChart) {
+        this.renderYearlyProfitChart();
+        if (this.selectedYear) {
+            this.renderMonthlyProfitChart(this.selectedYear);
+        }
+    }
+}
+
+// Detail 实现示例
+onThemeChange(theme) {
+    if (this.currentStockCode && this.snapshot?.calcResult?.timeSeries) {
+        this.renderPerShareCostTrendChart(this.snapshot.calcResult.timeSeries);
+    }
+}
+
+// TradeRecords 实现示例（使用缓存数据和 _rerenderChart）
+onThemeChange(theme) {
+    const chartIds = [
+        'tradeRecordsDailyAmountChart',
+        'tradeRecordsDailyProfitChart',
+        'tradeRecordsTypeDistributionChart',
+        'tradeRecordsStockAmountChart',
+        'tradeRecordsStockProfitChart',
+        'tradeRecordsDailyCountChart'
+    ];
+    
+    chartIds.forEach(chartId => {
+        const cachedData = this._chartDataCache?.[chartId];
+        // 从 DOM 获取图表类型选择器的值
+        const selector = document.querySelector(`.chart-type-selector[data-chart="${chartId}"]`);
+        const chartTypeValue = selector ? selector.value : null;
+        if (cachedData && chartTypeValue) {
+            this._rerenderChart(chartId, chartTypeValue);
+        }
+    });
+}
+```
+
 **图表 tooltip 主题适配规范**：
 
 在图表渲染函数中，必须根据主题设置 tooltip 样式：
