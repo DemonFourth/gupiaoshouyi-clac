@@ -1240,6 +1240,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         // 根据图表类型配置
         let seriesType = 'line';
         let stack = null;
@@ -1257,6 +1263,9 @@ const TradeRecords = {
         const option = {
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 axisPointer: {
                     type: 'cross'
                 },
@@ -1332,6 +1341,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         // 根据图表类型配置
         let seriesType = 'line';
         let areaStyle = null;
@@ -1367,6 +1382,9 @@ const TradeRecords = {
             },
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 formatter: function(params) {
                     const value = params[0].value !== undefined ? params[0].value.toFixed(2) : '0.00';
                     return `${params[0].name}<br/>累计收益: ¥${value}`;
@@ -1421,6 +1439,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         if (data.length === 0) {
             // 没有数据，显示提示
             const chartDom = document.getElementById(chartId);
@@ -1436,6 +1460,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'item',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: function(params) {
                         const value = params.value !== undefined ? params.value : 0;
                         const percent = params.percent !== undefined ? params.percent.toFixed(2) : '0.00';
@@ -1468,6 +1495,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'item',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: function(params) {
                         const value = params.value !== undefined ? params.value : 0;
                         const percent = params.percent !== undefined ? params.percent.toFixed(2) : '0.00';
@@ -1500,6 +1530,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     axisPointer: {
                         type: 'shadow'
                     },
@@ -1553,6 +1586,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         if (data.length === 0) {
             const chartDom = document.getElementById(chartId);
             if (chartDom) {
@@ -1568,6 +1607,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'item',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: function(params) {
                         const buyAmount = params.data[0] !== undefined ? params.data[0].toFixed(2) : '0.00';
                         const sellAmount = params.data[1] !== undefined ? params.data[1].toFixed(2) : '0.00';
@@ -1618,6 +1660,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     axisPointer: {
                         type: 'shadow'
                     },
@@ -1687,6 +1732,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     axisPointer: {
                         type: 'shadow'
                     },
@@ -1754,6 +1802,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     axisPointer: {
                         type: 'shadow'
                     }
@@ -1825,6 +1876,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         if (data.length === 0) {
             const chartDom = document.getElementById(chartId);
             if (chartDom) {
@@ -1840,6 +1897,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'axis',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     axisPointer: {
                         type: 'shadow'
                     }
@@ -1886,6 +1946,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'item',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: function(params) {
                         const totalAmount = params.data[0] !== undefined ? params.data[0].toFixed(2) : '0.00';
                         const profit = params.data[1] !== undefined ? params.data[1].toFixed(2) : '0.00';
@@ -1936,6 +1999,9 @@ const TradeRecords = {
             option = {
                 tooltip: {
                     trigger: 'item',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: function(params) {
                         const totalAmount = params.data[0] !== undefined ? params.data[0].toFixed(2) : '0.00';
                         const profit = params.data[1] !== undefined ? params.data[1].toFixed(2) : '0.00';
@@ -1986,6 +2052,9 @@ const TradeRecords = {
             // 矩形树图
             option = {
                 tooltip: {
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     formatter: '{b}<br/>收益: ¥{c}'
                 },
                 series: [
@@ -2014,6 +2083,9 @@ const TradeRecords = {
             // 雷达图
             option = {
                 tooltip: {
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
+                    textStyle: { color: tooltipText },
                     trigger: 'item'
                 },
                 legend: {
@@ -2064,6 +2136,12 @@ const TradeRecords = {
         // 销毁旧图表
         ChartManager.dispose(chartId);
         
+        // 根据主题设置 tooltip 样式
+        const isDark = ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        
         // 根据图表类型配置
         let seriesType = 'line';
         let stack = null;
@@ -2080,6 +2158,9 @@ const TradeRecords = {
         const option = {
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 axisPointer: {
                     type: 'cross'
                 },
@@ -2141,6 +2222,30 @@ const TradeRecords = {
         if (chartDom) {
             ChartManager.init(chartId, chartDom, option);
         }
+    },
+
+    /**
+     * 主题切换时的图表重新渲染
+     * @param {string} theme - 'dark' 或 'light'
+     */
+    onThemeChange(theme) {
+        // 使用缓存的图表数据和图表类型重新渲染所有图表
+        const chartIds = [
+            'tradeRecordsDailyAmountChart',
+            'tradeRecordsDailyProfitChart',
+            'tradeRecordsTypeDistributionChart',
+            'tradeRecordsStockAmountChart',
+            'tradeRecordsStockProfitChart',
+            'tradeRecordsDailyCountChart'
+        ];
+        
+        chartIds.forEach(chartId => {
+            const cachedData = this._chartDataCache?.get(chartId);
+            const chartTypeValue = this._getChartType(chartId);
+            if (cachedData && chartTypeValue) {
+                this._rerenderChart(chartId, chartTypeValue);
+            }
+        });
     }
 };
 

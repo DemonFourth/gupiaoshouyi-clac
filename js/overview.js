@@ -2484,6 +2484,19 @@ const Overview = {
     },
 
     /**
+     * 主题切换时的图表重新渲染
+     * @param {string} theme - 'dark' 或 'light'
+     */
+    onThemeChange(theme) {
+        if (this.yearlyProfitData && this.renderYearlyProfitChart) {
+            this.renderYearlyProfitChart();
+            if (this.selectedYear) {
+                this.renderMonthlyProfitChart(this.selectedYear);
+            }
+        }
+    },
+
+    /**
      * 设置收益点击事件
      * @private
      * @param {HTMLElement} element - 收益元素

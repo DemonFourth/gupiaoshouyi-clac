@@ -71,15 +71,15 @@ window.App = {
         // 通知 ChartManager 更新所有图表
         StockProfitCalculator.ChartManager.onThemeChange(theme);
 
-        // 重新渲染收益趋势图表（因为 tooltip 中的颜色需要重新计算）
-        // 只有在数据已加载后才重新渲染
-        const Overview = StockProfitCalculator.Overview;
-        if (Overview && Overview.yearlyProfitData && Overview.renderYearlyProfitChart) {
-            Overview.renderYearlyProfitChart();
-            if (Overview.selectedYear) {
-                Overview.renderMonthlyProfitChart(Overview.selectedYear);
+        // 统一调用所有图表模块的 onThemeChange 方法
+        const chartModules = ['Overview', 'Detail', 'TradeRecords'];
+        chartModules.forEach(moduleName => {
+            const module = StockProfitCalculator[moduleName];
+            if (module && typeof module.onThemeChange === 'function') {
+                Logger?.debug?.(`[App] 调用 ${moduleName}.onThemeChange()`);
+                module.onThemeChange(theme);
             }
-        }
+        });
     },
 
     /**

@@ -1,7 +1,7 @@
 # 股票收益计算器 - 开发规范文档
 
-> 版本：v2.29.0
-> 更新日期：2026-04-23
+> 版本：v2.32.0
+> 更新日期：2026-04-27
 
 ## 目录
 
@@ -1488,32 +1488,77 @@ themeColors: {
 }
 ```
 
-### 5. 主题切换时图表更新规范
+### 5. 主题切换时图表更新规范（统一接口方案）
 
-**必须遵循**：
-- 主题切换时必须重新渲染包含动态颜色的图表
-- 在 `app.js` 的 `applyTheme()` 中调用图表重新渲染
-- 检查数据是否已加载后再渲染
+**核心原则**：
+- 所有图表模块必须实现 `onThemeChange(theme)` 方法
+- `app.js` 统一调用所有图表模块的 `onThemeChange()` 方法
+- 新增图表模块只需实现接口，自动被主题切换调用，无需修改 `app.js`
 
-**示例**：
+**统一接口定义**：
+
+所有图表模块必须实现以下方法：
+
 ```javascript
-// app.js
-applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    
-    // 通知 ChartManager 更新所有图表
-    StockProfitCalculator.ChartManager.onThemeChange(theme);
-    
-    // 重新渲染包含动态颜色的图表（如 tooltip 颜色）
-    const Overview = StockProfitCalculator.Overview;
-    if (Overview && Overview.yearlyProfitData && Overview.renderYearlyProfitChart) {
-        Overview.renderYearlyProfitChart();
-        if (Overview.selectedYear) {
-            Overview.renderMonthlyProfitChart(Overview.selectedYear);
+const ChartModule = {
+    // ... 现有代码
+
+    /**
+     * 主题切换时的图表重新渲染
+     * @param {string} theme - 'dark' 或 'light'
+     */
+    onThemeChange(theme) {
+        if (this.chartData && this.renderChart) {
+            this.renderChart();
         }
+        // ... 其他需要重新渲染的图表
     }
+};
+```
+
+**app.js 统一调用机制**：
+
+```javascript
+applyTheme(theme) {
+    // ... 现有逻辑（设置 data-theme、通知 ChartManager）
+
+    // 统一调用所有图表模块的 onThemeChange 方法
+    const chartModules = ['Overview', 'Detail', 'TradeRecords'];
+    chartModules.forEach(moduleName => {
+        const module = StockProfitCalculator[moduleName];
+        if (module && typeof module.onThemeChange === 'function') {
+            module.onThemeChange(theme);
+        }
+    });
 }
+```
+
+**注意事项**：
+
+- ✅ 新增图表模块时，只需实现 `onThemeChange()` 方法
+- ✅ 无需修改 `app.js`，自动被调用
+- ✅ 所有包含 tooltip 的图表都应在 `onThemeChange()` 中重新渲染
+- ✅ 使用 `_rerenderChart()` 方法重新渲染缓存的图表数据
+
+**图表 tooltip 主题适配规范**：
+
+在图表渲染函数中，必须根据主题设置 tooltip 样式：
+
+```javascript
+// 根据主题设置 tooltip 样式
+const isDark = ChartManager.currentTheme === 'dark';
+const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+
+const option = {
+    tooltip: {
+        backgroundColor: tooltipBg,
+        borderColor: tooltipBorder,
+        textStyle: { color: tooltipText },
+        // ... formatter
+    }
+};
 ```
 
 ### 6. 表格主题适配规范

@@ -2848,6 +2848,16 @@ const Detail = {
                 });
             });
         }
+    },
+
+    /**
+     * 主题切换时的图表重新渲染
+     * @param {string} theme - 'dark' 或 'light'
+     */
+    onThemeChange(theme) {
+        if (this.currentStockCode && this.snapshot?.calcResult?.timeSeries) {
+            this.renderPerShareCostTrendChart(this.snapshot.calcResult.timeSeries);
+        }
     }
 };
 
