@@ -1822,6 +1822,14 @@ const Detail = {
         const cpsKey = hasLatest && Number.isFinite(latestPrice) && Number.isFinite(lastCps) && (latestPrice - lastCps) >= 0 ? 'pos' : 'neg';
         const dpsKey = hasLatest && Number.isFinite(latestPrice) && Number.isFinite(lastDps) && (latestPrice - lastDps) >= 0 ? 'pos' : 'neg';
 
+        // 根据主题设置 tooltip 样式
+        const isDark = StockProfitCalculator.ChartManager.currentTheme === 'dark';
+        const tooltipBg = isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+        const tooltipBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)';
+        const tooltipText = isDark ? '#e8eaf6' : '#1e293b';
+        const tooltipMuted = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)';
+        const tooltipHr = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+
         const titles = [
             {
                 text: '每股成本趋势（买入 vs 持仓 vs 摊薄）',
@@ -1839,6 +1847,9 @@ const Detail = {
             },
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: tooltipBg,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText },
                 formatter: function(params) {
                     const bps = params.find(p => p.seriesName === '买入价');
                     const cps = params.find(p => p.seriesName === '每股持仓成本');
@@ -1849,9 +1860,9 @@ const Detail = {
                     const dpsVal = dps && dps.value != null ? `¥${Number(dps.value).toFixed(3)}` : '--';
                     const lpVal  = hasLatest ? `¥${Utils.formatPrice(latestPrice)}` : '--';
 
-                    let result = `${date}<br/>买入: ${bpsVal}<br/>持仓: ${cpsVal}<br/>摊薄: ${dpsVal}`;
+                    let result = `${date}<br/><span style="color:${tooltipMuted}">买入:</span> ${bpsVal}<br/><span style="color:${tooltipMuted}">持仓:</span> ${cpsVal}<br/><span style="color:${tooltipMuted}">摊薄:</span> ${dpsVal}`;
                     if (hasLatest) {
-                        result += `<br/>最新价: ${lpVal}`;
+                        result += `<br/><span style="color:${tooltipMuted}">最新价:</span> ${lpVal}`;
                     }
 
                     // 检查是否有加仓对比数据
@@ -1859,10 +1870,10 @@ const Detail = {
                     if (additionComp) {
                         const signedVal = (n, d=3) => (n >= 0 ? '+' : '') + n.toFixed(d);
                         const color = additionComp.changePercent > 0 ? '#f44336' : '#4caf50';
-                        result += `<br/><hr style="margin:4px 0;"/>`;
+                        result += `<br/><hr style="margin:4px 0;border-color:${tooltipHr};"/>`;
                         result += `<span style="color:${color};font-weight:bold;">加仓对比：</span><br/>`;
-                        result += `本次加仓价: ¥${additionComp.price.toFixed(3)}<br/>`;
-                        result += `上次加仓价: ¥${additionComp.lastPrice.toFixed(3)}<br/>`;
+                        result += `<span style="color:${tooltipMuted}">本次加仓价:</span> ¥${additionComp.price.toFixed(3)}<br/>`;
+                        result += `<span style="color:${tooltipMuted}">上次加仓价:</span> ¥${additionComp.lastPrice.toFixed(3)}<br/>`;
                         result += `<span style="color:${color};font-weight:bold;">差额: ${signedVal(additionComp.change)} (${signedVal(additionComp.changePercent, 2)}%)</span>`;
                     }
 
