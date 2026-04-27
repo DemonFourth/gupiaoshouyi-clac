@@ -348,6 +348,9 @@ npx live-server .
   - 交易记录页所有图表 tooltip 适配 dark/light 主题（共15个tooltip配置）
   - 详情页每股成本趋势图 tooltip 适配 dark/light 主题
   - 新增图表模块只需实现 `onThemeChange()` 接口，自动被主题切换调用
+- **Bug 修复（2项）**：
+  - 修复 `onThemeChange` 缓存访问方式：`_chartDataCache` 是普通对象，使用对象属性访问
+  - 修复 `onThemeChange` 获取图表类型：从 DOM 获取选择器值，而非调用不存在的函数
 - **开发规范更新**：
   - 更新 CONTRIBUTING.md 统一接口规范文档
   - 新增图表 tooltip 主题适配规范说明

@@ -2240,8 +2240,10 @@ const TradeRecords = {
         ];
         
         chartIds.forEach(chartId => {
-            const cachedData = this._chartDataCache?.get(chartId);
-            const chartTypeValue = this._getChartType(chartId);
+            const cachedData = this._chartDataCache?.[chartId];
+            // 从 DOM 获取图表类型选择器的值
+            const selector = document.querySelector(`.chart-type-selector[data-chart="${chartId}"]`);
+            const chartTypeValue = selector ? selector.value : null;
             if (cachedData && chartTypeValue) {
                 this._rerenderChart(chartId, chartTypeValue);
             }
