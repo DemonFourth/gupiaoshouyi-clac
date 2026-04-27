@@ -36,7 +36,8 @@ const Calculator = {
                 cumulativeProfits: [],
                 returnRates: [],
                 costPerShares: [],
-                dilutedCostPerShares: []
+                dilutedCostPerShares: [],
+                buyPrices: []
             },
             cumulativeProfit: 0,
             currentCycleProfit: 0,
@@ -57,7 +58,10 @@ const Calculator = {
             lastAdditionTradeId: null,
             lastAdditionDate: null,
             additionComparisons: [],
-            additionComparisonsByCycle: {}  // 按轮次保存加仓对比数据
+            additionComparisonsByCycle: {},  // 按轮次保存加仓对比数据
+            
+            // 买入价（用于时间序列图）
+            lastBuyPrice: null
         };
     },
 
@@ -152,6 +156,9 @@ const Calculator = {
         state.lastAdditionPrice = trade.price;
         state.lastAdditionTradeId = trade.id;
         state.lastAdditionDate = trade.date;
+        
+        // 记录当前买入价（用于时间序列图）
+        state.lastBuyPrice = trade.price;
     },
 
     /**
@@ -270,6 +277,8 @@ const Calculator = {
             state.lastAdditionPrice = null;
             state.lastAdditionTradeId = null;
             state.lastAdditionDate = null;
+            // 清仓时重置买入价
+            state.lastBuyPrice = null;
             // 清空 additionComparisons 但保留 additionComparisonsByCycle
             state.additionComparisons.length = 0;
         }
@@ -389,6 +398,10 @@ const Calculator = {
         state.timeSeriesData.returnRates.push(currentCost > 0 ? (state.cumulativeProfit / currentCost * 100) : 0);
         state.timeSeriesData.costPerShares.push(costPerShare);
         state.timeSeriesData.dilutedCostPerShares.push(dilutedCostPerShare);
+        
+        // 买入价时间序列：买入时记录当前价格，其他交易保持上次买入价
+        const buyPrice = trade.type === 'buy' ? trade.price : state.lastBuyPrice;
+        state.timeSeriesData.buyPrices.push(buyPrice);
     },
 
     /**

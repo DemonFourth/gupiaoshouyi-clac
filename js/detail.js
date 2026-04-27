@@ -224,7 +224,8 @@ const Detail = {
             costs: timeSeries.costs?.length,
             profits: timeSeries.profits?.length,
             returnRates: timeSeries.returnRates?.length,
-            costPerShares: timeSeries.costPerShares?.length
+            costPerShares: timeSeries.costPerShares?.length,
+            buyPrices: timeSeries.buyPrices?.length
         });
 
         this.renderHoldingTrendChart(timeSeries);
@@ -1794,10 +1795,11 @@ const Detail = {
             data: [{ yAxis: latestPrice }]
         } : undefined;
 
-        // 计算自适应Y轴范围：根据两条成本曲线与最新价共同决定
+        // 计算自适应Y轴范围：根据三条曲线（持仓成本、摊薄成本、买入价）与最新价共同决定
         const cps = (timeSeries.costPerShares || []).filter(v => v != null && Number.isFinite(v));
         const dps = (timeSeries.dilutedCostPerShares || []).filter(v => v != null && Number.isFinite(v));
-        const vals = [...cps, ...dps];
+        const bps = (timeSeries.buyPrices || []).filter(v => v != null && Number.isFinite(v));
+        const vals = [...cps, ...dps, ...bps];
         if (Number.isFinite(latestPrice)) vals.push(latestPrice);
         const minVal = vals.length ? Math.min(...vals) : 0;
         const maxVal = vals.length ? Math.max(...vals) : 1;
@@ -1822,7 +1824,7 @@ const Detail = {
 
         const titles = [
             {
-                text: '每股成本趋势（持仓 vs 摊薄）',
+                text: '每股成本趋势（买入 vs 持仓 vs 摊薄）',
                 left: 'center',
                 textStyle: { fontSize: 16, fontWeight: 'bold' }
             }
@@ -1831,21 +1833,23 @@ const Detail = {
         const option = {
             title: titles,
             legend: {
-                data: hasLatest ? ['每股持仓成本', '每股摊薄成本', '最新价'] : ['每股持仓成本', '每股摊薄成本'],
+                data: hasLatest ? ['买入价', '每股持仓成本', '每股摊薄成本', '最新价'] : ['买入价', '每股持仓成本', '每股摊薄成本'],
                 top: 30,
                 textStyle: { fontSize: 12 }
             },
             tooltip: {
                 trigger: 'axis',
                 formatter: function(params) {
+                    const bps = params.find(p => p.seriesName === '买入价');
                     const cps = params.find(p => p.seriesName === '每股持仓成本');
                     const dps = params.find(p => p.seriesName === '每股摊薄成本');
                     const date = params[0]?.name || '';
+                    const bpsVal = bps && bps.value != null ? `¥${Number(bps.value).toFixed(3)}` : '--';
                     const cpsVal = cps && cps.value != null ? `¥${Number(cps.value).toFixed(3)}` : '--';
                     const dpsVal = dps && dps.value != null ? `¥${Number(dps.value).toFixed(3)}` : '--';
                     const lpVal  = hasLatest ? `¥${Utils.formatPrice(latestPrice)}` : '--';
 
-                    let result = `${date}<br/>持仓: ${cpsVal}<br/>摊薄: ${dpsVal}`;
+                    let result = `${date}<br/>买入: ${bpsVal}<br/>持仓: ${cpsVal}<br/>摊薄: ${dpsVal}`;
                     if (hasLatest) {
                         result += `<br/>最新价: ${lpVal}`;
                     }
@@ -1883,12 +1887,21 @@ const Detail = {
             },
             yAxis: {
                 type: 'value',
-                name: '成本(元/股)',
+                name: '价格(元/股)',
                 axisLabel: { formatter: '¥{value}' },
                 min: function() { return axisMin; },
                 max: function() { return axisMax; }
             },
             series: [
+                {
+                    name: '买入价',
+                    type: 'line',
+                    data: (timeSeries.buyPrices || []).map(v => (v == null ? null : Number(v.toFixed ? v.toFixed(3) : v))),
+                    smooth: true,
+                    symbol: 'diamond', symbolSize: 6,
+                    lineStyle: { color: '#FF9800', width: 2 },
+                    itemStyle: { color: '#FF9800' }
+                },
                 {
                     name: '每股持仓成本',
                     type: 'line',
