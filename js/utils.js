@@ -739,9 +739,10 @@ const Validator = {
             });
         }
 
-        if (typeof data.currentStockCode !== 'string') {
-            errors.push('当前股票代码无效');
-        }
+        // currentStockCode 只用于 localStorage UI 状态，D1 不存储，无需验证
+        // if (typeof data.currentStockCode !== 'string') {
+        //     errors.push('当前股票代码无效');
+        // }
 
         return {
             valid: errors.length === 0,

@@ -544,6 +544,11 @@ const DataManager = {
             const data = await response.json();
             StockProfitCalculator.Logger?.debug?.('[DataManager._loadFromD1] 从 API 加载数据成功，股票数量:', data.stocks?.length || 0);
 
+            // 防御性修复：确保数据结构完整（D1 只返回 stocks，不返回 currentStockCode）
+            if (data && typeof data === 'object' && data.currentStockCode === undefined) {
+                data.currentStockCode = null;
+            }
+
             // 数据验证
             if (this.validateData(data)) {
                 // 数据迁移
@@ -687,20 +692,19 @@ const DataManager = {
     /**
      * 数据验证
      */
-    validateData(data) {
-        if (!data || typeof data !== 'object') return false;
-        if (!Array.isArray(data.stocks)) return false;
-        if (data.currentStockCode !== null && typeof data.currentStockCode !== 'string') return false;
+     validateData(data) {
+         if (!data || typeof data !== 'object') return false;
+         if (!Array.isArray(data.stocks)) return false;
 
-        // 验证每只股票的数据
-        for (const stock of data.stocks) {
-            if (!stock.code || !stock.name || !Array.isArray(stock.trades)) {
-                return false;
-            }
-        }
+         // 验证每只股票的数据（核心数据验证）
+         for (const stock of data.stocks) {
+             if (!stock.code || !stock.name || !Array.isArray(stock.trades)) {
+                 return false;
+             }
+         }
 
-        return true;
-    },
+         return true;
+     },
 
     /**
      * 数据迁移：为旧数据添加 totalAmount 字段
